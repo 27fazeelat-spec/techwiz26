@@ -7,6 +7,7 @@
   detect-changes    compare document versions and record policy changes
   route-reviews     create review items for plans validated before the review queue existed
   export-reports    write every report as CSV, Excel and PDF
+  generate-plans    generate and validate one plan per job role
 """
 import csv
 import json
@@ -308,6 +309,46 @@ def register_cli(app):
                 path.write_bytes(reports.FORMATS[fmt][1](table))
             click.echo(f"  {name}: {len(table.rows)} rows")
         click.echo(f"Written to {folder}")
+
+    @app.cli.command("generate-plans")
+    @click.option("--role", "roles", multiple=True, help="Role code(s); default: every active role.")
+    @click.option("--pause", default=5, show_default=True, help="Seconds to wait between plans (Gemini rate limit).")
+    @click.option("--regenerate", is_flag=True, help="Also generate for roles that already have a current plan.")
+    def generate_plans_command(roles, pause, regenerate):
+        """Generate and validate one plan per job role (the first employee in each role), one at a time."""
+        import time
+        from database.models import Plan
+        from genai_pipeline.providers import ProviderError
+        from src.services.planning import generate_plan
+        query = select(JobRole).where(JobRole.status == "active").order_by(JobRole.code)
+        if roles:
+            query = query.where(JobRole.code.in_([r.upper() for r in roles]))
+        results = []
+        for n, role in enumerate(db.session.scalars(query).all()):
+            employee = db.session.scalar(select(Employee).where(Employee.job_role_id == role.id)
+                                         .order_by(Employee.employee_code))
+            if employee is None:
+                click.echo(f"  {role.code}: no employee in this role, skipped")
+                continue
+            current = db.session.scalar(select(Plan).where(Plan.employee_id == employee.id,
+                                                           Plan.status.notin_(["superseded", "Failed"])))
+            if current is not None and not regenerate:
+                click.echo(f"  {role.code}: {employee.name} already has {current.plan_code} v{current.version}, skipped")
+                continue
+            if n and pause:
+                time.sleep(pause)
+            started = time.time()
+            try:
+                plan = generate_plan(employee, {"email": "cli", "app_role": "system"}, current_app.config)
+            except (ProviderError, ValueError) as exc:
+                db.session.rollback()
+                click.echo(f"  {role.code}: FAILED ({exc})")
+                continue
+            took = time.time() - started
+            results.append(plan)
+            click.echo(f"  {role.code}: {employee.name:<22} {plan.plan_code} v{plan.version}  {plan.status:<24} "
+                       f"coverage {plan.score_coverage}%  traceability {plan.score_traceability}%  {took:.0f} s")
+        click.echo(f"{len(results)} plan(s) generated.")
 
     @app.cli.command("db-check")
     def db_check():
