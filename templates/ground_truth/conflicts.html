@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}Conflicts{% endblock %}
+{% macro clause(r, won, lost) -%}
+  <div class="side {{ 'side--won' if won else ('side--lost' if lost else '') }}">
+    <p class="side__ref"><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=r.id) }}">{{ r.req_id }}</a>
+      <span class="mono">{{ r.doc_id }}</span> v{{ r.version }} §{{ r.section_id }} · {{ r.document.category }} · tier {{ r.document.tier }}
+      {% if won %}<span class="badge badge--ok">Applies</span>{% elif lost %}<span class="badge badge--neutral">Overridden</span>{% endif %}</p>
+    <p class="side__text">{{ r.text }}</p>
+  </div>
+{%- endmacro %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">Ground truth</p>
+    <h1>Conflicts</h1>
+    <p class="pagehead__meta">Contradictions between documents, found by deterministic checks and resolved by the documented precedence rules. Overridden clauses are removed from the matrix and never shown to Gemini.</p>
+  </div>
+  {% if can('conflicts.resolve') %}
+  <form method="post" action="{{ url_for('ground_truth.conflicts_detect') }}" data-busy="Checking for contradictions…">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn" type="submit">{{ icon('split', 16) }}Run contradiction check</button>
+  </form>
+  {% endif %}
+</div>
+
+{% set open = counts.manual_review or 0 %}
+{% set auto = (counts.auto_resolved or 0) + (counts.auto_resolved_warning or 0) %}
+<section class="kpis" aria-label="Summary">
+  <div class="kpi {{ 'kpi--bad' if open }}"><span class="kpi__label">Needs a reviewer</span><span class="kpi__value">{{ open }}</span><span class="kpi__note">same authority, no automatic winner</span></div>
+  <div class="kpi"><span class="kpi__label">Resolved by precedence</span><span class="kpi__value">{{ auto }}</span><span class="kpi__note">{{ counts.auto_resolved_warning or 0 }} by the life-safety rule</span></div>
+  <div class="kpi"><span class="kpi__label">Resolved by reviewers</span><span class="kpi__value">{{ counts.resolved_by_reviewer or 0 }}</span><span class="kpi__note">recorded in the audit trail</span></div>
+  <div class="kpi"><span class="kpi__label">Version changes</span><span class="kpi__value">{{ versions }}</span><span class="kpi__note">old vs current policy</span></div>
+</section>
+
+{% if rows %}
+<div class="toolbar">
+  <div class="segmented" data-filter-group="#conflict-list" role="group" aria-label="Show conflicts">
+    <button type="button" class="is-on" data-filter="all" aria-pressed="true">All <span class="count">{{ rows|length }}</span></button>
+    <button type="button" data-filter="manual_review" aria-pressed="false">Needs a reviewer <span class="count">{{ open }}</span></button>
+    <button type="button" data-filter="auto" aria-pressed="false">Resolved by precedence <span class="count">{{ auto }}</span></button>
+    <button type="button" data-filter="resolved_by_reviewer" aria-pressed="false">By reviewers <span class="count">{{ counts.resolved_by_reviewer or 0 }}</span></button>
+    <button type="button" data-filter="version" aria-pressed="false">Version changes <span class="count">{{ versions }}</span></button>
+  </div>
+</div>
+{% endif %}
+
+<div class="stack" id="conflict-list">
+{% for c in rows %}
+{% set group = 'auto' if c.status in ['auto_resolved', 'auto_resolved_warning'] else c.status %}
+<section class="panel conflict {{ 'panel--alert' if c.status == 'manual_review' }}" id="{{ c.conflict_code }}"
+         data-filter-item data-filter-value="{{ group }}{{ ' version' if c.kind == 'version' }}">
+  <div class="conflict__head">
+    <span class="conflict__code">{{ c.conflict_code }}</span>
+    <span class="conflict__kind">{{ 'Version change' if c.kind == 'version' else 'Between documents' }}</span>
+    {% set tone = {'manual_review': 'bad', 'auto_resolved_warning': 'warn', 'resolved_by_reviewer': 'info', 'auto_resolved': 'ok'}[c.status] %}
+    <span class="badge badge--{{ tone }}">{{ {'manual_review': 'Needs a reviewer', 'auto_resolved_warning': 'Resolved, with warning', 'resolved_by_reviewer': 'Resolved by reviewer', 'auto_resolved': 'Resolved'}[c.status] }}</span>
+    <span class="conflict__meta">rule: <strong>{{ c.rule_applied|replace('_', ' ') }}</strong>{% if c.kind == 'cross_document' %} · topic match {{ '%.2f' % c.similarity }}{% endif %}</span>
+  </div>
+  <div class="conflict__body">
+    <div class="sides">
+      {{ clause(c.left, c.winner_requirement_id == c.left_requirement_id, c.winner_requirement_id and c.winner_requirement_id != c.left_requirement_id) }}
+      <span class="sides__vs" aria-hidden="true">VS</span>
+      {{ clause(c.right, c.winner_requirement_id == c.right_requirement_id, c.winner_requirement_id and c.winner_requirement_id != c.right_requirement_id) }}
+    </div>
+    <div class="diffs"><strong class="small">Disagreement</strong>
+      {% for d in c.differences %}<span class="diff">{% if d.type == 'number' %}{{ d.unit }} {{ d.left|join(', ') }} vs {{ d.right|join(', ') }}{% elif d.type == 'deadline' %}deadline {{ d.left }} vs {{ d.right }} min{% elif d.type == 'frequency' %}every {{ d.left }} vs every {{ d.right }} months{% else %}{{ d.left }} vs {{ d.right }}{% endif %}</span>{% endfor %}</div>
+    <p class="decision">{{ icon('check', 16) }}<span><strong>Decision:</strong> {{ c.explanation }}</span></p>
+  </div>
+  {% if c.status == 'manual_review' and can('conflicts.resolve') %}
+  <form method="post" action="{{ url_for('ground_truth.conflict_resolve', pk=c.id) }}" class="resolve">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field"><label for="winner-{{ c.id }}">Rule that applies</label>
+      <select id="winner-{{ c.id }}" name="winner" required><option value="">Choose…</option>
+        <option value="left">{{ c.left.req_id }} ({{ c.left.doc_id }})</option><option value="right">{{ c.right.req_id }} ({{ c.right.doc_id }})</option></select></div>
+    <div class="field field--grow"><label for="reason-{{ c.id }}">Reason (kept in the audit trail)</label>
+      <input id="reason-{{ c.id }}" name="reason" type="text" placeholder="e.g. Finance confirmed the 25% deposit applies group-wide"></div>
+    <button class="btn btn--primary" type="submit">Record decision</button>
+  </form>
+  {% endif %}
+</section>
+{% else %}
+<section class="panel">{{ empty('No contradictions found', 'Run the check after uploading documents. Clauses that disagree on numbers, deadlines, frequencies or permissions will appear here.', 'split') }}</section>
+{% endfor %}
+</div>
+{% endblock %}

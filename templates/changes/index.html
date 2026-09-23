@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}Policy changes{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">Knowledge base</p>
+    <h1>Policy changes</h1>
+    <p class="pagehead__meta">Each new document version is compared clause by clause with the version it replaces. Affected plans, items and employees are traced through the requirement links, and only the affected modules are regenerated.</p>
+  </div>
+  {% if can('documents.upload') %}
+  <form method="post" action="{{ url_for('changes.detect') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn" type="submit">{{ icon('split', 16) }}Compare versions again</button>
+  </form>
+  {% endif %}
+</div>
+
+<section class="panel panel--flush">
+  {% if rows %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Document</th><th>Versions</th><th class="num">Changed</th><th class="num">Added</th><th class="num">Removed</th><th>Impact</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for c in rows %}{% set i = impacts[c.id] %}
+        <tr>
+          <td><a href="{{ url_for('changes.detail', pk=c.id) }}"><span class="mono">{{ c.doc_id }}</span> {{ c.to_document.title }}</a></td>
+          <td class="mono nowrap">v{{ c.from_version }} → v{{ c.to_version }}</td>
+          <td class="num">{{ c.counts.changed or 0 }}</td><td class="num">{{ c.counts.added or 0 }}</td><td class="num">{{ c.counts.removed or 0 }}</td>
+          <td class="small">{% if i.plans %}{{ i['items'] }} items · {{ i.plans|length }} plan{{ 's' if i.plans|length != 1 }} · {{ i.employees }} employee{{ 's' if i.employees != 1 }}{% else %}<span class="muted">No current plan uses the changed clauses</span>{% endif %}</td>
+          <td>{% set tone = {'open': 'warn', 'regenerated': 'ok', 'no_impact': 'neutral', 'upcoming': 'info'}[c.status] %}
+            <span class="badge badge--{{ tone }}">{{ {'open': 'Plans need updating', 'regenerated': 'Plans updated', 'no_impact': 'No impact', 'upcoming': 'Not in force yet'}[c.status] }}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}{{ empty('No policy changes yet', 'Upload a new version of an existing document to see what changed and which plans it affects.', 'split') }}{% endif %}
+</section>
+{% endblock %}

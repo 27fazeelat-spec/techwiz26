@@ -1,0 +1,24 @@
+# Policy precedence (SRS Step 34). Lower tier number = higher authority.
+# Tier 0 means "never authoritative": the document is kept for reference but never creates requirements.
+tiers:
+  Compliance: 1
+  Policy: 1
+  SOP: 2
+  Role Description: 3
+  Handbook: 4
+  FAQ: 5
+  Informal Guidance: 6
+  External: 0
+  Other: 0
+
+# Applied in this order when two requirements conflict.
+rules:
+  - id: same_lineage
+    description: Within one document lineage, the latest approved, currently effective version wins.
+  - id: tier
+    description: Between different tiers, the higher-authority tier wins.
+  - id: life_safety
+    description: If a lower-tier source is stricter on a life-safety topic, the stricter rule applies and is flagged Verified with Warning.
+    topics: [injury, fire, evacuation, medical, first aid]
+  - id: same_tier_manual
+    description: Same tier, different documents - no automatic winner; route to Manual Review Required.

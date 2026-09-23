@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}Job roles{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Onboarding</p><h1>Job roles</h1>
+  <p class="pagehead__meta">A new role picks up existing requirements through its name, aliases and department. Nothing changes until you activate it and approve a new matrix.</p></div></div>
+
+<section class="panel panel--flush">
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Role</th><th>Department</th><th>Also known as</th><th class="num">Employees</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for r in rows %}
+        <tr><td><a href="{{ url_for('people.role_detail', code=r.code) }}"><span class="mono">{{ r.code }}</span> {{ r.name }}</a></td>
+          <td class="small">{{ r.department }}</td><td class="small muted">{{ (r.aliases or [])|join(', ') or '—' }}</td>
+          <td class="num">{{ counts.get(r.id, 0) }}</td>
+          <td>{% if r.status == 'active' %}<span class="badge badge--ok">Active</span>{% else %}<span class="badge badge--warn">Needs mapping review</span>{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if can('roles.create') %}
+<section class="panel">
+  <h2 class="panel__title">Add a role</h2>
+  <form method="post" class="formgrid" style="margin-top: 0; align-items: end">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field"><label for="code">Code</label><input id="code" name="code" type="text" placeholder="NAU" value="{{ form.get('code', '') }}"></div>
+    <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" placeholder="Night Auditor" value="{{ form.get('name', '') }}"></div>
+    <div class="field"><label for="department">Department</label><input id="department" name="department" type="text" placeholder="Front Office" value="{{ form.get('department', '') }}"></div>
+    <div class="field"><label for="aliases">Also known as <span class="muted">(comma separated)</span></label><input id="aliases" name="aliases" type="text" placeholder="night auditor, auditor" value="{{ form.get('aliases', '') }}"></div>
+    <div><button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Create role</button></div>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

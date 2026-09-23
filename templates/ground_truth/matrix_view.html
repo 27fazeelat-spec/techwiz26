@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Matrix v{{ version.version_no }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('ground_truth.matrix_index') }}">Role Requirement Matrix</a></p>
+    <h1>Matrix <span class="mono">v{{ version.version_no }}</span></h1>
+    <p class="pagehead__meta">
+      {% set tone = {'draft': 'info', 'approved': 'ok', 'retired': 'neutral'}[version.status] %}<span class="badge badge--{{ tone }}">{{ version.status|capitalize }}</span>
+      · {{ version.stats.requirements }} requirements from {{ version.source_documents|length }} active sources
+      · {{ version.stats.mandatory_requirements }} mandatory · {{ version.stats.role_specific_requirements }} role-specific
+    </p>
+  </div>
+  {% if version.status == 'draft' and can('matrix.approve') %}
+  <form method="post" action="{{ url_for('ground_truth.matrix_approve', number=version.version_no) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn--primary" type="submit">{{ icon('check', 16) }}Approve as ground truth</button>
+  </form>
+  {% endif %}
+</div>
+
+{% if version.status == 'draft' %}<div class="notice notice--info">This is a draft. Check each role's rows below, correct requirements that apply to the wrong roles, then approve it. Plans are only verified against an approved matrix.</div>{% endif %}
+
+<section class="panel panel--flush">
+  <div class="panel__bar"><h2 class="panel__title">Roles <span class="muted small">select a role to see its rows</span></h2></div>
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Role</th><th class="num">Requirements</th><th class="num">Mandatory</th><th class="num">Optional / recommended</th></tr></thead>
+      <tbody>
+      {% for r in roles %}{% set s = summary[r.code] %}
+        <tr class="{{ 'is-selected' if role and r.code == role.code }}">
+          <td><a href="{{ url_for('ground_truth.matrix_view', number=version.version_no, role=r.code) }}"><span class="mono">{{ r.code }}</span> {{ r.name }}</a></td>
+          <td class="num">{{ s.total or 0 }}</td><td class="num">{{ s.mandatory or 0 }}</td><td class="num">{{ s.optional or 0 }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if role %}
+<section class="panel panel--flush">
+  <h2 class="panel__title panel__title--inset">{{ role.name }} <span class="muted small">{{ rows|length }} rows · ordered by obligation, then stage</span></h2>
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Requirement</th><th>Kind</th><th>Competency</th><th>Mandatory</th><th>Priority</th><th>Stage</th><th>Assessment</th><th>Source</th></tr></thead>
+      <tbody>
+      {% for row, req in rows %}
+        <tr>
+          <td><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=req.id) }}">{{ req.req_id }}</a>
+              <div class="reqtext">{{ req.text }}</div>
+              {% if row.condition %}<span class="chip">only if: {{ row.condition.field }} {{ row.condition.op }} {{ row.condition.value }}</span>{% endif %}</td>
+          <td class="small">{{ row.requirement_kind|capitalize }}</td>
+          <td class="small">{{ row.competency }}</td>
+          <td>{% if row.mandatory %}<span class="badge badge--info">Mandatory</span>{% else %}<span class="badge badge--neutral">Optional</span>{% endif %}</td>
+          <td class="small">{{ row.priority }}</td>
+          <td><span class="tag mono">{{ row.due_stage }}</span></td>
+          <td class="small">{{ row.assessment_requirement }}</td>
+          <td class="small nowrap"><span class="mono">{{ req.doc_id }}</span> §{{ req.section_id }}{% if row.source_status == 'expired' %} <span class="badge badge--warn">Outdated source</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

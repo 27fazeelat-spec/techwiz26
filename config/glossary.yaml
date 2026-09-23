@@ -1,0 +1,15 @@
+# Terms that mean the same thing across documents. Keys are canonical; values are variants.
+# Used by contradiction detection to recognise that two clauses talk about the same topic.
+synonyms:
+  Duty Manager: [Manager on Duty, MOD]
+  guest folio: [guest bill]
+  room attendant: [housekeeper]
+  Property Management System: [PMS]
+  Front Office Associate: [front desk staff, front desk agent, front desk]
+  identity document: [identity documents, passport, passports, national ID, photo ID]
+  messaging app: [messaging apps, WhatsApp]
+  photograph: [photos, photo, photographed, photographs]
+  room key: [room keys, key card, key cards, replacement keys]
+  late check-out fee: [late check-out fees]
+  fire drill: [fire drills]
+  injury: [injuries, injured]

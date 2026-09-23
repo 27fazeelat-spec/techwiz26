@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% from "_macros.html" import plan_badge, plan_tone, item_badge, item_tone, icon, initials, meter, score_tone, empty %}
+{% block title %}{{ plan.plan_code }} v{{ plan.version }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('plans.employees') }}">Employees &amp; plans</a><span class="mono">{{ plan.plan_code }} v{{ plan.version }}</span></p>
+    <div class="person">
+      <span class="avatar avatar--lg" aria-hidden="true">{{ initials(plan.employee.name) }}</span>
+      <div><h1>{{ plan.employee.name }}</h1>
+        <p class="pagehead__meta" style="margin-top: 2px">{{ plan.job_role.name }} <span class="sep">·</span> {{ plan.employee.property.name }}
+          <span class="sep">·</span> matrix <span class="mono">v{{ plan.matrix_version.version_no }}</span> ({{ plan.matrix_version.status }})</p></div>
+    </div>
+  </div>
+  {% if can('plans.generate') and plan.status != 'Failed' %}
+  <div class="pagehead__actions">
+    <form method="post" action="{{ url_for('plans.consistency', pk=plan.id) }}"
+          data-busy="Measuring generation consistency" data-busy-steps="Re-running the Gemini outline|Comparing requirement selections across runs|Scoring agreement" data-busy-step-ms="7000">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn" type="submit">{{ icon('spark', 16) }}Run consistency check</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+
+{% if plan.error %}<div class="notice notice--warn"><strong>Generation failed:</strong> {{ plan.error }}</div>{% endif %}
+
+{% set verdicts = {
+  'Verified': 'Every mandatory requirement is covered, cited and consistent with the approved sources.',
+  'Verified with Warning': 'All mandatory requirements are covered, with minor issues worth a look before assigning.',
+  'Incomplete': 'Some mandatory requirements from the approved matrix are not covered by the plan.',
+  'Unsupported': 'Some items cite sources that do not support them, or cite no source at all.',
+  'Contradictory': 'Some items follow a rule that a higher-precedence document overrides.',
+  'Manual Review Required': 'Python could not decide some items; a reviewer needs to confirm them.',
+  'Failed': 'Generation did not complete, so nothing was validated or assigned.'} %}
+<div class="grid-hero">
+  <section class="panel panel--center">
+    <div class="verdict">
+      {% set cov = plan.score_coverage %}
+      <div class="ring ring--{{ score_tone(cov) }}" style="--v: {{ cov or 0 }}" role="img" aria-label="Mandatory coverage {{ cov if cov is not none else 'not measured' }}%">
+        <div class="ring__inner"><div><div class="ring__value">{{ ('%g' % cov) ~ '%' if cov is not none else '—' }}</div><div class="ring__label">coverage</div></div></div>
+      </div>
+      <div>
+        {{ plan_badge(plan.status) }}
+        <p class="verdict__title" style="margin-top: 8px">{% if plan.status == 'Incomplete' and plan.count_missing %}{{ plan.count_missing }} mandatory requirement{{ 's' if plan.count_missing != 1 }} missing{% else %}{{ plan.status }}{% endif %}</p>
+        <p class="verdict__text">{{ verdicts.get(plan.status, '') }} Gemini wrote the plan; Python checked every item against the approved sources.</p>
+        {% if run %}
+        <div class="verdict__chips">
+          <span class="badge {{ 'badge--bad' if plan.count_missing else 'badge--ok' }}">{{ plan.count_missing }} missing</span>
+          <span class="badge {{ 'badge--bad' if plan.count_unsupported else 'badge--ok' }}">{{ plan.count_unsupported }} unsupported</span>
+          <span class="badge {{ 'badge--bad' if plan.count_contradictions else 'badge--ok' }}">{{ plan.count_contradictions }} contradictions</span>
+          <span class="badge {{ 'badge--warn' if plan.count_duplicates else 'badge--neutral' }}">{{ plan.count_duplicates }} duplicates</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    {% set total = (plan.timeline | selectattr('step', 'equalto', 'Total') | map(attribute='ms') | first) or 1 %}
+    <h2 class="panel__title">How this plan was made <span class="panel__aside mono">{{ '%.1f' % (total / 1000) }} s</span></h2>
+    <ol class="stepper">
+      {% for s in plan.timeline if s.step != 'Total' %}
+      {% set ai = 'Gemini' in s.step %}{% set py = 'Python' in s.step %}
+      <li class="stepper__item {{ 'stepper__item--ai' if ai else ('stepper__item--py' if py else '') }}">
+        <span class="stepper__dot">{{ loop.index }}</span>
+        <div><p class="stepper__name">{{ s.step }} <span class="stepper__who">{{ 'GenAI' if ai else ('Verifier' if py else 'System') }}</span></p>
+          {% if s.detail %}<p class="stepper__detail">{{ s.detail }}</p>{% endif %}</div>
+        <span class="stepper__ms">{{ '%.1f' % (s.ms / 1000) }} s</span>
+        <span class="stepper__bar">{{ meter([100 * s.ms / total, 1] | max) }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+    {% if outline_runs %}<p class="legendline"><span>{{ icon('spark', 14) }}{{ outline_runs[0].model }}</span><span>prompt {{ outline_runs[0].prompt_template }} v{{ outline_runs[0].prompt_version }}</span></p>{% endif %}
+  </section>
+</div>
+
+{% set rs = review_state %}
+<section class="panel {{ 'panel--alert' if rs.open }}">
+  <div class="panel__bar" style="padding: 0 0 var(--space-3); border: 0">
+    <h2 class="panel__title">Review &amp; assignment</h2>
+    {% if rs.assigned %}<span class="badge badge--ok badge--lg">Assigned {{ plan.approved_at.strftime('%d %b %Y') }} by {{ plan.approved_by }}</span>
+      <a class="btn btn--sm" href="{{ url_for('learning.team_member', code=plan.employee.employee_code) }}">View progress</a>
+    {% elif rs.assignable %}<span class="badge badge--ok badge--lg">Ready to assign</span>
+    {% else %}<span class="badge badge--warn badge--lg">Not assignable yet</span>{% endif %}
+  </div>
+  <p class="small">{{ rs.total }} item{{ 's' if rs.total != 1 }} needed a person: <strong>{{ rs.open }}</strong> waiting, {{ rs.decided }} decided.
+    {% if rs.total %}<a href="{{ url_for('review.queue', show='all') }}">Open the review queue</a>{% endif %}</p>
+  {% if rs.blockers %}<ul class="warnings" style="margin-top: var(--space-2)">{% for b in rs.blockers %}<li>{{ b }}</li>{% endfor %}</ul>{% endif %}
+  {% set waiting = rs['items'] | selectattr('status', 'equalto', 'open') | list %}
+  {% if waiting %}<div class="actions" style="margin-top: var(--space-3)">
+    {% for w in waiting[:6] %}<a class="tag" href="{{ url_for('review.detail', pk=w.id) }}">RV-{{ '%05d' % w.id }} · {{ w.target_key.split('.')[-2:]|join('.') }}</a>{% endfor %}
+    {% if waiting|length > 6 %}<span class="small muted">+ {{ waiting|length - 6 }} more</span>{% endif %}</div>{% endif %}
+  {% if can('plans.assign') and not rs.assigned %}
+  <form method="post" action="{{ url_for('plans.assign', pk=plan.id) }}" style="margin-top: var(--space-4)">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn--primary" type="submit" {{ 'disabled' if not rs.assignable }}>{{ icon('check', 15) }}Assign plan to {{ plan.employee.name.split(' ')[0] }}</button>
+  </form>
+  {% endif %}
+</section>
+
+{% if run %}
+<section class="kpis" aria-label="Verification scores">
+  {% set t = plan.score_traceability %}{% set rc = plan.score_requirement_consistency %}{% set gc = plan.score_generation_consistency %}
+  <div class="kpi"><span class="kpi__label">Mandatory coverage</span><span class="kpi__value">{{ plan.score_coverage }}<small>%</small></span>
+    {{ meter(plan.score_coverage, score_tone(plan.score_coverage)) }}
+    <span class="kpi__note mono">{{ run.scores.mandatory_covered }} / {{ run.scores.mandatory_expected }} required</span></div>
+  <div class="kpi"><span class="kpi__label">Source traceability</span><span class="kpi__value">{{ t }}<small>%</small></span>
+    {{ meter(t, score_tone(t)) }}
+    <span class="kpi__note">mandatory items {{ plan.score_traceability_mandatory }}%</span></div>
+  <div class="kpi"><span class="kpi__label">Requirement consistency</span><span class="kpi__value">{{ rc }}<small>%</small></span>
+    {{ meter(rc, score_tone(rc)) }}
+    <span class="kpi__note">GenAI vs matrix, field by field</span></div>
+  <div class="kpi"><span class="kpi__label">Generation consistency</span>
+    <span class="kpi__value">{% if gc is not none %}{{ gc }}<small>%</small>{% else %}—{% endif %}</span>
+    {{ meter(gc, score_tone(gc)) }}
+    <span class="kpi__note">{% if plan.consistency %}{{ plan.consistency.runs }} runs compared{% else %}not measured yet{% endif %}</span></div>
+</section>
+
+<section class="panel panel--flush">
+  <div class="panel__bar">
+    <h2 class="panel__title">Findings <span class="muted small">{{ findings|length }} raised by Python checks</span></h2>
+    <div class="segmented" data-filter-group="#findings" role="group" aria-label="Severity">
+      <button type="button" class="is-on" data-filter="all" aria-pressed="true">All <span class="count">{{ findings|length }}</span></button>
+      <button type="button" data-filter="error" aria-pressed="false">Errors <span class="count">{{ severity.error or 0 }}</span></button>
+      <button type="button" data-filter="warning" aria-pressed="false">Warnings <span class="count">{{ severity.warning or 0 }}</span></button>
+      <button type="button" data-filter="info" aria-pressed="false">Info <span class="count">{{ severity.info or 0 }}</span></button>
+    </div>
+  </div>
+  {% if findings %}
+  <ul class="findings" id="findings">
+    {% for f in findings %}
+    <li class="finding finding--{{ f.severity }}" data-filter-item data-filter-value="{{ f.severity }}">
+      <span><span class="badge badge--{{ {'error': 'bad', 'warning': 'warn', 'info': 'neutral'}[f.severity] }}">{{ f.severity|capitalize }}</span></span>
+      <span><span class="finding__rule">{{ f.rule_id }}</span>{{ f.message }}</span>
+      {% if f.item_key %}<a href="#{{ f.item_key }}">{{ f.item_key.split('.')[-2:]|join('.') }} {{ icon('arrow', 12) }}</a>{% else %}<span></span>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}{{ empty('No findings', 'Every check passed without raising anything.', 'check') }}{% endif %}
+</section>
+
+<section class="panel panel--flush">
+  <div class="panel__bar">
+    <h2 class="panel__title">GenAI vs Python <span class="muted small">{{ total_rows }} requirements compared field by field</span></h2>
+    <div class="segmented" role="group" aria-label="Rows shown">
+      <a href="?comparison=mismatches" class="{{ 'is-on' if show == 'mismatches' }}">Disagreements</a>
+      <a href="?comparison=all" class="{{ 'is-on' if show != 'mismatches' }}">All rows</a>
+    </div>
+  </div>
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Requirement</th><th>Source</th><th>Fields <span class="muted" title="Hover a field to see both values">(hover)</span></th><th>Coverage</th><th>Status</th><th>Explanation</th></tr></thead>
+      <tbody>
+      {% for r in rows %}
+      <tr>
+        <td class="reqid nowrap">{{ r.req_id }}</td>
+        <td class="small nowrap">{{ r.source }}</td>
+        <td class="small">{% for name, f in r.fields.items() %}<span class="fieldchip {{ 'fieldchip--ok' if f.match else 'fieldchip--bad' }}" title="GenAI: {{ f.genai }} · Python: {{ f.python }}">{{ '✓' if f.match else '✕' }} {{ name|replace('_', ' ') }}</span>{% endfor %}</td>
+        <td class="small">{{ r.coverage_status }}</td>
+        <td>{{ item_badge(r.validation_status) }}</td>
+        <td class="small muted">{{ r.explanation }}</td>
+      </tr>
+      {% else %}<tr><td colspan="6">{{ empty('Full agreement', 'GenAI and the approved matrix agree on every compared requirement.', 'check') }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+{% if plan.modules %}
+<h2 class="section-title">Modules <span class="muted small">{{ plan.modules|length }} modules · click an item to see its source trail</span></h2>
+{% endif %}
+{% for m in plan.modules %}
+<section class="panel module">
+  <div class="module__head">
+    <span class="module__key">{{ m.module_key }}</span>
+    <div style="flex: 1 1 320px; min-width: 0">
+      <h3 class="module__title">{{ m.title }}</h3>
+      <p class="module__meta"><span>{{ m.category }}</span><span>due {{ m.stage }}</span><span>{{ m.estimated_minutes }} min</span><span>{{ m.items|length }} items</span></p>
+      {% if m.purpose %}<p class="module__purpose">{{ m.purpose }}</p>{% endif %}
+    </div>
+    <div class="module__stats">
+      {% for g in m.items|groupby('status') %}<span class="badge badge--{{ item_tone(g.grouper) }}" title="{{ g.grouper or 'Not validated' }}">{{ g.list|length }} {{ (g.grouper or 'not validated')|lower }}</span>{% endfor %}
+    </div>
+  </div>
+  {% if not m.content_ok %}<div class="notice notice--warn" style="margin: var(--space-4) var(--space-5) 0">Gemini did not return valid content for this module; it needs regeneration.</div>{% endif %}
+  <ul class="items">
+    {% for i in m.items %}{% set c = i.content %}
+    <li class="item" id="{{ i.item_key }}">
+      <details>
+        <summary>
+          <span class="item__type">{{ i.item_type|replace('_', ' ') }}</span>
+          <span class="item__text">{{ c.text or c.activity or c.description or c.situation or c.question or c.topic }}</span>
+          {{ item_badge(i.status) }}{% set rv = review_by_item.get(i.item_key) %}{% if rv %} <a class="badge badge--{{ 'neutral' if rv.status == 'open' else 'info' }}" href="{{ url_for('review.detail', pk=rv.id) }}" title="Review decision">{{ 'Waiting for review' if rv.status == 'open' else 'Reviewer: ' ~ rv.status }}</a>{% endif %}
+        </summary>
+        <div class="item__body">
+          {% if i.item_type == 'quiz_question' %}
+            <ol class="options">{% for o in c.options %}<li class="{{ 'is-correct' if loop.index0 in c.correct_options }}">{{ o }}</li>{% endfor %}</ol>
+            <p class="small"><strong>Explanation:</strong> {{ c.explanation }}</p>
+          {% elif i.item_type == 'task' %}
+            <dl class="deflist"><dt>Expected outcome</dt><dd>{{ c.expected_outcome }}</dd><dt>Done when</dt><dd>{{ c.completion_criteria }}</dd><dt>Difficulty</dt><dd>{{ c.difficulty }}</dd></dl>
+          {% elif i.item_type == 'scenario' %}
+            <p class="label">Expected actions</p>
+            <ul class="small" style="margin: 0; padding-left: 1.2em">{% for a in c.expected_actions %}<li>{{ a }}</li>{% endfor %}</ul>
+          {% elif i.item_type == 'checklist' %}
+            <p class="small"><span class="tag">{{ 'Required' if c.required else 'Optional' }}</span> <span class="tag">due {{ c.due_stage }}</span> <span class="tag">responsible: {{ c.responsible }}</span></p>
+          {% elif i.item_type == 'assessment' %}
+            <div class="tablewrap"><table class="table table--compact"><thead><tr><th>Criterion</th><th class="num">Weight</th><th>Expected</th><th>Pass condition</th></tr></thead>
+              <tbody>{% for r in c.rubric %}<tr><td>{{ r.criterion }}</td><td class="num">{{ r.weight }}</td><td>{{ r.expected_performance }}</td><td>{{ r.pass_condition }}</td></tr>{% endfor %}</tbody></table></div>
+          {% endif %}
+          <div class="trace">
+            <p class="trace__head">{{ icon('quote', 14) }}Source trail</p>
+            <p class="trace__chain">
+              {% for rid in c.requirement_ids %}<span class="tag mono">{{ rid }}</span>{% else %}<span class="muted">no requirement linked</span>{% endfor %}
+              {% if i.source_doc_id %}{{ icon('arrow', 12) }}<span class="tag mono">{{ i.source_doc_id }} §{{ i.source_section_id }}</span>{% endif %}
+              {% set r = runs.get(m.run_id) %}{% if r %}{{ icon('arrow', 12) }}<span class="muted">{{ r.model }} · {{ r.prompt_template }} v{{ r.prompt_version }}</span>{% endif %}
+            </p>
+            {% for chunk in sources.get((i.source_doc_id, i.source_section_id), []) %}
+              <blockquote class="quote">{{ chunk.source_text }}<span class="quote__src">{{ chunk.doc_id }} v{{ chunk.version }} · §{{ chunk.section_id }}{% if chunk.location.page_start %} · page {{ chunk.location.page_start }}{% endif %}</span></blockquote>
+            {% else %}{% if i.source_doc_id %}<p class="trace__missing">The cited section does not exist in any current document.</p>{% endif %}{% endfor %}
+            {% for f in by_item.get(i.item_key, []) %}<p class="trace__finding"><span class="finding__rule">{{ f.rule_id }}</span>{{ f.message }}</p>{% endfor %}
+          </div>
+        </div>
+      </details>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endfor %}
+{% endblock %}

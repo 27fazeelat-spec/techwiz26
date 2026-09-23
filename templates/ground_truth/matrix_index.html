@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}Role Requirement Matrix{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">Ground truth</p>
+    <h1>Role Requirement Matrix</h1>
+    <p class="pagehead__meta">The approved matrix is what every generated plan is checked against. It is built by rules and approved by a person.</p>
+  </div>
+  {% if can('matrix.build') %}
+  <form method="post" action="{{ url_for('ground_truth.matrix_build') }}" data-busy="Building draft…">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn--primary" type="submit">{{ icon('grid', 16) }}Build new draft</button>
+  </form>
+  {% endif %}
+</div>
+
+<section class="panel panel--flush">
+  {% if versions %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Version</th><th>Status</th><th class="num">Requirements</th><th class="num">Mandatory</th><th class="num">Role-specific</th><th class="num">Rows</th><th>Built</th><th>Approved</th></tr></thead>
+      <tbody>
+      {% for v in versions %}
+        <tr>
+          <td><a class="mono" href="{{ url_for('ground_truth.matrix_view', number=v.version_no) }}">v{{ v.version_no }} →</a></td>
+          <td>{% set tone = {'draft': 'info', 'approved': 'ok', 'retired': 'neutral'}[v.status] %}<span class="badge badge--{{ tone }}">{{ v.status|capitalize }}</span></td>
+          <td class="num">{{ v.stats.requirements }}</td><td class="num">{{ v.stats.mandatory_requirements }}</td>
+          <td class="num">{{ v.stats.role_specific_requirements }}</td><td class="num">{{ v.stats.rows }}</td>
+          <td class="small nowrap">{{ v.created_at.strftime('%d %b %H:%M') }} · {{ v.created_by }}</td>
+          <td class="small nowrap">{% if v.approved_at %}{{ v.approved_at.strftime('%d %b %H:%M') }} · {{ v.approved_by }}{% else %}—{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}{{ empty('No matrix yet', 'Build a draft from the extracted requirements, review it, then approve it as ground truth.', 'grid') }}{% endif %}
+</section>
+{% endblock %}

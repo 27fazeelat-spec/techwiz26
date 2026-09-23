@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Sign in{% endblock %}
+{% block page_class %}page--auth{% endblock %}
+{% block content %}
+<aside class="auth-aside">
+  <a class="brand" href="{{ url_for('auth.login') }}">
+    <img class="brand__mark" src="{{ url_for('static', filename='image/logo.png') }}" alt="">
+    <span class="brand__name">SkillSprint</span>
+  </a>
+  <div>
+    <h2>Onboarding plans you can trace back to policy.</h2>
+    <p>SkillSprint turns your approved documents into role-specific onboarding, then checks every item against the source before anyone is assigned it.</p>
+  </div>
+  <ul class="auth-points">
+    <li>{{ icon('file') }}<div><strong>Grounded in your documents</strong><span>Only active, approved versions are used as sources.</span></div></li>
+    <li>{{ icon('check') }}<div><strong>Verified by rules, not by AI</strong><span>Python validates coverage, sources and contradictions.</span></div></li>
+    <li>{{ icon('shield') }}<div><strong>Safe ingestion</strong><span>Hidden or injected instructions are quarantined before generation.</span></div></li>
+  </ul>
+</aside>
+<div class="auth-main">
+  <section class="auth">
+    <div>
+      <h1 class="auth__title">Sign in</h1>
+      <p class="muted small">Use your work email to continue.</p>
+    </div>
+    <form method="post" class="auth__card" novalidate>
+      {{ form.hidden_tag() }}
+      <p class="auth__workspace"><span class="label">Workspace</span>{{ org_name }}</p>
+      <div class="field">
+        <label for="email">Email</label>
+        {{ form.email(id="email", autocomplete="username", autofocus=true, placeholder="name@company.example") }}
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        {{ form.password(id="password", autocomplete="current-password") }}
+      </div>
+      <button type="submit" class="btn btn--primary btn--block">Sign in</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

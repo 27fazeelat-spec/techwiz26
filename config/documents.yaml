@@ -1,0 +1,51 @@
+# Document intake rules (SRS Steps 4-8).
+
+categories:
+  - Policy
+  - SOP
+  - Compliance
+  - Role Description
+  - Handbook
+  - FAQ
+  - Informal Guidance
+  - External
+  - Other
+
+# Header values that mean the same category.
+category_synonyms:
+  Procedure: SOP
+  Standard Operating Procedure: SOP
+  Process Manual: SOP
+  Compliance Instructions: Compliance
+  Job Description: Role Description
+  Employee Handbook: Handbook
+  Frequently Asked Questions: FAQ
+  Memo: Informal Guidance
+  Guidance: Informal Guidance
+  Partner Document: External
+
+departments:
+  - Front Office
+  - Guest Relations
+  - Housekeeping
+  - Food & Beverage
+  - Engineering & Maintenance
+  - Sales & Events
+  - Revenue Management
+  - Finance
+  - Human Resources
+  - IT
+  - Security & Safety
+  - Hotel Management
+
+limits:
+  max_upload_mb: 15
+  min_words: 20            # below this the document is treated as empty
+  allowed_formats: [pdf, docx]
+
+chunking:
+  max_words: 350           # longer sections are split at paragraph boundaries
+  min_words: 1
+
+# Header status values that mark a document as a draft (never a valid source).
+draft_markers: [draft, not approved, for review]

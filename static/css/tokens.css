@@ -1,0 +1,118 @@
+/* ==========================================================================
+   SkillSprint AI · design tokens: "Clean Verified"
+   White, airy surfaces; emerald marks verified and primary actions.
+
+   Rules:
+   - Components use tokens only; no hex values outside this file.
+   - Status colours (ok / warn / bad / info) are reserved for validation,
+     conflict and review states. Never use them as decoration.
+   - The brand colour (primary) is for actions, navigation and the logo.
+   - Theme: light by default; dark via OS preference or data-theme="dark"
+     on <html>. data-theme="light" forces light.
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* ---- Surfaces & text ---- */
+  --bg:            #FFFFFF;
+  --canvas:        #F7F9F8;  /* page ground behind content */
+  --surface:       #FFFFFF;  /* cards, panels, tables */
+  --surface-sunk:  #F2F5F4;  /* inputs, table headers, wells */
+  --surface-hover: #F5F8F7;
+  --ink:           #101714;
+  --ink-soft:      #2B3531;
+  --muted:         #5F6B65;
+  --faint:         #8B968F;
+  --line:          #E4E9E6;
+  --line-strong:   #CFD7D3;
+
+  /* ---- Sidebar ---- */
+  --side:          #F5F7F6;
+  --side-ink:      #2B3531;
+  --side-muted:    #7A857F;
+  --side-active:   #FFFFFF;
+
+  /* ---- Brand ---- */
+  --primary:       #047857;
+  --primary-hover: #065F46;
+  --primary-soft:  #E3F4EC;
+  --on-primary:    #FFFFFF;
+
+  /* ---- Validation / status (semantic, not brand) ---- */
+  --ok:   #047857;  --ok-bg:   #DDF3E8;   /* Verified, Resolved, Active */
+  --warn: #B45309;  --warn-bg: #FDF0DA;   /* Warning, Outdated source, Expired */
+  --bad:  #C0392B;  --bad-bg:  #FBE4E1;   /* Missing, Unsupported, Contradiction */
+  --info: #2F5BB7;  --info-bg: #E4EBF9;   /* Manual review, Scheduled, Mandatory */
+  --neutral-bg: #EEF1EF;
+
+  /* ---- Typography ---- */
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --text-2xs:  11px;
+  --text-xs:   12px;
+  --text-sm:   13.5px;
+  --text-base: 15px;
+  --text-md:   16px;
+  --text-lg:   19px;
+  --text-xl:   26px;
+  --text-2xl:  32px;
+  --leading:   1.55;
+
+  /* ---- Space, shape, depth ---- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --shadow-sm:  0 1px 2px rgba(16, 23, 20, 0.05);
+  --shadow-md:  0 1px 2px rgba(16, 23, 20, 0.04), 0 6px 18px rgba(16, 23, 20, 0.06);
+  --shadow-pop: 0 12px 32px rgba(16, 23, 20, 0.14);
+
+  --focus-ring: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in srgb, var(--primary) 70%, transparent);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --fast: 140ms;
+  --sidebar-w: 248px;
+  --content-max: 1280px;
+  --reading-max: 70ch;
+
+  color-scheme: light;
+}
+
+/* ---- Dark palette, shared by OS preference and explicit choice ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1311; --canvas: #0B0F0D; --surface: #141A17; --surface-sunk: #1A211E; --surface-hover: #1B2320;
+    --ink: #E8EDEA; --ink-soft: #C9D2CD; --muted: #9AA69F; --faint: #6F7B75; --line: #242D29; --line-strong: #33403A;
+    --side: #0E1311; --side-ink: #C9D2CD; --side-muted: #6F7B75; --side-active: #1A211E;
+    --primary: #34D399; --primary-hover: #6EE7B7; --primary-soft: rgba(52, 211, 153, 0.12); --on-primary: #03281B;
+    --ok: #4ADE9A;   --ok-bg: rgba(74, 222, 154, 0.12);
+    --warn: #F5B84B; --warn-bg: rgba(245, 184, 75, 0.13);
+    --bad: #F87171;  --bad-bg: rgba(248, 113, 113, 0.13);
+    --info: #8AB0FF; --info-bg: rgba(138, 176, 255, 0.13);
+    --neutral-bg: #1F2724;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1311; --canvas: #0B0F0D; --surface: #141A17; --surface-sunk: #1A211E; --surface-hover: #1B2320;
+  --ink: #E8EDEA; --ink-soft: #C9D2CD; --muted: #9AA69F; --faint: #6F7B75; --line: #242D29; --line-strong: #33403A;
+  --side: #0E1311; --side-ink: #C9D2CD; --side-muted: #6F7B75; --side-active: #1A211E;
+  --primary: #34D399; --primary-hover: #6EE7B7; --primary-soft: rgba(52, 211, 153, 0.12); --on-primary: #03281B;
+  --ok: #4ADE9A;   --ok-bg: rgba(74, 222, 154, 0.12);
+  --warn: #F5B84B; --warn-bg: rgba(245, 184, 75, 0.13);
+  --bad: #F87171;  --bad-bg: rgba(248, 113, 113, 0.13);
+  --info: #8AB0FF; --info-bg: rgba(138, 176, 255, 0.13);
+  --neutral-bg: #1F2724;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}

@@ -1,0 +1,117 @@
+# Deterministic requirement extraction (SRS Step 11). No GenAI is involved.
+# Patterns are case-insensitive regular expressions matched against one sentence.
+
+# Obligation strength. The first matching group wins, checked in this order.
+modality:
+  mandatory:
+    - '\bmust\b'
+    - '\bshall\b'
+    - '\b(is|are) required to\b'
+    - '\brequires?\b'
+    - '\bprohibited\b'
+    - '\b(is|are) not permitted\b'
+    - '\bmay only\b'
+    - '\bwill not be approved\b'
+    - '\bnever\b'
+    - '\b(is|are) entitled to\b'
+    - '\b(is|are) responsible for\b'
+    - '\ba maximum of\b'
+    - '\b(granted|issued|done|allowed) only (after|when|if)\b'
+    - '\b(is|are) charged\b'
+    - '\bhas authority\b'
+  recommended:
+    - '\bshould\b'
+    - '\b(is|are) encouraged to\b'
+    - '\b(is|are) recommended\b'
+    - '^please\b'
+  optional:
+    - '\bmay\b'
+    - '\bcan\b'
+
+# Requirement type for mandatory clauses, checked in this order; the fallback is Must Know.
+types:
+  Must Acknowledge: ['\backnowledg', '\bdeclaration\b']
+  Must Demonstrate: ['\bdemonstrat', '\brole-play\b', '\bpractical\b', '\bsupervised\b']
+  Must Complete: ['\bcomplete\b', '\battend\b', '\bparticipate\b', '\btraining\b', '\bcertification\b',
+                  '\benabled\b', '\bcollect\b', '\bschedule\b', '\ballocate\b', '\bcontact every\b',
+                  '\bhand over\b', '\bhold a valid\b', '\bwalk-through\b']
+
+# Explicit timing phrases -> onboarding stage (config/stages.yaml codes).
+stages:
+  D1: ['\bfirst working day\b', '\bfirst day\b', '\bon Day 1\b', '\bDay 1\b', '\bbefore (their|the) first shift\b']
+  W1: ['\bfirst week\b', '\bWeek 1\b']
+  W2: ['\bfirst two weeks\b', '\bWeek 2\b']
+  D30: ['\b(within|first) 30 days\b']
+  D60: ['\b(within|first) 60 days\b']
+  D90: ['\b(within|first) 90 days\b', '\bevery six months\b']
+
+# Stage when the text gives no timing.
+default_stage:
+  Must Acknowledge: D1
+  Must Complete: W1
+  Must Know: {High: W1, default: W2}
+  Must Demonstrate: W2
+  Recommended: D30
+  Optional: D30
+
+# Conditions: a requirement that applies only to some employees of a role.
+# 'value' may use {1} for the first captured group; 'slug' lower-cases and joins words with '_'.
+conditions:
+  - {pattern: '\bat (malaysian|malaysia) properties\b', field: property.country, op: eq, value: Malaysia}
+  - {pattern: '\bat (UAE|emirati) properties\b', field: property.country, op: eq, value: UAE}
+  - {pattern: '\bat (oman|omani) properties\b', field: property.country, op: eq, value: Oman}
+  - {pattern: '\bat residences properties\b', field: property.type, op: eq, value: Residences}
+  - {pattern: '\b(working|work) night shifts?\b', field: shift_pattern, op: in, value: [night, rotating]}
+  - {pattern: '\bassigned to (in-room dining|pool duty)\b', field: assignments, op: contains, value: '{1}', transform: slug}
+  - {pattern: '\bholding a valid ([a-z ]+?) certificate\b', field: certifications, op: contains, value: '{1}', transform: slug}
+  - {pattern: '\b(two|2) or more years of previous\b', field: experience_years, op: gte, value: 2}
+
+# Competency: keyword hits in the sentence count double; hits in the heading path and document title count once.
+competencies:
+  Fire & Life Safety: [fire, evacuation, extinguisher, drill, assembly point, RACE]
+  Information Security: [password, phishing, multi-factor, workstation, credentials, security incident, information security basics, USB]
+  Data Privacy: [personal data, passport, identity document, privacy, consent, personnel file, guest names]
+  Payment & Cash Handling: [payment card, cash, float, refund, pre-authorisation, payment terminal, card settlement]
+  Food Safety: [food, allergen, allergy, chilled, hot food, menu, vomiting]
+  In-Room Dining: [room-service, in-room dining, trays, delivery]
+  Health & Safety: [injur, PPE, chemical, lifeguard, pool, loads, safety footwear]
+  Front Office Operations: [check-in, check-out, folio, room keys, early arrivals, PMS Front Desk, long-stay, upgrades]
+  Night Audit: [night audit, day-end, Shift Close Forms, Rate Exception Report, room charge]
+  Housekeeping Operations: [cleaned, inspect, Do Not Disturb, welfare check, room attendant, found items, valuables, defects]
+  Engineering Safety: [Permit to Work, lockout, hot work, electrical, energy source, maintenance requests, preventive maintenance]
+  Guest Service Recovery: [complaint, service recovery, CARE model, VIP, Guest Incident Log]
+  Incident Management: [incident, Severity, media, crisis, Manager on Duty, walk-through, senior manager on duty]
+  Revenue Management: [rate, pick-up, forecast, displacement, competitor rate shop]
+  Sales & Events: [group, event, Banquet, contract, proposal, site inspection, market segment]
+  Finance Operations: [Purchase Order, invoice, city ledger, expense, journal, accounts payable, Delegation of Authority]
+  HR Operations: [right-to-work, personnel files, exit interview, employee relations, HR System, salary]
+  HR Essentials: [probation, leave, working time, overtime, absence, grievance, transfer, check-in meeting, night shifts]
+  Workplace Conduct: [harassment, gift, uniform, social media, conflicts of interest, Code of Conduct, grooming, breaks]
+  IT & Systems: [access level, Wi-Fi, Mobile Device Management, Aurelle Learning app, personal commercial, system access]
+  Company Orientation: [Employee Handbook, staff ID badge, biometric, Culture, e-learning modules, pass mark, coaching review]
+
+# Priority for mandatory clauses: High when any of these apply, otherwise Medium. Non-mandatory: Low.
+priority:
+  high_competencies: [Fire & Life Safety, Information Security, Data Privacy, Payment & Cash Handling,
+                      Health & Safety, Food Safety, Engineering Safety, Incident Management]
+  high_patterns: ['\bimmediately\b', '\bprohibited\b', '\bnever\b']
+  high_stages: [D1]
+
+# Assessment requirement recorded in the matrix.
+assessment:
+  Must Acknowledge: Acknowledgement
+  Must Complete: Checklist
+  Must Demonstrate: Practical
+  Must Know: Quiz
+  Recommended: None
+  Optional: None
+
+# Titles that are not job roles but appear as actors in clauses (used for fact extraction).
+actors: [General Manager, Hotel Manager, Finance Manager, Chief Engineer, Duty Engineer, Director of Sales,
+         Director of Revenue, Executive Housekeeper, Human Resources, IT Service Desk, Security, Finance,
+         Revenue Management, Communications team, Events Operations team]
+
+# Minimum text similarity for matching a clause to its predecessor in the previous document version.
+lineage:
+  same_section_min_ratio: 0.55
+  any_section_min_ratio: 0.8

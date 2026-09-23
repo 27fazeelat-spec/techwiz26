@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, item_state %}
+{% block title %}{{ m.title }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('main.employee_dashboard') }}">My onboarding</a><span class="mono">{{ m.module_key }}</span></p>
+    <h1>{{ m.title }}</h1>
+    <p class="pagehead__meta">{{ m.estimated_minutes }} min <span class="sep">·</span> from {{ m.stage }}{% if m.purpose %} <span class="sep">·</span> {{ m.purpose }}{% endif %}</p>
+  </div>
+  {% set quiz = items | selectattr('item_type', 'equalto', 'quiz_question') | list %}
+  {% if quiz %}<a class="btn btn--primary" href="{{ url_for('learning.quiz', module_key=m.module_key) }}">{{ icon('check', 15) }}{{ 'Retake quiz' if attempts else 'Take the quiz' }}</a>{% endif %}
+</div>
+
+{% set objectives = items | selectattr('item_type', 'equalto', 'objective') | list %}
+{% if objectives %}
+<section class="panel">
+  <h2 class="panel__title">What you will be able to do</h2>
+  <ul class="warnings">{% for o in objectives %}<li>{{ o.content.text }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+{% for type, title in [('checklist', 'Checklist'), ('task', 'Tasks'), ('scenario', 'Scenarios'), ('assessment', 'Assessment')] %}
+{% set group = items | selectattr('item_type', 'equalto', type) | list %}
+{% if group %}
+<section class="panel module">
+  <div class="module__head"><h2 class="module__title">{{ title }}</h2>
+    <p class="module__meta">{{ {'checklist': 'Tick each item off when it is done.', 'task': 'Do the task, then submit it; your manager signs it off.',
+      'scenario': 'Work through the situation, then submit; your manager discusses it with you.', 'assessment': 'Your manager assesses you against this rubric.'}[type] }}</p></div>
+  <ul class="items">
+  {% for i in group %}{% set c = i.content %}{% set row = rows.get(i.id) %}
+    <li class="item" id="{{ i.item_key }}">
+      <details {{ 'open' if row and row.status in ['not_started', 'in_progress'] and loop.first }}>
+        <summary>
+          <span class="item__type">{{ ('due ' ~ row.due_date.strftime('%d %b')) if row and row.due_date else '' }}</span>
+          <span class="item__text">{{ c.activity or c.description or c.situation or c.topic }}</span>
+          {{ item_state(row) }}
+        </summary>
+        <div class="item__body">
+          {% if type == 'task' %}<dl class="deflist"><dt>Expected outcome</dt><dd>{{ c.expected_outcome }}</dd><dt>Done when</dt><dd>{{ c.completion_criteria }}</dd></dl>
+          {% elif type == 'scenario' %}<p class="label">What you should do</p><ul class="small" style="margin: 0; padding-left: 1.2em">{% for a in c.expected_actions %}<li>{{ a }}</li>{% endfor %}</ul>
+          {% elif type == 'checklist' %}<p class="small"><span class="tag">{{ 'Required' if c.required else 'Optional' }}</span> <span class="tag">with: {{ c.responsible }}</span></p>
+          {% elif type == 'assessment' %}<div class="tablewrap"><table class="table table--compact"><thead><tr><th>Criterion</th><th class="num">Weight</th><th>Pass condition</th></tr></thead>
+            <tbody>{% for r in c.rubric %}<tr><td>{{ r.criterion }}</td><td class="num">{{ r.weight }}</td><td>{{ r.pass_condition }}</td></tr>{% endfor %}</tbody></table></div>
+            {% if row and row.score is not none %}<p class="small"><strong>Result:</strong> {{ row.score }} / 100 · {{ row.verified_by }}</p>{% endif %}{% endif %}
+          {% if row and row.note %}<p class="small"><strong>Note:</strong> {{ row.note }}</p>{% endif %}
+          {% for chunk in sources.get((i.source_doc_id, i.source_section_id), [])[:1] %}
+            <blockquote class="quote">{{ chunk.source_text }}<span class="quote__src">{{ chunk.doc_id }} v{{ chunk.version }} · §{{ chunk.section_id }}</span></blockquote>
+          {% endfor %}
+          {% if row and completion(i.item_type) == 'employee' and row.status not in ['completed', 'waived'] %}
+            <form method="post" action="{{ url_for('learning.item_action', item_id=i.id, action='done') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn--sm btn--primary" type="submit">{{ icon('check', 14) }}Mark as done</button></form>
+          {% elif row and type in ['task', 'scenario'] and row.status in ['not_started', 'in_progress', 'failed'] %}
+            <form method="post" action="{{ url_for('learning.item_action', item_id=i.id, action='submit') }}" class="actions">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input name="note" type="text" placeholder="Optional note for your manager" aria-label="Note" style="flex: 1 1 220px">
+              <button class="btn btn--sm btn--primary" type="submit">Submit for sign-off</button></form>
+          {% endif %}
+        </div>
+      </details>
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endfor %}
+
+{% if attempts %}
+<section class="panel">
+  <h2 class="panel__title">Quiz attempts <span class="muted small">pass mark {{ cfg.pass_mark_percent }}% · {{ attempts|length }} of {{ cfg.max_quiz_attempts }} used</span></h2>
+  <ul class="rows">{% for a in attempts %}<li class="rows__item"><span>Attempt {{ a.attempt_no }} · {{ a.submitted_at.strftime('%d %b %H:%M') }}</span>
+    <span class="badge badge--{{ 'ok' if a.passed else 'bad' }}">{{ a.score }}% {{ 'passed' if a.passed else 'not passed' }}</span></li>{% endfor %}</ul>
+</section>
+{% endif %}
+{% endblock %}

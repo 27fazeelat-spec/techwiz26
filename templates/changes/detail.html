@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, plan_badge, empty %}
+{% block title %}{{ c.doc_id }} v{{ c.from_version }} → v{{ c.to_version }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('changes.index') }}">Policy changes</a><span class="mono">{{ c.doc_id }}</span></p>
+    <h1>{{ c.to_document.title }} <span class="mono small muted">v{{ c.from_version }} → v{{ c.to_version }}</span></h1>
+    <p class="pagehead__meta">
+      <a href="{{ url_for('documents.detail', doc_id=c.doc_id, version=c.from_version) }}">v{{ c.from_version }}</a> ({{ c.from_document.status }})
+      <span class="sep">→</span>
+      <a href="{{ url_for('documents.detail', doc_id=c.doc_id, version=c.to_version) }}">v{{ c.to_version }}</a> ({{ c.to_document.status }}{% if c.to_document.effective_date %}, effective {{ c.to_document.effective_date.strftime('%d %b %Y') }}{% endif %})
+      <span class="sep">·</span> detected {{ c.created_at.strftime('%d %b %Y %H:%M') }} UTC</p>
+  </div>
+</div>
+
+<section class="kpis" aria-label="Summary">
+  <div class="kpi"><span class="kpi__label">Clauses changed</span><span class="kpi__value">{{ c.counts.changed or 0 }}</span><span class="kpi__note">{{ c.counts.added or 0 }} added · {{ c.counts.removed or 0 }} removed · {{ c.counts.unchanged or 0 }} unchanged</span></div>
+  <div class="kpi {{ 'kpi--warn' if info.plans }}"><span class="kpi__label">Affected items</span><span class="kpi__value">{{ info['items'] }}</span>
+    <span class="kpi__note">{% for t, n in info.by_type.items() %}{{ n }} {{ t|replace('_', ' ') }}{{ ', ' if not loop.last }}{% else %}none{% endfor %}</span></div>
+  <div class="kpi"><span class="kpi__label">Affected plans</span><span class="kpi__value">{{ info.plans|length }}</span><span class="kpi__note">{{ info.assigned }} already assigned</span></div>
+  <div class="kpi"><span class="kpi__label">Affected employees</span><span class="kpi__value">{{ info.employees }}</span><span class="kpi__note">current plan versions only</span></div>
+</section>
+
+<section class="panel">
+  <h2 class="panel__title">What changed</h2>
+  {% for x in c.changes %}
+  <div class="changeclause">
+    <p class="side__ref"><span class="reqid">{{ x.req_id }}</span> §{{ x.section_id }}
+      <span class="badge badge--{{ {'changed': 'warn', 'added': 'info', 'removed': 'bad'}[x.change] }}">{{ x.change|capitalize }}</span>
+      {% if x.old_mandatory is not none and x.new_mandatory is not none and x.old_mandatory != x.new_mandatory %}<span class="badge badge--bad">{{ 'Now mandatory' if x.new_mandatory else 'No longer mandatory' }}</span>{% endif %}
+      {% if x.facts and (x.facts.removed or x.facts.added) %}<span class="diff">{{ x.facts.removed|join(', ') or '—' }} → {{ x.facts.added|join(', ') or '—' }}</span>{% endif %}</p>
+    {% if x.change == 'changed' %}
+      <p class="difftext">{% for op, text in diffs[x.req_id] %}{% if op == 'delete' %}<del>{{ text }}</del>{% elif op == 'insert' %}<ins>{{ text }}</ins>{% else %}{{ text }}{% endif %} {% endfor %}</p>
+    {% elif x.change == 'added' %}<p class="difftext"><ins>{{ x.new_text }}</ins></p>
+    {% else %}<p class="difftext"><del>{{ x.old_text }}</del></p>{% endif %}
+  </div>
+  {% else %}<p class="muted">The requirement clauses are identical; only wording outside requirements changed.</p>{% endfor %}
+</section>
+
+<section class="panel panel--flush">
+  <div class="panel__bar"><h2 class="panel__title">Affected plans</h2>
+    {% if c.regenerated %}<span class="panel__aside">{{ c.regenerated|length }} plan version(s) already regenerated</span>{% endif %}</div>
+  {% if info.plans %}
+  <form method="post" action="{{ url_for('changes.regenerate', pk=c.id) }}"
+        data-busy="Updating affected plans" data-busy-steps="Gemini regenerates only the affected modules|Copying every unaffected module unchanged|Python re-validates each new plan version|Routing new issues to the review queue" data-busy-step-ms="7000">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="tablewrap">
+      <table class="table">
+        <thead><tr><th></th><th>Employee</th><th>Plan</th><th>Affected modules</th><th>Items</th></tr></thead>
+        <tbody>
+        {% for p in info.plans %}
+          <tr>
+            <td class="middle"><input type="checkbox" name="plan_id" value="{{ p.plan.id }}" checked aria-label="Include {{ p.plan.employee.name }}"></td>
+            <td class="middle"><span class="person__name">{{ p.plan.employee.name }}</span><span class="person__meta">{{ p.plan.job_role.name }}</span></td>
+            <td class="middle"><a class="mono" href="{{ url_for('plans.plan_detail', pk=p.plan.id) }}">{{ p.plan.plan_code }} v{{ p.plan.version }}</a><br>{{ plan_badge(p.plan.status) }}
+              {% if p.plan.approved_at %}<span class="badge badge--info">Assigned</span>{% endif %}</td>
+            <td class="small">{% for key, m in p.modules.items() %}<div><span class="tag mono">{{ key }}</span> {{ m.title }} <span class="muted">· {{ m.requirements|sort|join(', ') }}</span></div>{% endfor %}</td>
+            <td class="small">{% for t, n in p.by_type.items() %}{{ n }} {{ t|replace('_', ' ') }}{{ ', ' if not loop.last }}{% endfor %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="resolve">
+      {% if blockers %}<ul class="warnings">{% for b in blockers %}<li>{{ b }}</li>{% endfor %}</ul>
+      {% elif can('plans.generate') %}
+        <p class="small" style="flex: 1 1 320px">Only the listed modules are regenerated. Every other module is copied unchanged, reviewer decisions on copied items carry over, and each new version is fully re-validated.
+          {% if info.added %}{{ info.added|length }} new clause(s) are added where the approved matrix assigns them to the role.{% endif %}</p>
+        <button class="btn btn--primary" type="submit">{{ icon('spark', 15) }}Regenerate affected modules</button>
+      {% endif %}
+    </div>
+  </form>
+  {% else %}{{ empty('No current plan is affected', 'No current plan item was generated from the changed or removed clauses.' ~ (' New clauses appear in plans after the matrix is rebuilt and approved.' if info.added else ''), 'check') }}{% endif %}
+</section>
+
+{% if c.regenerated %}
+<section class="panel">
+  <h2 class="panel__title">Regenerated</h2>
+  <ul class="rows">{% for r in c.regenerated %}<li class="rows__item"><span><span class="mono">{{ r.plan_code }} v{{ r.from_version }} → v{{ r.to_version }}</span> · modules {{ r.modules|join(', ') }}</span>{{ plan_badge(r.status) }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+{% endblock %}

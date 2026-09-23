@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_macros.html" import plan_badge, plan_tone, icon, initials, meter, score_tone, empty %}
+{% block title %}Employees{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">Onboarding</p>
+    <h1>Employees &amp; plans</h1>
+    <p class="pagehead__meta">
+      {% if matrix %}Plans are validated against Role Requirement Matrix <span class="mono">v{{ matrix.version_no }}</span>
+        {% if matrix.status == 'approved' %}<span class="badge badge--ok">Approved</span>{% else %}<span class="badge badge--warn">Draft: approve it before plans can be verified</span>{% endif %}
+      {% else %}<span class="badge badge--bad">No matrix yet: build one first</span>{% endif %}
+    </p>
+  </div>
+  {% if can('employees.create') %}<a class="btn btn--primary" href="{{ url_for('people.employee_new') }}">{{ icon('user', 16) }}Add employee</a>{% endif %}
+</div>
+
+{% set ns = namespace(verified=0, attention=0, none=0) %}
+{% for e in people %}{% set p = latest.get(e.id) %}
+  {% if not p %}{% set ns.none = ns.none + 1 %}{% elif plan_tone(p.status) == 'ok' %}{% set ns.verified = ns.verified + 1 %}{% else %}{% set ns.attention = ns.attention + 1 %}{% endif %}
+{% endfor %}
+
+<section class="kpis" aria-label="Plan summary">
+  <div class="kpi"><span class="kpi__label">Employees</span><span class="kpi__value">{{ people|length }}</span><span class="kpi__note">profiles in this workspace</span></div>
+  <div class="kpi kpi--ok"><span class="kpi__label">Verified plans</span><span class="kpi__value">{{ ns.verified }}</span><span class="kpi__note">passed every Python check</span></div>
+  <div class="kpi {{ 'kpi--warn' if ns.attention }}"><span class="kpi__label">Need attention</span><span class="kpi__value">{{ ns.attention }}</span><span class="kpi__note">missing, unsupported or for review</span></div>
+  <div class="kpi"><span class="kpi__label">No plan yet</span><span class="kpi__value">{{ ns.none }}</span><span class="kpi__note">ready to generate</span></div>
+</section>
+
+<section class="panel panel--flush">
+  <div class="panel__bar">
+    <div class="toolbar">
+      <label class="toolbar__search">{{ icon('search', 16) }}
+        <input type="search" placeholder="Filter by name, role or property" aria-label="Filter employees" data-search="#people"></label>
+      <div class="segmented" data-filter-group="#people" role="group" aria-label="Plan status">
+        <button type="button" class="is-on" data-filter="all" aria-pressed="true">All <span class="count">{{ people|length }}</span></button>
+        <button type="button" data-filter="verified" aria-pressed="false">Verified <span class="count">{{ ns.verified }}</span></button>
+        <button type="button" data-filter="attention" aria-pressed="false">Needs attention <span class="count">{{ ns.attention }}</span></button>
+        <button type="button" data-filter="none" aria-pressed="false">No plan <span class="count">{{ ns.none }}</span></button>
+      </div>
+    </div>
+  </div>
+  {% if people %}
+  <div class="tablewrap">
+    <table class="table" id="people">
+      <thead><tr><th>Employee</th><th>Role &amp; property</th><th>Level</th><th>Joining</th><th>Latest plan</th><th>Coverage</th><th><span class="sr-only">Actions</span></th></tr></thead>
+      <tbody>
+      {% for e in people %}{% set p = latest.get(e.id) %}
+        <tr data-filter-item data-filter-value="{{ 'none' if not p else ('verified' if plan_tone(p.status) == 'ok' else 'attention') }}">
+          <td class="middle"><div class="person"><span class="avatar" aria-hidden="true">{{ initials(e.name) }}</span>
+            <span><span class="person__name">{{ e.name }}</span><span class="person__meta mono">{{ e.employee_code }}{% if can('employees.edit') %} · <a href="{{ url_for('people.employee_edit', code=e.employee_code) }}">edit</a>{% endif %}</span></span></div></td>
+          <td class="middle"><span class="person__name small">{{ e.job_role.name }}</span><span class="person__meta">{{ e.property.name }}</span></td>
+          <td class="middle small">{{ e.experience_level }}</td>
+          <td class="middle small nowrap">{{ e.joining_date.strftime('%d %b %Y') }}</td>
+          <td class="middle">{% if p %}<a href="{{ url_for('plans.plan_detail', pk=p.id) }}" class="nowrap"><span class="mono">{{ p.plan_code }} v{{ p.version }}</span></a><br>{{ plan_badge(p.status) }}
+              {% else %}<span class="muted small">None yet</span>{% endif %}</td>
+          <td class="middle">{% if p and p.score_coverage is not none %}
+              <span class="coverage">{{ meter(p.score_coverage, score_tone(p.score_coverage)) }}<b>{{ p.score_coverage }}%</b></span>
+              {% else %}<span class="muted small">—</span>{% endif %}</td>
+          <td class="middle">{% if can('plans.generate') and matrix %}
+            <form method="post" action="{{ url_for('plans.generate', code=e.employee_code) }}" style="margin: 0"
+                  data-busy="Generating {{ e.name.split(' ')[0] }}'s plan"
+                  data-busy-steps="Retrieving approved sources for {{ e.job_role.name }}|Gemini drafts the outline|Gemini writes module content|Python validates every item|Comparing against the approved matrix"
+                  data-busy-step-ms="6500">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn--sm" type="submit">{{ icon('spark', 14) }}{{ 'Regenerate' if p else 'Generate plan' }}</button>
+            </form>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}{{ empty('No employees yet', 'Seed or import employee profiles to start generating plans.', 'users') }}{% endif %}
+</section>
+{% endblock %}

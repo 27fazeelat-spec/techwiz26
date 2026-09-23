@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Upload document{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div><p class="eyebrow"><a href="{{ url_for('documents.index') }}">Documents</a></p><h1>Upload document</h1></div>
+</div>
+
+{% if result %}
+<section class="panel panel--alert" aria-live="polite">
+  <h2 class="panel__title">The document was not ingested</h2>
+  <ol class="steps">
+    {% for s in result.steps %}
+      <li class="steps__item steps__item--{{ s.status }}"><strong>{{ s.name }}</strong><span>{{ s.detail }}</span></li>
+    {% endfor %}
+  </ol>
+  <ul class="errors">{% for e in result.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  {% if result.warnings %}<details><summary>{{ result.warnings|length }} warning(s)</summary>
+    <ul class="small">{% for w in result.warnings %}<li>{{ w }}</li>{% endfor %}</ul></details>{% endif %}
+</section>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="upload" novalidate data-busy="Processing document" data-busy-steps="Checking the file type from its content|Parsing text, headings and tables|Scanning for hidden or injected instructions|Chunking and extracting requirements" data-busy-step-ms="1800">
+  {{ form.hidden_tag() }}
+  <section class="panel">
+    <h2 class="panel__title">File</h2>
+    <div class="field">
+      <label for="file">{{ form.file.label.text }}</label>
+      {{ form.file(id="file", accept=".pdf,.docx") }}
+      <p class="hint">PDF and Word (.docx) are supported, up to the configured size limit. The file type is checked from its content, not its name.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">Metadata <span class="muted small">optional</span></h2>
+    <p class="hint">SkillSprint reads metadata from the document's header. Fill these in only for documents without a header, such as memos or partner documents. If the document and the form disagree, the document wins and you'll see a warning.</p>
+    <div class="formgrid">
+      {% for name in ['doc_id', 'version', 'title', 'category', 'owner_department', 'applies_to', 'effective_date', 'expiry_date'] %}
+        {% set f = form[name] %}
+        <div class="field">
+          <label for="{{ name }}">{{ f.label.text }}</label>
+          {{ f(id=name) }}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="actions">
+    <button type="submit" class="btn btn--primary">Upload and process</button>
+    <a class="btn btn--ghost" href="{{ url_for('documents.index') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

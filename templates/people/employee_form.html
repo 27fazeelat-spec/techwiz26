@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit ' ~ employee.name if employee else 'Add employee' }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow"><a href="{{ url_for('plans.employees') }}">Employees &amp; plans</a></p>
+  <h1>{{ employee.name if employee else 'Add employee' }}</h1>
+  <p class="pagehead__meta">Only what onboarding needs. No national ID, salary or health information is collected.</p></div></div>
+
+<form method="post" class="panel">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="formgrid" style="margin-top: 0">
+    {% if not employee %}<div class="field"><label for="employee_code">Employee code</label><input id="employee_code" name="employee_code" type="text" placeholder="E013" value="{{ form.get('employee_code', '') }}"></div>{% endif %}
+    <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" value="{{ form.get('name', '') }}"></div>
+    <div class="field"><label for="role_code">Job role</label><select id="role_code" name="role_code"><option value="">Choose…</option>
+      {% for r in roles %}<option value="{{ r.code }}" {{ 'selected' if form.get('role_code') == r.code }}>{{ r.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="property_code">Property</label><select id="property_code" name="property_code"><option value="">Choose…</option>
+      {% for p in properties %}<option value="{{ p.code }}" {{ 'selected' if form.get('property_code') == p.code }}>{{ p.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="department">Department <span class="muted">(defaults to the role)</span></label><input id="department" name="department" type="text" value="{{ form.get('department', '') }}"></div>
+    <div class="field"><label for="experience_level">Experience level</label><select id="experience_level" name="experience_level">
+      {% for l in levels %}<option value="{{ l }}" {{ 'selected' if form.get('experience_level') == l }}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="experience_years">Years of experience</label><input id="experience_years" name="experience_years" type="text" inputmode="numeric" value="{{ form.get('experience_years', '0') }}"></div>
+    <div class="field"><label for="joining_date">Joining date</label><input id="joining_date" name="joining_date" type="date" value="{{ form.get('joining_date', '') }}"></div>
+    <div class="field"><label for="reporting_manager_code">Reporting manager code</label><input id="reporting_manager_code" name="reporting_manager_code" type="text" placeholder="M001" value="{{ form.get('reporting_manager_code', '') }}"></div>
+    <div class="field"><label for="shift_pattern">Shift pattern</label><select id="shift_pattern" name="shift_pattern">
+      {% for s in shifts %}<option value="{{ s }}" {{ 'selected' if form.get('shift_pattern', 'day') == s }}>{{ s|capitalize }}</option>{% endfor %}</select></div>
+  </div>
+  <div class="field" style="margin-top: var(--space-4)"><label for="previous_experience">Previous experience</label><input id="previous_experience" name="previous_experience" type="text" value="{{ form.get('previous_experience', '') }}"></div>
+  <div class="field" style="margin-top: var(--space-4)"><label for="certifications">Certifications <span class="muted">(comma separated)</span></label><input id="certifications" name="certifications" type="text" value="{{ form.get('certifications', '') }}"></div>
+  <div class="actions" style="margin-top: var(--space-5)"><button class="btn btn--primary" type="submit">Save</button><a class="btn btn--ghost" href="{{ url_for('plans.employees') }}">Cancel</a></div>
+</form>
+{% endblock %}

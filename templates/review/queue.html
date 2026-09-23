@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_macros.html" import item_badge, icon, empty %}
+{% block title %}Review queue{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">Onboarding</p>
+    <h1>Review queue</h1>
+    <p class="pagehead__meta">Items Python could not verify, and mandatory requirements a plan does not cover. A plan reaches the employee only after every item here has a decision.</p>
+  </div>
+</div>
+
+<section class="kpis" aria-label="Summary">
+  <div class="kpi {{ 'kpi--warn' if counts.open }}"><span class="kpi__label">Waiting for a decision</span><span class="kpi__value">{{ counts.open or 0 }}</span><span class="kpi__note">on current plan versions</span></div>
+  <div class="kpi"><span class="kpi__label">Approved as is</span><span class="kpi__value">{{ counts.approved or 0 }}</span><span class="kpi__note">computed status kept alongside</span></div>
+  <div class="kpi"><span class="kpi__label">Edited or overridden</span><span class="kpi__value">{{ (counts.edited or 0) + (counts.overridden or 0) }}</span><span class="kpi__note">edits are re-validated by Python</span></div>
+  <div class="kpi"><span class="kpi__label">Rejected</span><span class="kpi__value">{{ counts.rejected or 0 }}</span><span class="kpi__note">hidden from the employee</span></div>
+</section>
+
+<section class="panel panel--flush">
+  <div class="panel__bar">
+    <h2 class="panel__title">{{ rows|length }} item{{ 's' if rows|length != 1 }}</h2>
+    <div class="segmented" role="group" aria-label="Show">
+      <a href="?show=open" class="{{ 'is-on' if show == 'open' }}">Waiting</a>
+      <a href="?show=decided" class="{{ 'is-on' if show == 'decided' }}">Decided</a>
+      <a href="?show=all" class="{{ 'is-on' if show == 'all' }}">All</a>
+    </div>
+  </div>
+  {% if rows %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Item</th><th>Plan</th><th>Why it is here</th><th>Computed status</th><th>Decision</th></tr></thead>
+      <tbody>
+      {% for r, p in rows %}
+        <tr>
+          <td class="nowrap"><a class="reqid" href="{{ url_for('review.detail', pk=r.id) }}">RV-{{ '%05d' % r.id }}</a><br>
+            <span class="small muted">{{ ('Missing requirement' if r.original_status == 'Requirement Missing' else 'Requirement') if r.target_type == 'requirement' else (r.plan_item.item_type|replace('_', ' ')|capitalize if r.plan_item else 'Item') }}</span></td>
+          <td class="small"><a href="{{ url_for('plans.plan_detail', pk=p.id) }}">{{ p.employee.name }}</a><br><span class="mono muted">{{ p.plan_code }} v{{ p.version }}</span></td>
+          <td class="small">{% for x in r.reasons[:2] %}<div><span class="finding__rule">{{ x.rule_id }}</span>{{ x.message }}</div>{% endfor %}
+            {% if r.reasons|length > 2 %}<span class="muted">+ {{ r.reasons|length - 2 }} more</span>{% endif %}</td>
+          <td>{{ item_badge(r.original_status) }}</td>
+          <td>{% if r.status == 'open' %}<span class="badge badge--neutral">Waiting</span>
+              {% else %}<span class="badge badge--{{ {'approved': 'ok', 'edited': 'info', 'overridden': 'info', 'rejected': 'bad', 'regenerated': 'info'}[r.status] }}">{{ r.status|capitalize }}</span>
+              <div class="small muted">{{ r.decision_by }}</div>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}{{ empty('Nothing to review' if show == 'open' else 'No items', 'When Python flags an item or a plan misses a mandatory requirement, it appears here.', 'check') }}{% endif %}
+</section>
+{% endblock %}

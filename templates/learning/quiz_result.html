@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Quiz result · {{ m.title }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('learning.module', module_key=m.module_key) }}">{{ m.title }}</a><span>Result</span></p>
+    <h1>{{ attempt.score }}% · {{ 'Passed' if attempt.passed else 'Not passed yet' }}</h1>
+    <p class="pagehead__meta">Attempt {{ attempt.attempt_no }} of {{ cfg.max_quiz_attempts }} <span class="sep">·</span> pass mark {{ cfg.pass_mark_percent }}%</p>
+  </div>
+  <div class="pagehead__actions">
+    {% if not attempt.passed and used < cfg.max_quiz_attempts %}<a class="btn btn--primary" href="{{ url_for('learning.quiz', module_key=m.module_key) }}">Try again</a>{% endif %}
+    <a class="btn" href="{{ url_for('learning.module', module_key=m.module_key) }}">Back to the module</a>
+  </div>
+</div>
+
+{% for q in questions %}{% set c = q.content %}{% set a = by_key[q.item_key] %}
+<section class="panel">
+  <p class="side__ref"><span class="tag mono">{{ loop.index }}</span> <span class="badge badge--{{ 'ok' if a.correct else 'bad' }}">{{ 'Correct' if a.correct else 'Incorrect' }}</span></p>
+  <p style="margin: 8px 0"><strong>{{ c.question }}</strong></p>
+  <ol class="options">{% for o in c.options %}
+    <li class="{{ 'is-correct' if loop.index0 in c.correct_options }}">{{ o }}{% if loop.index0 in a.selected %} <span class="muted">(your answer)</span>{% endif %}</li>{% endfor %}</ol>
+  <p class="small" style="margin-top: 8px"><strong>Why:</strong> {{ c.explanation }}</p>
+  {% for chunk in sources.get((q.source_doc_id, q.source_section_id), [])[:1] %}
+    <blockquote class="quote" style="margin-top: 8px">{{ chunk.source_text }}<span class="quote__src">{{ chunk.doc_id }} v{{ chunk.version }} · §{{ chunk.section_id }}</span></blockquote>
+  {% endfor %}
+</section>
+{% endfor %}
+{% endblock %}

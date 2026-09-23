@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% from "_macros.html" import initials, meter, progress_badge, item_state, empty %}
+{% block title %}{{ employee.name }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('main.team_dashboard') if can('dashboard.team') else url_for('plans.employees') }}">{{ 'My team' if can('dashboard.team') else 'Employees & plans' }}</a><span class="mono">{{ employee.employee_code }}</span></p>
+    <div class="person"><span class="avatar avatar--lg" aria-hidden="true">{{ initials(employee.name) }}</span>
+      <div><h1>{{ employee.name }}</h1><p class="pagehead__meta" style="margin-top: 2px">{{ employee.job_role.name }} <span class="sep">·</span> {{ employee.property.name }} <span class="sep">·</span> joined {{ employee.joining_date.strftime('%d %b %Y') }}</p></div></div>
+  </div>
+</div>
+
+{% if not plan %}
+<section class="panel">{{ empty('No plan assigned yet', 'Progress appears once a verified plan is assigned.', 'list') }}</section>
+{% else %}
+<section class="kpis" aria-label="Progress">
+  <div class="kpi"><span class="kpi__label">Overall</span><span class="kpi__value">{{ summary.pct }}<small>%</small></span>{{ meter(summary.pct) }}<span class="kpi__note">{{ summary.done }} of {{ summary.total }} items</span></div>
+  <div class="kpi"><span class="kpi__label">Status</span><span class="kpi__value" style="font-size: var(--text-lg)">{{ progress_badge(summary.status) }}</span><span class="kpi__note">{{ summary.overdue }} overdue · {{ summary.submitted }} waiting for sign-off</span></div>
+  {% for t, label in [('checklist', 'Checklist'), ('quiz_question', 'Quiz questions'), ('task', 'Tasks'), ('assessment', 'Assessments')] %}{% set x = summary.by_type.get(t) %}
+  {% if x %}<div class="kpi"><span class="kpi__label">{{ label }}</span><span class="kpi__value">{{ x.done }}<small>/{{ x.total }}</small></span>{{ meter(100 * x.done / x.total) }}</div>{% endif %}{% endfor %}
+</section>
+
+<div class="grid-2">
+  <section class="panel panel--flush">
+    <div class="panel__bar"><h2 class="panel__title">Modules</h2><a class="panel__aside mono" href="{{ url_for('plans.plan_detail', pk=plan.id) if can('plans.view') else '#' }}">{{ plan.plan_code }} v{{ plan.version }}</a></div>
+    <ul class="rows" style="padding: 0 var(--space-5)">{% for x in summary.modules %}
+      <li class="rows__item"><span><span class="tag mono">{{ x.module.module_key }}</span> {{ x.module.title }}</span>
+        <span class="coverage" style="min-width: 160px">{{ meter(x.pct, 'ok' if x.pct == 100 else '') }}<b>{{ x.done }}/{{ x.total }}</b></span></li>{% endfor %}</ul>
+  </section>
+  <section class="panel">
+    <h2 class="panel__title">Weak areas <span class="muted small">requirements answered wrongly in quizzes</span></h2>
+    {% if weak %}<ul class="rows">{% for rid, n in weak.most_common(8) %}<li class="rows__item"><span class="reqid">{{ rid }}</span><span class="badge badge--warn">{{ n }} wrong</span></li>{% endfor %}</ul>
+    {% else %}<p class="muted small">No wrong quiz answers yet.</p>{% endif %}
+  </section>
+</div>
+
+<section class="panel panel--flush">
+  <div class="panel__bar"><h2 class="panel__title">Tasks, scenarios and assessments</h2></div>
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Item</th><th>Due</th><th>State</th><th>Your decision</th></tr></thead>
+      <tbody>
+      {% for row, item in rows %}{% set c = item.content %}
+        <tr>
+          <td><span class="tag">{{ item.item_type }}</span> {{ c.description or c.situation or c.topic }}{% if row.note %}<div class="small muted">Note: {{ row.note }}</div>{% endif %}</td>
+          <td class="small nowrap">{{ row.due_date.strftime('%d %b %Y') if row.due_date }}</td>
+          <td>{{ item_state(row) }}</td>
+          <td>
+            {% if item.item_type == 'assessment' and row.status not in ['completed'] %}
+            <form method="post" action="{{ url_for('learning.sign_off', pk=row.id) }}" class="actions">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input name="score" type="text" inputmode="numeric" placeholder="Score 0-100" aria-label="Score" style="width: 110px">
+              <input name="note" type="text" placeholder="Note" aria-label="Note" style="width: 160px">
+              <button class="btn btn--sm btn--primary" name="decision" value="approve" type="submit">Passed</button>
+              <button class="btn btn--sm" name="decision" value="fail" type="submit">Not passed</button>
+            </form>
+            {% elif row.status == 'submitted' %}
+            <form method="post" action="{{ url_for('learning.sign_off', pk=row.id) }}" class="actions">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input name="note" type="text" placeholder="Feedback (optional)" aria-label="Feedback" style="width: 180px">
+              <button class="btn btn--sm btn--primary" name="decision" value="approve" type="submit">Sign off</button>
+              <button class="btn btn--sm" name="decision" value="return" type="submit">Return</button>
+            </form>
+            {% elif row.verified_by %}<span class="small muted">{{ row.verified_by }}</span>{% endif %}
+          </td>
+        </tr>
+      {% else %}<tr><td colspan="4" class="muted">No tasks or assessments in this plan.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

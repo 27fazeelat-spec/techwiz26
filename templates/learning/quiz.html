@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Quiz · {{ m.title }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('learning.module', module_key=m.module_key) }}">{{ m.title }}</a><span>Quiz</span></p>
+    <h1>{{ m.title }}: quiz</h1>
+    <p class="pagehead__meta">{{ questions|length }} questions <span class="sep">·</span> pass mark {{ cfg.pass_mark_percent }}% <span class="sep">·</span> attempt {{ used + 1 }} of {{ cfg.max_quiz_attempts }}</p>
+  </div>
+</div>
+
+{% if used >= cfg.max_quiz_attempts %}
+<div class="notice notice--warn">You have used all attempts for this quiz. Your manager will go through it with you.</div>
+{% else %}
+<form method="post" class="stack">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% for q in questions %}{% set c = q.content %}{% set multi = c.type == 'multiple_response' %}
+  <fieldset class="panel quizq">
+    <legend class="quizq__legend"><span class="tag mono">{{ loop.index }}</span> {{ c.question }}</legend>
+    {% if multi %}<p class="small muted">Choose every correct answer.</p>{% endif %}
+    <div class="quizq__options">
+      {% for o in c.options %}
+      <label class="quizq__option"><input type="{{ 'checkbox' if multi else 'radio' }}" name="{{ q.item_key }}" value="{{ loop.index0 }}" {{ 'required' if not multi }}> <span>{{ o }}</span></label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  {% endfor %}
+  <div><button class="btn btn--primary" type="submit">Submit answers</button></div>
+</form>
+{% endif %}
+{% endblock %}

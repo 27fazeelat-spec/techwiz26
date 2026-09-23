@@ -1,0 +1,116 @@
+{% from "_macros.html" import icon, initials %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='image/logo.png') }}">
+  <title>{% block title %}SkillSprint{% endblock %} · SkillSprint AI</title>
+  <script>
+    try { var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="{{ 'has-shell' if current_user.is_authenticated }}">
+<a class="skip" href="#main">Skip to content</a>
+{% if current_user.is_authenticated %}
+{% macro navlink(endpoint_url, label, icon_name, active) -%}
+  <a href="{{ endpoint_url }}" class="navlink {{ 'is-active' if active }}" {{ 'aria-current=page' if active }}>{{ icon(icon_name) }}<span>{{ label }}</span></a>
+{%- endmacro %}
+{% set ep = request.endpoint or '' %}
+<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+  <a class="brand" href="{{ url_for('main.home') }}" aria-label="SkillSprint home">
+    <img class="brand__mark" src="{{ url_for('static', filename='image/logo.png') }}" alt="">
+    <span class="brand__name">SkillSprint</span>
+  </a>
+  <div class="workspace" title="Active organisation"><small>Workspace</small><span>{{ org_name }}</span></div>
+
+  <nav class="navgroup">
+    <p class="navgroup__label">Home</p>
+    {% if can('dashboard.admin') %}{{ navlink(url_for('main.admin_dashboard'), 'Overview', 'home', ep == 'main.admin_dashboard') }}{% endif %}
+    {% if can('dashboard.team') %}{{ navlink(url_for('main.team_dashboard'), 'My team', 'users', ep == 'main.team_dashboard') }}{% endif %}
+    {% if can('dashboard.employee') %}{{ navlink(url_for('main.employee_dashboard'), 'My onboarding', 'user', ep == 'main.employee_dashboard') }}{% endif %}
+  </nav>
+  {% if can('documents.view') or can('security.view') %}
+  <nav class="navgroup">
+    <p class="navgroup__label">Knowledge base</p>
+    {% if can('documents.view') %}{{ navlink(url_for('documents.index'), 'Documents', 'file', request.blueprint == 'documents') }}{% endif %}
+    {% if can('security.view') %}{{ navlink(url_for('ground_truth.security'), 'Security scan', 'shield', ep == 'ground_truth.security') }}{% endif %}
+    {% if can('documents.view') %}{{ navlink(url_for('changes.index'), 'Policy changes', 'split', request.blueprint == 'changes') }}{% endif %}
+  </nav>
+  {% endif %}
+  {% if can('requirements.view') or can('conflicts.view') or can('matrix.view') %}
+  <nav class="navgroup">
+    <p class="navgroup__label">Ground truth</p>
+    {% if can('requirements.view') %}{{ navlink(url_for('ground_truth.requirements'), 'Requirements', 'list', ep.startswith('ground_truth.requirement')) }}{% endif %}
+    {% if can('conflicts.view') %}{{ navlink(url_for('ground_truth.conflicts'), 'Conflicts', 'split', ep.startswith('ground_truth.conflict')) }}{% endif %}
+    {% if can('matrix.view') %}{{ navlink(url_for('ground_truth.matrix_index'), 'Role matrix', 'grid', ep.startswith('ground_truth.matrix')) }}{% endif %}
+  </nav>
+  {% endif %}
+  {% if can('plans.view') %}
+  <nav class="navgroup">
+    <p class="navgroup__label">Onboarding</p>
+    {{ navlink(url_for('plans.employees'), 'Employees & plans', 'users', request.blueprint == 'plans') }}
+    {% if can('review.view') %}{{ navlink(url_for('review.queue'), 'Review queue', 'inbox', request.blueprint == 'review') }}{% endif %}
+    {% if can('roles.view') %}{{ navlink(url_for('people.roles'), 'Job roles', 'grid', ep.startswith('people.role')) }}{% endif %}
+  </nav>
+  {% endif %}
+
+  <p class="sidebar__foot">Gemini writes. Python verifies.<br>People approve.</p>
+</aside>
+<div class="scrim" data-nav-close hidden></div>
+
+<header class="topbar">
+  <button type="button" class="iconbtn topbar__menu" data-nav-open aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">{{ icon('menu') }}</button>
+  {% if can('requirements.view') %}
+  <form class="topsearch" method="get" action="{{ url_for('ground_truth.requirements') }}" role="search">
+    {{ icon('search', 16) }}
+    <input name="q" type="search" placeholder="Search requirements by text or ID…" aria-label="Search requirements" value="{{ request.args.get('q', '') if ep == 'ground_truth.requirements' else '' }}">
+    <kbd>/</kbd>
+  </form>
+  {% endif %}
+  <div class="topbar__right">
+    <button type="button" class="iconbtn themetoggle" data-theme-toggle aria-label="Switch to dark theme" title="Switch theme">
+      <span class="themetoggle__sun">{{ icon('sun') }}</span><span class="themetoggle__moon">{{ icon('moon') }}</span>
+    </button>
+    <div class="who">
+      <span class="avatar" aria-hidden="true">{{ initials(current_user.name) }}</span>
+      <span class="who__text">{{ current_user.name }}<small>{{ role_label(current_user.app_role) }}</small></span>
+    </div>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="iconbtn" aria-label="Sign out" title="Sign out">{{ icon('logout') }}</button>
+    </form>
+  </div>
+</header>
+{% endif %}
+
+<main id="main" class="page {% block page_class %}{% endblock %}">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flashes" role="status">
+        {% for category, message in messages %}
+        <div class="flash flash--{{ category }}">
+          <span class="flash__icon">{{ icon('check' if category == 'success' else ('alert' if category == 'error' else 'spark'), 16) }}</span>
+          <span class="flash__text">{{ message }}</span>
+          <button type="button" class="flash__close" data-dismiss aria-label="Dismiss">{{ icon('x', 14) }}</button>
+        </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<div class="busy-overlay" data-busy-overlay hidden>
+  <div class="busy-card" role="status" aria-live="polite">
+    <span class="spinner" aria-hidden="true"></span>
+    <p class="busy-card__title" data-busy-title>Working…</p>
+    <ol class="busy-steps" data-busy-steps></ol>
+    <p class="busy-card__note">Please keep this tab open.</p>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

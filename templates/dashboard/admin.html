@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge, icon, empty %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">{{ org_name }}</p>
+    <h1>Overview</h1>
+    <p class="pagehead__meta">From uploaded policy to verified onboarding plan. Each stage below feeds the next.</p>
+  </div>
+  <div class="pagehead__actions">
+    {% if can('plans.view') %}<a class="btn" href="{{ url_for('plans.employees') }}">{{ icon('users', 16) }}Employees</a>{% endif %}
+    {% if can('documents.upload') %}<a class="btn btn--primary" href="{{ url_for('documents.upload') }}">{{ icon('upload', 16) }}Upload document</a>{% endif %}
+  </div>
+</div>
+
+{% set m = stats.matrix %}
+<nav class="flow" aria-label="Verification pipeline">
+  <a class="flow__step flow__step--ok" href="{{ url_for('documents.index') }}">
+    <span class="flow__num">1 · Ingest</span><span class="flow__value">{{ stats.lineages }}</span>
+    <span class="flow__label">Documents</span><span class="flow__note">{{ counts.active }} active · {{ stats.chunks }} chunks</span></a>
+  <a class="flow__step {{ 'flow__step--bad' if stats.quarantined else 'flow__step--ok' }}" href="{{ url_for('ground_truth.security') }}">
+    <span class="flow__num">2 · Scan</span><span class="flow__value">{{ stats.findings }}</span>
+    <span class="flow__label">Security findings</span><span class="flow__note">{{ stats.quarantined }} chunks quarantined</span></a>
+  <a class="flow__step flow__step--ok" href="{{ url_for('ground_truth.requirements') }}">
+    <span class="flow__num">3 · Extract</span><span class="flow__value">{{ stats.requirements }}</span>
+    <span class="flow__label">Requirements</span><span class="flow__note">rule-based, with lineage</span></a>
+  <a class="flow__step {{ 'flow__step--warn' if stats.conflicts_open else 'flow__step--ok' }}" href="{{ url_for('ground_truth.conflicts') }}">
+    <span class="flow__num">4 · Resolve</span><span class="flow__value">{{ stats.conflicts }}</span>
+    <span class="flow__label">Conflicts</span><span class="flow__note">{% if stats.conflicts_open %}{{ stats.conflicts_open }} need a reviewer{% else %}all resolved{% endif %}</span></a>
+  <a class="flow__step {{ 'flow__step--ok' if m else ('flow__step--info' if stats.matrix_draft else 'flow__step--idle') }}" href="{{ url_for('ground_truth.matrix_index') }}">
+    <span class="flow__num">5 · Approve</span><span class="flow__value">{% if m %}v{{ m.version_no }}{% elif stats.matrix_draft %}Draft{% else %}—{% endif %}</span>
+    <span class="flow__label">Role matrix</span><span class="flow__note">{% if m %}approved ground truth{% elif stats.matrix_draft %}v{{ stats.matrix_draft.version_no }} awaiting approval{% else %}not built yet{% endif %}</span></a>
+  <a class="flow__step {{ 'flow__step--ok' if stats.plans else 'flow__step--idle' }}" href="{{ url_for('plans.employees') }}">
+    <span class="flow__num">6 · Generate</span><span class="flow__value">{{ stats.plans }}</span>
+    <span class="flow__label">Plans</span><span class="flow__note">{{ stats.plans_verified }} verified · {{ stats.employees }} employees</span></a>
+</nav>
+
+{% if stats.matrix_draft and (not m or stats.matrix_draft.version_no > m.version_no) %}
+<div class="notice notice--info">Matrix draft <span class="mono">v{{ stats.matrix_draft.version_no }}</span> is waiting for review.
+  Plans are only verified against an approved matrix. <a href="{{ url_for('ground_truth.matrix_view', number=stats.matrix_draft.version_no) }}">Review the draft</a></div>
+{% endif %}
+
+<div class="grid-2">
+  <section class="panel">
+    <h2 class="panel__title">Document versions by status <span class="panel__aside">{{ stats.documents }} files</span></h2>
+    {% set total = stats.documents or 1 %}
+    <div class="stackbar" role="img" aria-label="Document versions by status">
+      {% for s in statuses %}{% if counts[s] %}<span class="stackbar__seg stackbar__seg--{{ s }}" style="flex: {{ counts[s] }}" title="{{ s|capitalize }}: {{ counts[s] }}"></span>{% endif %}{% endfor %}
+    </div>
+    <ul class="legend">
+      {% for s in statuses %}<li><span class="legend__dot legend__dot--{{ s }}"></span>{{ s|capitalize }}<strong>{{ counts[s] }}</strong></li>{% endfor %}
+    </ul>
+    <p class="muted small">Only active versions are used as sources. Superseded, expired, draft and not-yet-effective versions are kept for traceability and change analysis.</p>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">Needs attention {% if attention %}<span class="badge badge--warn">{{ attention|length }}</span>{% endif %}</h2>
+    {% if attention %}
+    <ul class="rows">
+      {% for d in attention %}
+      <li class="rows__item">
+        <a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}"><span class="mono muted">{{ d.doc_id }} v{{ d.version }}</span> {{ d.title }}</a>
+        <span class="rows__meta">
+          {% if d.parse and d.parse.hidden_blocks %}<span class="badge badge--bad">Hidden content</span>{% endif %}
+          {% if d.status in ['expired', 'draft'] %}{{ status_badge(d.status) }}{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}{{ empty('All clear', 'No expired, draft or suspicious documents.', 'check') }}{% endif %}
+  </section>
+</div>
+
+<section class="panel panel--flush">
+  <div class="panel__bar"><h2 class="panel__title">Recent activity</h2><span class="panel__aside">Append-only audit trail</span></div>
+  {% if recent %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>When (UTC)</th><th>Action</th><th>Item</th><th>By</th></tr></thead>
+      <tbody>
+      {% for e in recent %}
+        <tr>
+          <td class="nowrap muted">{{ e.ts.strftime('%d %b %H:%M') }}</td>
+          <td><span class="tag mono">{{ e.action }}</span></td>
+          <td>{{ e.entity_id }}{% if e.entity_version %} <span class="muted">v{{ e.entity_version }}</span>{% endif %}</td>
+          <td class="muted">{{ e.actor.email or e.actor.user_id }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}{{ empty('No activity yet', 'Uploads, approvals and generations will appear here.') }}{% endif %}
+</section>
+{% endblock %}

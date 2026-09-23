@@ -1,0 +1,47 @@
+# Application roles -> permissions. "*" is a wildcard: "documents.*" grants every documents permission.
+# Checked server-side on every route by src/rbac.py.
+roles:
+  admin:
+    label: Administrator
+    permissions: ["*"]
+  training_manager:
+    label: Training Manager
+    permissions:
+      - dashboard.admin
+      - documents.*
+      - roles.*
+      - requirements.*
+      - matrix.*
+      - conflicts.*
+      - security.view
+      - employees.*
+      - plans.*
+      - review.view
+      - reports.view
+  reviewer:
+    label: Reviewer
+    permissions:
+      - dashboard.admin
+      - documents.view
+      - roles.view
+      - requirements.view
+      - matrix.view
+      - conflicts.*
+      - security.view
+      - plans.view
+      - review.*
+      - reports.view
+      - audit.view
+  manager:
+    label: Manager
+    permissions:
+      - dashboard.team
+      - employees.view_team
+      - plans.view_team
+      - progress.verify_team
+      - reports.team
+  employee:
+    label: Employee
+    permissions:
+      - dashboard.employee
+      - learning.*

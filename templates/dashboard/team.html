@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import initials, empty, meter, progress_badge %}
+{% block title %}My team{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">{{ org_name }}</p><h1>My team</h1>
+  <p class="pagehead__meta">People who report to you, where they are in onboarding, and what is waiting for your sign-off.</p></div></div>
+
+{% if pending %}
+<section class="panel panel--alert">
+  <h2 class="panel__title">Waiting for your sign-off <span class="badge badge--info">{{ pending|length }}</span></h2>
+  <ul class="rows">{% for row, item, module in pending %}
+    <li class="rows__item"><span>{{ item.content.description or item.content.situation }} <span class="muted small">· {{ module.title }}</span></span>
+      <a class="btn btn--sm" href="{{ url_for('learning.team_member', code=(team|selectattr('id', 'equalto', row.employee_id)|first).employee_code) }}">Review</a></li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+<section class="panel panel--flush">
+  {% if team %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Employee</th><th>Role</th><th>Joining</th><th>Progress</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for e in team %}{% set plan, s = states[e.id] %}
+        <tr><td class="middle"><div class="person"><span class="avatar" aria-hidden="true">{{ initials(e.name) }}</span>
+              <span><span class="person__name">{{ e.name }}</span><span class="person__meta mono">{{ e.employee_code }}</span></span></div></td>
+            <td class="middle">{{ e.job_role.name }}<br><span class="small muted">{{ e.property.name }}</span></td>
+            <td class="middle nowrap">{{ e.joining_date.strftime('%d %b %Y') }}</td>
+            <td class="middle">{% if s %}<span class="coverage">{{ meter(s.pct) }}<b>{{ s.pct }}%</b></span>{% else %}<span class="muted small">—</span>{% endif %}</td>
+            <td class="middle">{% if s %}{{ progress_badge(s.status) }}{% else %}<span class="badge badge--neutral">No plan yet</span>{% endif %}</td>
+            <td class="middle">{% if plan %}<a class="btn btn--sm" href="{{ url_for('learning.team_member', code=e.employee_code) }}">Open</a>{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}{{ empty('No one reports to you yet', 'When employees are assigned to you, their onboarding progress appears here.', 'users') }}{% endif %}
+</section>
+{% endblock %}

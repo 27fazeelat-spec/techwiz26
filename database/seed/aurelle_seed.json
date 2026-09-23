@@ -1,0 +1,55 @@
+{
+  "organization": {
+    "org_id": "aurelle",
+    "name": "Aurelle Hotels & Residences",
+    "settings": {"currency_label": "USD or local equivalent"}
+  },
+  "properties": [
+    {"code": "DXB-HBR", "name": "Aurelle Harbourside Dubai", "country": "UAE", "type": "Hotel", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "DXB-DTN", "name": "Aurelle Downtown Dubai", "country": "UAE", "type": "Hotel", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "DXB-MRN", "name": "Aurelle Residences Marina", "country": "UAE", "type": "Residences", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "AUH-CRN", "name": "Aurelle Corniche Abu Dhabi", "country": "UAE", "type": "Hotel", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "MCT-BAY", "name": "Aurelle Muscat Bay", "country": "Oman", "type": "Hotel", "services": {"in_room_dining": false, "pool": true}},
+    {"code": "MCT-QRM", "name": "Aurelle Residences Qurum", "country": "Oman", "type": "Residences", "services": {"in_room_dining": true, "pool": false}},
+    {"code": "SLL-GDN", "name": "Aurelle Salalah Gardens", "country": "Oman", "type": "Hotel", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "KUL-BBT", "name": "Aurelle Bukit Bintang", "country": "Malaysia", "type": "Hotel", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "KUL-MKR", "name": "Aurelle Residences Mont Kiara", "country": "Malaysia", "type": "Residences", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "PEN-HTG", "name": "Aurelle Penang Heritage", "country": "Malaysia", "type": "Hotel", "services": {"in_room_dining": true, "pool": false}},
+    {"code": "LGK-SHR", "name": "Aurelle Langkawi Shores", "country": "Malaysia", "type": "Hotel", "services": {"in_room_dining": true, "pool": true}},
+    {"code": "PEN-GTN", "name": "Aurelle Residences Georgetown", "country": "Malaysia", "type": "Residences", "services": {"in_room_dining": true, "pool": false}},
+    {"code": "CORP", "name": "Aurelle Corporate Office", "country": "UAE", "type": "Corporate", "services": {}}
+  ],
+  "job_roles": [
+    {"code": "FOA", "name": "Front Office Associate", "department": "Front Office", "aliases": ["Front Office Associate", "Front Office Associates", "front desk staff", "front desk"]},
+    {"code": "GRE", "name": "Guest Relations Executive", "department": "Guest Relations", "aliases": ["Guest Relations Executive", "Guest Relations Executives"]},
+    {"code": "HKS", "name": "Housekeeping Supervisor", "department": "Housekeeping", "aliases": ["Housekeeping Supervisor", "Housekeeping Supervisors"]},
+    {"code": "FBA", "name": "F&B Associate", "department": "Food & Beverage", "aliases": ["F&B Associate", "F&B Associates", "F&B employees", "food handlers", "server"]},
+    {"code": "MTT", "name": "Maintenance Technician", "department": "Engineering & Maintenance", "aliases": ["Maintenance Technician", "Maintenance Technicians", "technician", "technicians"]},
+    {"code": "SEE", "name": "Sales & Events Executive", "department": "Sales & Events", "aliases": ["Sales & Events Executive", "Sales & Events Executives", "Sales Executives"]},
+    {"code": "RVA", "name": "Revenue Analyst", "department": "Revenue Management", "aliases": ["Revenue Analyst", "Revenue Analysts"]},
+    {"code": "FNA", "name": "Finance Associate", "department": "Finance", "aliases": ["Finance Associate", "Finance Associates"]},
+    {"code": "HRE", "name": "HR Executive", "department": "Human Resources", "aliases": ["HR Executive", "HR Executives"]},
+    {"code": "DMG", "name": "Duty Manager", "department": "Hotel Management", "aliases": ["Duty Manager", "Duty Managers", "Manager on Duty", "MOD"]}
+  ],
+  "employees": [
+    {"employee_id": "E001", "name": "Leila Haddad", "role_code": "FOA", "department": "Front Office", "property_code": "DXB-HBR", "experience_level": "Beginner", "experience_years": 1, "previous_experience": "1 year retail customer service", "joining_date": "2026-10-05", "reporting_manager_id": "M001", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "E002", "name": "Arjun Menon", "role_code": "FOA", "department": "Front Office", "property_code": "DXB-MRN", "experience_level": "Intermediate", "experience_years": 3, "previous_experience": "3 years city-hotel front desk", "joining_date": "2026-10-12", "reporting_manager_id": "M002", "certifications": [], "assignments": [], "shift_pattern": "rotating"},
+    {"employee_id": "E003", "name": "Nurul Aina Rahman", "role_code": "GRE", "department": "Guest Relations", "property_code": "KUL-BBT", "experience_level": "Intermediate", "experience_years": 2, "previous_experience": "2 years airline customer care", "joining_date": "2026-10-05", "reporting_manager_id": "M003", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "E004", "name": "Mateus Oliveira", "role_code": "HKS", "department": "Housekeeping", "property_code": "MCT-BAY", "experience_level": "Advanced", "experience_years": 7, "previous_experience": "7 years resort housekeeping", "joining_date": "2026-09-28", "reporting_manager_id": "M004", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "E005", "name": "Grace Tan", "role_code": "FBA", "department": "Food & Beverage", "property_code": "PEN-HTG", "experience_level": "Beginner", "experience_years": 0, "previous_experience": "None", "joining_date": "2026-10-19", "reporting_manager_id": "M005", "certifications": [], "assignments": ["in_room_dining"], "shift_pattern": "rotating"},
+    {"employee_id": "E006", "name": "Yusuf Al-Balushi", "role_code": "MTT", "department": "Engineering & Maintenance", "property_code": "SLL-GDN", "experience_level": "Intermediate", "experience_years": 4, "previous_experience": "4 years building maintenance", "joining_date": "2026-10-05", "reporting_manager_id": "M006", "certifications": ["hot_work", "lifeguard"], "assignments": ["pool_duty"], "shift_pattern": "day"},
+    {"employee_id": "E007", "name": "Sofia Petrova", "role_code": "SEE", "department": "Sales & Events", "property_code": "DXB-DTN", "experience_level": "Intermediate", "experience_years": 3, "previous_experience": "3 years MICE sales", "joining_date": "2026-10-12", "reporting_manager_id": "M007", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "E008", "name": "Daniel Okafor", "role_code": "RVA", "department": "Revenue Management", "property_code": "CORP", "experience_level": "Advanced", "experience_years": 6, "previous_experience": "6 years revenue management", "joining_date": "2026-10-05", "reporting_manager_id": "M008", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "E009", "name": "Hana Kobayashi", "role_code": "FNA", "department": "Finance", "property_code": "AUH-CRN", "experience_level": "Beginner", "experience_years": 0, "previous_experience": "Accounting graduate", "joining_date": "2026-11-02", "reporting_manager_id": "M009", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "E010", "name": "Priya Raman", "role_code": "HRE", "department": "Human Resources", "property_code": "LGK-SHR", "experience_level": "Intermediate", "experience_years": 3, "previous_experience": "3 years HR generalist", "joining_date": "2026-10-19", "reporting_manager_id": "M010", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "E011", "name": "Karim Mansour", "role_code": "DMG", "department": "Hotel Management", "property_code": "DXB-HBR", "experience_level": "Advanced", "experience_years": 8, "previous_experience": "8 years hotel operations", "joining_date": "2026-09-28", "reporting_manager_id": "M011", "certifications": [], "assignments": [], "shift_pattern": "rotating"},
+    {"employee_id": "E012", "name": "Farah Qureshi", "role_code": "FBA", "department": "Food & Beverage", "property_code": "MCT-BAY", "experience_level": "Intermediate", "experience_years": 2, "previous_experience": "2 years cafe service", "joining_date": "2026-10-12", "reporting_manager_id": "M012", "certifications": [], "assignments": [], "shift_pattern": "day"}
+  ],
+  "users": [
+    {"email": "admin@aurelle.example", "name": "System Administrator", "app_role": "admin"},
+    {"email": "training@aurelle.example", "name": "Nadia Karim", "app_role": "training_manager"},
+    {"email": "evaluator@aurelle.example", "name": "Evaluator", "app_role": "reviewer"},
+    {"email": "omar.siddiqui@aurelle.example", "name": "Omar Siddiqui", "app_role": "manager", "employee_id": "M001"},
+    {"email": "leila.haddad@aurelle.example", "name": "Leila Haddad", "app_role": "employee", "employee_id": "E001"}
+  ]
+}

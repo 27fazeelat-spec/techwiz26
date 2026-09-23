@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge, source_chip, location %}
+{% block title %}{{ doc.doc_id }} v{{ doc.version }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow"><a href="{{ url_for('documents.index') }}">Documents</a></p>
+    <h1><span class="mono">{{ doc.doc_id }}</span> {{ doc.title }}</h1>
+    <p class="pagehead__meta">Version <span class="mono">{{ doc.version }}</span> · {{ status_badge(doc.status) }} · {{ doc.category }}{% if doc.tier %} · precedence tier {{ doc.tier }}{% else %} · never used as a source{% endif %}</p>
+  </div>
+  <a class="btn" href="{{ url_for('documents.download', doc_id=doc.doc_id, version=doc.version) }}">Download original</a>
+</div>
+
+{% if doc.status in ['superseded', 'expired', 'draft', 'scheduled'] %}
+<div class="notice notice--{{ 'info' if doc.status == 'scheduled' else 'warn' }}">
+  {% if doc.status == 'superseded' %}This version has been replaced by version <a class="mono" href="{{ url_for('documents.detail', doc_id=doc.doc_id, version=doc.superseded_by) }}">{{ doc.superseded_by }}</a> and is not used as a source.
+  {% elif doc.status == 'expired' %}This document passed its review / expiry date and no replacement has been uploaded. Content that relies on it will be marked Outdated Source.
+  {% elif doc.status == 'draft' %}This is a draft that has not been approved. It is stored for reference but never used as a source.
+  {% else %}This version becomes effective on {{ doc.effective_date.strftime('%d %B %Y') }}. Until then the current version stays in force.{% endif %}
+</div>
+{% endif %}
+
+<div class="grid-2">
+  <section class="panel">
+    <h2 class="panel__title">Metadata</h2>
+    <dl class="deflist">
+      {% set src = doc.metadata_source %}
+      <dt>Document ID</dt><dd class="mono">{{ doc.doc_id }} {{ source_chip(src.doc_id) }}</dd>
+      <dt>Version</dt><dd class="mono">{{ doc.version }} {{ source_chip(src.version) }}</dd>
+      <dt>Title</dt><dd>{{ doc.title }} {{ source_chip(src.title) }}</dd>
+      <dt>Category</dt><dd>{{ doc.category }} {{ source_chip(src.category) }}</dd>
+      <dt>Owner</dt><dd>{{ doc.owner_department or '—' }} {{ source_chip(src.owner_department) }}</dd>
+      <dt>Applies to</dt><dd>{{ doc.applies_to_text or '—' }} {{ source_chip(src.applies_to) }}</dd>
+      <dt>Effective</dt><dd>{{ doc.effective_date.strftime('%d %b %Y') if doc.effective_date else '—' }} {{ source_chip(src.effective_date) }}</dd>
+      <dt>Review / expiry</dt><dd>{{ doc.expiry_date.strftime('%d %b %Y') if doc.expiry_date else '—' }} {{ source_chip(src.expiry_date) }}</dd>
+      <dt>Header status</dt><dd>{{ doc.header_status or '—' }}</dd>
+      <dt>File</dt><dd>{{ doc.file.filename }} · {{ doc.file.format|upper }} · {{ (doc.file.size_bytes / 1024)|round|int }} KB</dd>
+      <dt>SHA-256</dt><dd class="mono small wrap">{{ doc.file.sha256 }}</dd>
+    </dl>
+  </section>
+
+  <div class="stack">
+    <section class="panel">
+      <h2 class="panel__title">Version history</h2>
+      <ol class="lineage">
+        {% for v in lineage %}
+        <li class="lineage__item {{ 'is-current' if v.version == doc.version }}">
+          <a class="mono" href="{{ url_for('documents.detail', doc_id=doc.doc_id, version=v.version) }}">v{{ v.version }}</a>
+          {{ status_badge(v.status) }}
+          <span class="muted small">{{ v.effective_date.strftime('%d %b %Y') if v.effective_date else 'no effective date' }}</span>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Parsing</h2>
+      <dl class="deflist deflist--compact">
+        {% if doc.parse.pages %}<dt>Pages</dt><dd>{{ doc.parse.pages }}</dd>{% endif %}
+        <dt>Words</dt><dd>{{ doc.parse.words }}</dd>
+        <dt>Headings</dt><dd>{{ doc.parse.headings }}</dd>
+        <dt>Table rows</dt><dd>{{ doc.parse.table_rows }}</dd>
+        <dt>Chunks</dt><dd>{{ chunks|length }}</dd>
+        <dt>Hidden text</dt><dd>{% if doc.parse.hidden_blocks %}<span class="badge badge--bad">{{ doc.parse.hidden_blocks }} block(s)</span>{% else %}None{% endif %}</dd>
+        {% if doc.parse.watermark %}<dt>Watermark</dt><dd class="small">{{ doc.parse.watermark[:80] }}</dd>{% endif %}
+      </dl>
+    </section>
+  </div>
+</div>
+
+{% if findings %}
+<section class="panel panel--alert">
+  <h2 class="panel__title">Security findings <span class="muted small">{{ findings|length }} · see the Security page for all documents</span></h2>
+  <ul class="warnings">{% for f in findings %}<li><strong>{{ f.technique|replace('_', ' ')|capitalize }}</strong>
+    {% if f.chunk %}in § {{ f.chunk.section_id }}{% else %}(whole document){% endif %}: {{ f.action|replace('_', ' ') }}.
+    <span class="evidence">{{ f.excerpt }}</span></li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+{% if doc.warnings %}
+<section class="panel">
+  <h2 class="panel__title">Warnings</h2>
+  <ul class="warnings">{% for w in doc.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2 class="panel__title">Chunks <span class="muted small">{{ chunks|length }} · every chunk keeps its source location</span></h2>
+  <ol class="chunks">
+    {% for c in chunks %}
+    <li class="chunk {{ 'chunk--quarantined' if c.quarantined else ('chunk--hidden' if c.hidden_content) }}" id="{{ c.chunk_id }}">
+      <div class="chunk__head">
+        <span class="chunk__section mono">§ {{ c.section_id }}</span>
+        <span class="chunk__path">{{ c.heading_path|join(' › ') or 'Untitled section' }}</span>
+        <span class="chunk__loc">{{ location(c.location) }} · {{ c.word_count }} words</span>
+        {% if c.quarantined %}<span class="badge badge--bad">Quarantined</span>{% endif %}
+        {% if c.hidden_content %}<span class="badge badge--bad">Hidden text</span>{% endif %}
+        {% if req_counts.get(c.id) %}<a class="badge badge--info" href="{{ url_for('ground_truth.requirements', doc=doc.doc_id) }}">{{ req_counts[c.id] }} requirement{{ 's' if req_counts[c.id] != 1 }}</a>{% endif %}
+      </div>
+      <p class="chunk__text">{{ c.text }}</p>
+      {% if c.hidden_text %}<p class="chunk__hiddentext"><span class="label">Hidden text</span>{{ c.hidden_text }}</p>{% endif %}
+      <p class="chunk__id mono small muted">{{ c.chunk_id }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endblock %}

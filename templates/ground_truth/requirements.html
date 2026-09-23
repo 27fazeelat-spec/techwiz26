@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}Requirements{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">Ground truth</p>
+    <h1>Requirements</h1>
+    <p class="pagehead__meta">Extracted from active sources by deterministic rules. No AI decides what counts as a requirement.</p>
+  </div>
+</div>
+
+<form class="filters" method="get" role="search">
+  <div class="field field--grow"><label for="q">Search</label>
+    <input id="q" name="q" type="search" value="{{ args.q or '' }}" placeholder="Text or requirement ID"></div>
+  <div class="field"><label for="doc">Document</label>
+    <select id="doc" name="doc" data-autosubmit><option value="">All documents</option>
+      {% for d in docs %}<option value="{{ d }}" {{ 'selected' if args.doc == d }}>{{ d }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="role">Role</label>
+    <select id="role" name="role" data-autosubmit><option value="">All roles</option>
+      {% for r in roles %}<option value="{{ r.code }}" {{ 'selected' if args.role == r.code }}>{{ r.code }} · {{ r.name }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="type">Type</label>
+    <select id="type" name="type" data-autosubmit><option value="">All types</option>
+      {% for t in types %}<option value="{{ t }}" {{ 'selected' if args.type == t }}>{{ t }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="review">Review</label>
+    <select id="review" name="review" data-autosubmit><option value="">Any status</option>
+      {% for s in ['pending', 'confirmed', 'edited', 'rejected'] %}<option value="{{ s }}" {{ 'selected' if args.review == s }}>{{ s|capitalize }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn btn--primary">{{ icon('search', 15) }}Apply</button>
+  {% if args %}<a class="btn btn--ghost" href="{{ url_for('ground_truth.requirements') }}">Clear</a>{% endif %}
+</form>
+
+{% set labels = {'q': 'search', 'doc': 'document', 'role': 'role', 'type': 'type', 'review': 'review'} %}
+{% set active = labels.keys()|select('in', args.keys())|list %}
+
+<section class="panel panel--flush">
+  <div class="panel__bar">
+    <h2 class="panel__title">{{ total }} requirement{{ 's' if total != 1 }}</h2>
+    {% if active %}<div class="activefilters">Filtered by {% for k in active %}{% if args.get(k) %}<span class="tag">{{ labels[k] }}: {{ args.get(k) }}</span>{% endif %}{% endfor %}</div>{% endif %}
+  </div>
+  {% if rows %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Requirement</th><th>Type</th><th>Roles</th><th>Stage</th><th>Competency</th><th>Source</th><th>Review</th></tr></thead>
+      <tbody>
+      {% for r, d in rows %}
+        <tr>
+          <td><a href="{{ url_for('ground_truth.requirement_detail', pk=r.id) }}" class="reqid">{{ r.req_id }}</a>
+              <div class="reqtext">{{ r.text }}</div>
+              {% if r.condition %}<span class="chip" title="{{ r.condition.text }}">only if: {{ r.condition.field }} {{ r.condition.op }} {{ r.condition.value }}</span>{% endif %}</td>
+          <td class="nowrap">{% if r.mandatory %}<span class="badge badge--info">{{ r.req_type }}</span>{% else %}<span class="badge badge--neutral">{{ r.req_type }}</span>{% endif %}</td>
+          <td class="small">{{ 'All roles' if r.roles == ['ALL'] else r.roles|join(', ') }}</td>
+          <td><span class="tag mono">{{ r.due_stage }}</span></td>
+          <td class="small">{{ r.competency }}</td>
+          <td class="nowrap small"><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}#{{ r.chunk.chunk_id }}"><span class="mono">{{ d.doc_id }}</span> §{{ r.section_id }}</a>{% if d.status == 'expired' %}<br><span class="badge badge--warn">Expired source</span>{% endif %}</td>
+          <td>{% set tone = {'pending': 'neutral', 'confirmed': 'ok', 'edited': 'info', 'rejected': 'bad'}[r.review_status] %}<span class="badge badge--{{ tone }}">{{ r.review_status|capitalize }}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="tablefoot">
+    <span>{% if pages > 1 %}Page {{ page }} of {{ pages }}{% else %}Showing all {{ total }}{% endif %}</span>
+    {% if pages > 1 %}<span class="pager">
+      {% if page > 1 %}<a class="btn btn--sm" href="{{ url_for('ground_truth.requirements', **dict(args, page=page - 1)) }}">Previous</a>{% endif %}
+      {% if page < pages %}<a class="btn btn--sm" href="{{ url_for('ground_truth.requirements', **dict(args, page=page + 1)) }}">Next</a>{% endif %}
+    </span>{% endif %}
+  </div>
+  {% else %}
+    {% call empty('No requirements match these filters', 'Try a broader search or clear the filters.', 'search') %}
+      {% if args %}<a class="btn" href="{{ url_for('ground_truth.requirements') }}">Clear filters</a>{% endif %}
+    {% endcall %}
+  {% endif %}
+</section>
+{% endblock %}

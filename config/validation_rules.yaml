@@ -1,0 +1,37 @@
+# Pipeline 2 - Python validation rules. Each rule can be switched off or re-tuned here;
+# adding a rule = one function in python_validation/rules.py plus one entry below.
+rules:
+  V-SCHEMA:        {enabled: true}
+  V-MATRIX:        {enabled: true}
+  V-REQ-ID:        {enabled: true}
+  V-SOURCE:        {enabled: true}
+  V-OUTDATED:      {enabled: true}
+  V-COVERAGE:      {enabled: true}
+  V-MANDATORY:     {enabled: true}
+  V-ROLE:          {enabled: true}
+  V-CONDITION:     {enabled: true}
+  V-STAGE:         {enabled: true}
+  V-SEQUENCE:      {enabled: true}
+  V-DUPLICATE:     {enabled: true, similarity: 0.9}
+  V-QUIZ-SOURCE:   {enabled: true, min_word_overlap: 0.5}
+  V-HALLUCINATION: {enabled: true}
+  V-ASSESS:        {enabled: true}
+  V-CHECKLIST:     {enabled: true}
+  V-CONTRADICTION: {enabled: true}
+
+# Item status order: when an item has several findings, the first status in this list wins.
+item_status_order: [Contradiction Detected, Requirement Missing, Unsupported Requirement, Outdated Source,
+                    Source Support Missing, Manual Review Required, Partially Verified, Verified with Warning, Verified]
+
+# Plan status: the first matching condition wins (see python_validation/statuses.py).
+plan_status_order: [Contradictory, Incomplete, Unsupported, Manual Review Required, Verified with Warning, Verified]
+
+# Review queue (SRS Step 48). Items whose computed status is listed here go to a reviewer; the plan
+# cannot be assigned until every open review item has a decision.
+review:
+  route_item_statuses: [Contradiction Detected, Unsupported Requirement, Outdated Source,
+                        Source Support Missing, Manual Review Required]
+  route_missing_requirements: true      # mandatory requirements the plan does not cover
+  # Statuses a reviewer may set with an override (the computed status is kept alongside).
+  override_statuses: [Verified, Verified with Warning, Partially Verified, Manual Review Required]
+  min_reason_length: 10

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+<section class="panel errorpage">
+  <p class="errorpage__code">404</p>
+  <h1>That page doesn't exist</h1>
+  <p class="muted">The link may be out of date, or the item was never created.</p>
+  <a class="btn" href="{{ url_for('main.home') }}">Back to your dashboard</a>
+</section>
+{% endblock %}

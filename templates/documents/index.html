@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge, icon, empty %}
+{% block title %}Documents{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div><p class="eyebrow">Knowledge base</p><h1>Documents</h1></div>
+  {% if can('documents.upload') %}<a class="btn btn--primary" href="{{ url_for('documents.upload') }}">{{ icon('upload', 16) }}Upload document</a>{% endif %}
+</div>
+
+<form class="filters" method="get" role="search">
+  <div class="field field--grow">
+    <label for="q">Search</label>
+    <input id="q" name="q" type="search" value="{{ q }}" placeholder="Document ID or title">
+  </div>
+  <div class="field">
+    <label for="status">Status</label>
+    <select id="status" name="status" data-autosubmit>
+      <option value="">All statuses</option>
+      {% for s in statuses %}<option value="{{ s }}" {{ 'selected' if s == status }}>{{ s|capitalize }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="category">Category</label>
+    <select id="category" name="category" data-autosubmit>
+      <option value="">All categories</option>
+      {% for c in categories %}<option value="{{ c }}" {{ 'selected' if c == category }}>{{ c }}</option>{% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn--primary">{{ icon('search', 15) }}Apply</button>
+  {% if q or status or category %}<a class="btn btn--ghost" href="{{ url_for('documents.index') }}">Clear</a>{% endif %}
+</form>
+
+<section class="panel panel--flush">
+  {% if docs %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead>
+        <tr><th>Document</th><th>Version</th><th>Category</th><th class="num">Tier</th><th>Status</th><th>Effective</th><th class="num">Chunks</th><th>Flags</th></tr>
+      </thead>
+      <tbody>
+      {% for d in docs %}
+        <tr>
+          <td><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}"><span class="mono muted">{{ d.doc_id }}</span> {{ d.title }}</a></td>
+          <td class="mono">{{ d.version }}</td>
+          <td>{{ d.category }}</td>
+          <td class="num">{{ d.tier if d.tier else '—' }}</td>
+          <td>{{ status_badge(d.status) }}</td>
+          <td class="nowrap">{{ d.effective_date.strftime('%d %b %Y') if d.effective_date else '—' }}</td>
+          <td class="num">{{ d.chunk_count or 0 }}</td>
+          <td>
+            {% if d.parse.hidden_blocks %}<span class="badge badge--bad" title="Contains text a reader cannot see">Hidden text</span>{% endif %}
+            {% if d.parse.watermark %}<span class="badge badge--warn" title="{{ d.parse.watermark[:60] }}">Watermark</span>{% endif %}
+            {% if d.warnings %}<span class="muted small" title="{{ d.warnings|length }} warning(s)">{{ d.warnings|length }} ⚠</span>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="tablefoot">{{ docs|length }} file{{ 's' if docs|length != 1 }}</div>
+  {% else %}
+    {% call empty('No documents match these filters', 'Try another status or category, or upload a new document.', 'file') %}{% if q or status or category %}<a class="btn" href="{{ url_for('documents.index') }}">Clear filters</a>{% endif %}{% endcall %}
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+# Onboarding stages (SRS Step 13). day_offset counts from the joining date.
+stages:
+  - {code: D1,  label: "Day 1",         day_offset: 0}
+  - {code: W1,  label: "Week 1",        day_offset: 6}
+  - {code: W2,  label: "Week 2",        day_offset: 13}
+  - {code: D30, label: "First 30 Days", day_offset: 29}
+  - {code: D60, label: "First 60 Days", day_offset: 59}
+  - {code: D90, label: "First 90 Days", day_offset: 89}
+
+# The plan must not load everything onto Day 1.
+day1_max_items: 12

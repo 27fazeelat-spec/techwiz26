@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ role.name }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div><p class="eyebrow"><a href="{{ url_for('people.roles') }}">Job roles</a><span class="mono">{{ role.code }}</span></p>
+    <h1>{{ role.name }}</h1>
+    <p class="pagehead__meta">{{ role.department }} <span class="sep">·</span>
+      {% if role.status == 'active' %}<span class="badge badge--ok">Active</span>{% else %}<span class="badge badge--warn">Needs mapping review</span>{% endif %}
+      <span class="sep">·</span> {{ employees|length }} employee{{ 's' if employees|length != 1 }}</p></div>
+  {% if role.status != 'active' and can('roles.edit') %}
+  <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn--primary" name="action" value="activate" type="submit">{{ icon('check', 15) }}Activate role</button></form>
+  {% endif %}
+</div>
+
+{% if role.status != 'active' %}<div class="notice notice--info">Check the requirements below. After activating, build a new matrix draft and approve it; plans for this role are then checked against it.</div>{% endif %}
+
+<section class="kpis" aria-label="Mapping">
+  <div class="kpi"><span class="kpi__label">Role-specific requirements</span><span class="kpi__value">{{ preview.specific|length }}</span><span class="kpi__note">{{ preview.mandatory }} mandatory</span></div>
+  <div class="kpi"><span class="kpi__label">Requirements for everyone</span><span class="kpi__value">{{ preview.everyone }}</span><span class="kpi__note">apply to every role</span></div>
+  <div class="kpi"><span class="kpi__label">From documents</span><span class="kpi__value">{{ preview.documents|length }}</span><span class="kpi__note">{{ preview.documents[:4]|join(', ') }}{{ '…' if preview.documents|length > 4 }}</span></div>
+</section>
+
+<div class="grid-2">
+  <section class="panel panel--flush">
+    <div class="panel__bar"><h2 class="panel__title">Requirements matched to this role</h2></div>
+    {% if preview.specific %}
+    <ul class="rows" style="padding: 0 var(--space-5); max-height: 520px; overflow-y: auto">{% for r in preview.specific %}
+      <li class="rows__item"><span><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=r.id) }}">{{ r.req_id }}</a>
+        <span class="reqtext" style="display: block">{{ r.text }}</span></span>
+        {% if r.mandatory %}<span class="badge badge--info">Mandatory</span>{% endif %}</li>{% endfor %}</ul>
+    {% else %}{{ empty('No role-specific requirements yet', 'Add aliases that appear in the documents (for example "auditor"), or upload the role description document.', 'search') }}{% endif %}
+  </section>
+  {% if can('roles.edit') %}
+  <section class="panel">
+    <h2 class="panel__title">Edit role</h2>
+    <form method="post" class="stack" style="gap: var(--space-3)">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" value="{{ role.name }}"></div>
+      <div class="field"><label for="department">Department</label><input id="department" name="department" type="text" value="{{ role.department }}"></div>
+      <div class="field"><label for="aliases">Also known as <span class="muted">(comma separated)</span></label><input id="aliases" name="aliases" type="text" value="{{ (role.aliases or [])|join(', ') }}"></div>
+      <div><button class="btn" name="action" value="save" type="submit">Save</button></div>
+    </form>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

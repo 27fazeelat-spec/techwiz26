@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_macros.html" import initials, empty, meter, progress_badge %}
+{% block title %}My onboarding{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">{{ org_name }}</p><h1>Welcome{% if employee %}, {{ employee.name.split(' ')[0] }}{% endif %}</h1>
+  <p class="pagehead__meta">Everything in your plan comes from Aurelle's approved policies and was checked before it reached you.</p></div></div>
+
+{% if plan and summary %}
+<section class="kpis" aria-label="Your progress">
+  <div class="kpi"><span class="kpi__label">Overall</span><span class="kpi__value">{{ summary.pct }}<small>%</small></span>{{ meter(summary.pct) }}
+    <span class="kpi__note">{{ summary.done }} of {{ summary.total }} items done</span></div>
+  <div class="kpi"><span class="kpi__label">Status</span><span class="kpi__value" style="font-size: var(--text-lg)">{{ progress_badge(summary.status) }}</span>
+    <span class="kpi__note">{% if summary.overdue %}{{ summary.overdue }} item(s) overdue{% else %}nothing overdue{% endif %}</span></div>
+  {% for t, label in [('checklist', 'Checklist'), ('quiz_question', 'Quiz questions'), ('task', 'Tasks'), ('assessment', 'Assessments')] %}{% set x = summary.by_type.get(t) %}
+  {% if x %}<div class="kpi"><span class="kpi__label">{{ label }}</span><span class="kpi__value">{{ x.done }}<small>/{{ x.total }}</small></span>{{ meter(100 * x.done / x.total) }}</div>{% endif %}
+  {% endfor %}
+</section>
+
+<section class="panel panel--flush">
+  <div class="panel__bar"><h2 class="panel__title">Your modules</h2><span class="panel__aside mono">{{ plan.plan_code }} v{{ plan.version }}</span></div>
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Module</th><th>Due</th><th>Progress</th><th>Quiz</th><th></th></tr></thead>
+      <tbody>
+      {% for x in summary.modules %}
+        <tr>
+          <td class="middle"><span class="tag mono">{{ x.module.module_key }}</span> <strong>{{ x.module.title }}</strong><br><span class="small muted">{{ x.module.estimated_minutes }} min · from {{ x.module.stage }}</span></td>
+          <td class="middle small nowrap">{{ x.due.strftime('%d %b %Y') if x.due else 'Done' }}</td>
+          <td class="middle"><span class="coverage">{{ meter(x.pct, 'ok' if x.pct == 100 else '') }}<b>{{ x.done }}/{{ x.total }}</b></span></td>
+          <td class="middle">{% if not x.has_quiz %}<span class="muted small">—</span>{% elif x.quiz_passed %}<span class="badge badge--ok">Passed</span>{% elif x.quiz_failed %}<span class="badge badge--bad">Retake</span>{% else %}<span class="badge badge--neutral">To do</span>{% endif %}</td>
+          <td class="middle"><a class="btn btn--sm" href="{{ url_for('learning.module', module_key=x.module.module_key) }}">Open</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% else %}
+<section class="panel">{{ empty('Your plan is not assigned yet', "Your Training Manager assigns it once it has passed verification against Aurelle's approved policies.", 'list') }}</section>
+{% endif %}
+
+{% if employee %}
+<section class="panel">
+  <div class="person" style="margin-bottom: var(--space-4)"><span class="avatar avatar--lg" aria-hidden="true">{{ initials(employee.name) }}</span>
+    <span><span class="person__name">{{ employee.name }}</span><span class="person__meta">{{ employee.job_role.name }} · {{ employee.property.name }}</span></span></div>
+  <dl class="deflist">
+    <dt>Joining date</dt><dd>{{ employee.joining_date.strftime('%d %B %Y') }}</dd>
+    <dt>Experience</dt><dd>{{ employee.experience_level }} · {{ employee.previous_experience }}</dd>
+  </dl>
+</section>
+{% endif %}
+{% endblock %}

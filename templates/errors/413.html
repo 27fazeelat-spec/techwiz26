@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}File too large{% endblock %}
+{% block content %}
+<section class="panel errorpage">
+  <p class="errorpage__code">413</p>
+  <h1>The file is too large</h1>
+  <p class="muted">Uploads are limited to {{ limit }} MB. Reduce the file size, for example by saving images at a lower resolution, and try again.</p>
+  <a class="btn" href="{{ url_for('documents.upload') }}">Back to upload</a>
+</section>
+{% endblock %}

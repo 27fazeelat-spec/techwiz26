@@ -1,0 +1,28 @@
+# Generative AI settings (Pipeline 1). The API key is read from the GEMINI_API_KEY environment variable.
+# GEMINI_MODEL in the environment overrides model; nothing here is a secret.
+provider: gemini
+model: gemini-3.5-flash                   # Phase 1: applicability, mandatory status, stages (the decisions Python checks)
+module_model: gemini-3.5-flash-lite       # Phase 2: learning content; faster, with its own rate limit
+fallback_model: gemini-3.5-flash-lite     # used when a model is unavailable or over its rate limit
+model_env: GEMINI_MODEL
+
+generation:
+  temperature: 0.2                 # low, for reproducible structured output
+  thinking_level: minimal          # Python makes the decisions; long model "thinking" only adds latency
+  max_output_tokens: 16384
+  timeout_seconds: 45
+  module_concurrency: 8            # parallel Phase-2 module calls; lower it if the API rate limit is hit
+
+retry:
+  max_attempts: 2                  # per model; then the fallback model is tried
+  base_delay_seconds: 1
+  repair_invalid_json: true        # one repair attempt that sends the schema errors back
+
+consistency:
+  extra_runs: 2                    # Phase-1 re-runs used for the consistency score
+
+plan:
+  outline_shard_requirements: 35   # requirement clauses per parallel Phase-1 call
+  max_modules: 8                   # smallest knowledge areas are merged beyond this
+  min_module_requirements: 2
+  day1_max_items: 12

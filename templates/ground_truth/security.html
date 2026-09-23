@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty %}
+{% block title %}Security findings{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">Ingestion security</p>
+    <h1>Security findings</h1>
+    <p class="pagehead__meta">Uploaded documents are treated as data. Text that tries to instruct an AI, impersonate the system or hide from readers is caught here, before any generation.</p>
+  </div>
+</div>
+
+<section class="kpis" aria-label="Summary">
+  <div class="kpi"><span class="kpi__label">Findings</span><span class="kpi__value">{{ rows|length }}</span><span class="kpi__note">{{ counts|length }} techniques</span></div>
+  <div class="kpi {{ 'kpi--bad' if quarantined }}"><span class="kpi__label">Quarantined chunks</span><span class="kpi__value">{{ quarantined }}</span><span class="kpi__note">never sent to Gemini</span></div>
+  <div class="kpi"><span class="kpi__label">Hidden text blocks</span><span class="kpi__value">{{ counts.hidden_text or 0 }}</span><span class="kpi__note">excluded, kept as evidence</span></div>
+</section>
+
+<section class="panel panel--flush">
+  {% if rows %}
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Document</th><th>Where</th><th>Technique</th><th>Severity</th><th>Action</th><th>Evidence</th></tr></thead>
+      <tbody>
+      {% for f, d, c in rows %}
+        <tr>
+          <td class="nowrap"><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}{% if c %}#{{ c.chunk_id }}{% endif %}"><span class="mono">{{ d.doc_id }}</span> v{{ d.version }}</a></td>
+          <td class="small nowrap">{{ ('§ ' ~ c.section_id) if c else 'Whole document' }}</td>
+          <td class="small">{{ f.technique|replace('_', ' ')|capitalize }}</td>
+          <td>{% set tone = {'high': 'bad', 'medium': 'warn', 'low': 'neutral'}[f.severity] %}<span class="badge badge--{{ tone }}">{{ f.severity|capitalize }}</span></td>
+          <td class="small">{{ f.action|replace('_', ' ') }}</td>
+          <td class="small"><span class="evidence">{{ f.excerpt }}</span>{% if f.decoded and f.technique == 'encoded_instruction' %}<div class="muted">Decoded: {{ f.decoded }}</div>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}{{ empty('No suspicious content found', 'Every uploaded document passed the injection scanner.', 'shield') }}{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+# Learning progress (SRS Steps 53-54). Every value here is a rule Python applies; nothing is decided by GenAI.
+
+pass_mark_percent: 80          # CMP-01 §3.1: onboarding quizzes need 80%
+max_quiz_attempts: 3           # after this, the attempt is routed to the manager
+attention_window_days: 2       # items due within this many days make the plan "Requires Attention"
+
+# Who completes each item type.
+completion:
+  checklist: employee          # employee ticks it off
+  task: manager                # employee submits, the manager signs it off
+  scenario: manager
+  quiz_question: quiz          # scored by Python from the module quiz
+  assessment: manager          # the manager records the result against the rubric
+  objective: none              # not tracked on its own; covered by the module's other items
+
+# Progress status, first matching rule wins (see src/services/progress.py).
+status_order: [Completed, Behind Schedule, Assessment Required, Requires Attention, On Track]
