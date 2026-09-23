@@ -109,3 +109,19 @@ def test_audit_log_is_append_only(corpus):
         raise AssertionError("audit entry was updated")
     except PermissionError:
         session.rollback()
+
+
+def test_ingest_folder_writes_a_readiness_report(app, tmp_path):
+    import shutil
+    from tests.conftest import SAMPLES
+    folder = tmp_path / "unseen"
+    folder.mkdir()
+    for name in ("GDP-01_v1.0.docx", "MEM-01_v1.0.docx"):
+        if (SAMPLES / name).exists():
+            shutil.copy(SAMPLES / name, folder / name)
+    (folder / "broken.pdf").write_bytes(b"not a pdf at all")
+    report = tmp_path / "readiness.md"
+    result = app.test_cli_runner().invoke(args=["ingest-folder", str(folder), "--report", str(report)])
+    assert result.exit_code == 0, result.output
+    text = report.read_text(encoding="utf-8")
+    assert "| broken.pdf | **rejected** |" in text and "ingested" in text

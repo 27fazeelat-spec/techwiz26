@@ -79,10 +79,29 @@ The suite ingests the full sample collection and checks the results against the 
 | Deterministic requirement extraction with lineage across versions (recall 99.5%, precision 100% vs the gold register) | ✅ |
 | Role Requirement Matrix: draft build, human review of requirements (audited), approval | ✅ |
 | Gemini generation: sharded Phase-1 outline, deterministic modules, parallel module content, retry / repair / fallback, every call logged | ✅ |
-| Python validation: 16 rules (coverage, role, condition, stage, sequence, sources, quiz answers, numeric-fact hallucination check, duplicates, rubric) | ✅ |
+| Python validation: 17 rules (coverage, role, condition, stage, sequence, sources, quiz answers, numeric-fact hallucination check, duplicates, rubric) | ✅ |
 | GenAI vs Python comparison, item and plan statuses, coverage / traceability / consistency scores, plan page with traceability | ✅ |
 | Contradiction detection (numbers, deadlines, frequencies, permission vs prohibition, version changes) with configurable precedence and reviewer decisions: 12 of 12 planned conflicts found | ✅ |
-| Review queue and overrides, policy-update impact and selective regeneration, progress tracking, reports | Next |
+| Review queue: approve, reject, edit (re-validated), override with reason, regenerate one module, comment; plan assignment only after every decision | ✅ |
+| Policy updates: clause-by-clause change detection, impact on items / plans / employees, regeneration of affected modules only | ✅ |
+| Progress: checklist, tasks with manager sign-off, Python-scored quizzes (pass mark, attempt limit), assessments, progress status, weak areas, rule-based recommendations | ✅ |
+| Job roles added at runtime (mapping preview, activation), employee profiles without sensitive data | ✅ |
+| Twelve reports from stored data (comparison, validation, traceability, hallucination, progress, …) exported as CSV, Excel and PDF | ✅ |
+| Employee filters (role, department, property, verification result, progress) and plan comparison | ✅ |
+
+## Commands
+
+All run as `python -m flask --app run <command>`:
+
+| Command | What it does |
+|---|---|
+| `seed` | organisation, properties, roles, accounts and employee profiles |
+| `ingest-folder PATH [--report FILE]` | ingest every PDF/DOCX in a folder; `--report` writes a per-file readiness report |
+| `build-matrix` / `detect-conflicts` / `detect-changes` | rebuild the matrix draft, the conflicts, the policy changes |
+| `route-reviews` | create review items for plans validated before the review queue existed |
+| `export-reports [--out DIR]` | write every report as CSV, Excel and PDF |
+| `set-password EMAIL [--generate]` | set a password and clear a lockout |
+| `db-check` / `upgrade-db --dry-run` | read-only connection check; list additive schema changes |
 
 ## Project structure
 
