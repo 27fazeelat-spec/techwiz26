@@ -137,6 +137,36 @@ def impact(change):
             "assigned": sum(1 for p in ordered if p["plan"].approved_at), "added": added}
 
 
+def impact_counts(changes_list):
+    """{change id: (items, plans, employees)} for many changes at once (list page)."""
+    touched = {}
+    for c in changes_list:
+        for x in c.changes:
+            if x["change"] in ("changed", "removed"):
+                touched.setdefault(c.from_document_id, {}).setdefault(x["req_id"], set()).add(c.id)
+    out = {c.id: (0, 0, 0) for c in changes_list}
+    if not touched:
+        return out
+    row_to_changes = {}
+    for r in db.session.scalars(select(Requirement).where(Requirement.document_id.in_(list(touched)))):
+        ids = touched[r.document_id].get(r.req_id)
+        if ids:
+            row_to_changes[r.id] = ids
+    if not row_to_changes:
+        return out
+    acc = {}
+    for item_id, plan_id, employee_id, req_row in db.session.execute(
+            select(PlanItem.id, Plan.id, Plan.employee_id, PlanItemRequirement.requirement_id)
+            .join(PlanItemRequirement, PlanItemRequirement.plan_item_id == PlanItem.id)
+            .join(PlanModule, PlanItem.module_id == PlanModule.id).join(Plan, PlanModule.plan_id == Plan.id)
+            .where(PlanItemRequirement.requirement_id.in_(list(row_to_changes)), Plan.status != "superseded")):
+        for cid in row_to_changes[req_row]:
+            a = acc.setdefault(cid, (set(), set(), set()))
+            a[0].add(item_id), a[1].add(plan_id), a[2].add(employee_id)
+    out.update({cid: (len(a[0]), len(a[1]), len(a[2])) for cid, a in acc.items()})
+    return out
+
+
 # --------------------------------------------------------------------------- regeneration
 
 def regeneration_blockers(change):

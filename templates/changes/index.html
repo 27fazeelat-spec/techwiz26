@@ -27,7 +27,7 @@
           <td><a href="{{ url_for('changes.detail', pk=c.id) }}"><span class="mono">{{ c.doc_id }}</span> {{ c.to_document.title }}</a></td>
           <td class="mono nowrap">v{{ c.from_version }} → v{{ c.to_version }}</td>
           <td class="num">{{ c.counts.changed or 0 }}</td><td class="num">{{ c.counts.added or 0 }}</td><td class="num">{{ c.counts.removed or 0 }}</td>
-          <td class="small">{% if i.plans %}{{ i['items'] }} items · {{ i.plans|length }} plan{{ 's' if i.plans|length != 1 }} · {{ i.employees }} employee{{ 's' if i.employees != 1 }}{% else %}<span class="muted">No current plan uses the changed clauses</span>{% endif %}</td>
+          <td class="small">{% set items, plans, people = i %}{% if plans %}{{ items }} items · {{ plans }} plan{{ 's' if plans != 1 }} · {{ people }} employee{{ 's' if people != 1 }}{% else %}<span class="muted">No current plan uses the changed clauses</span>{% endif %}</td>
           <td>{% set tone = {'open': 'warn', 'regenerated': 'ok', 'no_impact': 'neutral', 'upcoming': 'info'}[c.status] %}
             <span class="badge badge--{{ tone }}">{{ {'open': 'Plans need updating', 'regenerated': 'Plans updated', 'no_impact': 'No impact', 'upcoming': 'Not in force yet'}[c.status] }}</span></td>
         </tr>

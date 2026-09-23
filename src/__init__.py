@@ -46,6 +46,9 @@ def create_app(overrides=None):
 
     import database.models  # noqa: F401  (registers the tables)
     with app.app_context():
+        if db.engine.dialect.name == "postgresql":
+            from database import install_idle_ping
+            install_idle_ping(db.engine)
         try:
             db.create_all()
         except (OperationalError, InterfaceError) as exc:
@@ -85,11 +88,16 @@ def create_app(overrides=None):
     def template_helpers():
         from flask_login import current_user
         from database.models import Organization
-        org = db.session.query(Organization.name).first()
+        if "org_name" not in app.extensions:            # it never changes at runtime: read it once
+            org = db.session.query(Organization.name).first()
+            if org is None:
+                return {"can": lambda perm: has_permission(current_user, perm), "org_name": "No organisation set up",
+                        "role_label": lambda code: load_config("permissions")["roles"].get(code, {}).get("label", code)}
+            app.extensions["org_name"] = org.name
         roles = load_config("permissions")["roles"]
         return {
             "can": lambda perm: has_permission(current_user, perm),
-            "org_name": org.name if org else "No organisation set up",
+            "org_name": app.extensions["org_name"],
             "role_label": lambda code: roles.get(code, {}).get("label", code),
         }
 

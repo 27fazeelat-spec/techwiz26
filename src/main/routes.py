@@ -29,16 +29,21 @@ def admin_dashboard():
     counts = dict(db.session.execute(select(Document.status, func.count()).group_by(Document.status)).all())
     counts = {s: counts.get(s, 0) for s in DOC_STATUSES}
     hidden = Document.parse["hidden_blocks"].as_integer() > 0
+    # Every counter in one statement: each round trip to the hosted database costs ~0.6 s.
+    sub = lambda q: q.scalar_subquery()
+    counters = db.session.execute(select(
+        sub(select(func.count(func.distinct(Document.doc_id)))),
+        sub(select(func.count()).select_from(Chunk).where(Chunk.doc_status == "active")),
+        sub(select(func.count()).select_from(JobRole)),
+        sub(select(func.count()).select_from(Employee)),
+        sub(select(func.count()).select_from(Requirement).join(Document).where(Document.status.in_(["active", "expired"]))),
+        sub(select(func.count()).select_from(SecurityFinding)),
+        sub(select(func.count()).select_from(Chunk).where(Chunk.quarantined)),
+    )).one()
     stats = {
         "documents": sum(counts.values()),
-        "lineages": db.session.scalar(select(func.count(func.distinct(Document.doc_id)))),
-        "chunks": db.session.scalar(select(func.count()).select_from(Chunk).where(Chunk.doc_status == "active")),
-        "roles": db.session.scalar(select(func.count()).select_from(JobRole)),
-        "employees": db.session.scalar(select(func.count()).select_from(Employee)),
-        "requirements": db.session.scalar(select(func.count()).select_from(Requirement).join(Document).where(
-            Document.status.in_(["active", "expired"]))),
-        "findings": db.session.scalar(select(func.count()).select_from(SecurityFinding)),
-        "quarantined": db.session.scalar(select(func.count()).select_from(Chunk).where(Chunk.quarantined)),
+        "lineages": counters[0], "chunks": counters[1], "roles": counters[2], "employees": counters[3],
+        "requirements": counters[4], "findings": counters[5], "quarantined": counters[6],
         "matrix": db.session.scalar(select(MatrixVersion).where(MatrixVersion.status == "approved")),
         "matrix_draft": db.session.scalar(select(MatrixVersion).where(MatrixVersion.status == "draft")
                                           .order_by(MatrixVersion.version_no.desc())),

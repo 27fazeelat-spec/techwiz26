@@ -86,7 +86,10 @@ def engine_options(url):
     options = {"pool_pre_ping": True}
     if not url.startswith("postgresql+pg8000://"):
         return options
-    options.update(pool_size=5, max_overflow=5, pool_recycle=1800)
+    # A ping on every checkout costs a full network round trip per request (~0.6 s to the hosted
+    # database). database.install_idle_ping pings only connections that sat idle, which is when the
+    # pooler may have dropped them.
+    options.update(pool_pre_ping=False, pool_size=5, max_overflow=5, pool_recycle=1800)
     if (urlsplit(url).hostname or "") in LOCAL_HOSTS:
         return options
     options["connect_args"] = {"ssl_context": verified_context(root_cert_path()), "timeout": 15}

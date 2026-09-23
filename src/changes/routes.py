@@ -2,6 +2,7 @@
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from database import audit, db
 from database.models import ChangeImpact
@@ -15,12 +16,14 @@ bp = Blueprint("changes", __name__)
 @bp.route("/changes")
 @require_permission("documents.view")
 def index():
-    rows = db.session.scalars(select(ChangeImpact).order_by(ChangeImpact.created_at.desc(), ChangeImpact.id.desc())).all()
-    for c in rows:
+    upcoming = db.session.scalars(select(ChangeImpact).where(ChangeImpact.status == "upcoming")).all()
+    for c in upcoming:                              # a scheduled version may have come into force
         changes.refresh_status(c)
-    db.session.commit()
-    impacts = {c.id: changes.impact(c) for c in rows}
-    return render_template("changes/index.html", rows=rows, impacts=impacts)
+    if upcoming:
+        db.session.commit()
+    rows = db.session.scalars(select(ChangeImpact).options(selectinload(ChangeImpact.to_document))
+                              .order_by(ChangeImpact.created_at.desc(), ChangeImpact.id.desc())).all()
+    return render_template("changes/index.html", rows=rows, impacts=changes.impact_counts(rows))
 
 
 @bp.route("/changes/detect", methods=["POST"])

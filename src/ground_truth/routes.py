@@ -4,6 +4,7 @@ from collections import Counter, defaultdict
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_wtf import FlaskForm
+from sqlalchemy.orm import selectinload
 from sqlalchemy import func, or_, select
 from wtforms import SelectField, SelectMultipleField, StringField
 from wtforms.validators import DataRequired
@@ -30,7 +31,7 @@ def _stage_choices():
 def requirements():
     args = request.args
     query = (select(Requirement, Document).join(Document, Requirement.document_id == Document.id)
-             .where(Document.status.in_(["active", "expired"])))
+             .where(Document.status.in_(["active", "expired"])).options(selectinload(Requirement.chunk)))
     if args.get("doc"):
         query = query.where(Requirement.doc_id == args["doc"])
     if args.get("type"):
@@ -167,7 +168,9 @@ def matrix_view(number):
 @require_permission("conflicts.view")
 def conflicts():
     from database.models import Conflict
-    rows = db.session.scalars(select(Conflict)).all()
+    rows = db.session.scalars(select(Conflict).options(
+        *[selectinload(rel).selectinload(Requirement.document) for rel in (Conflict.left, Conflict.right)],
+        selectinload(Conflict.winner))).all()
     order = {"manual_review": 0, "auto_resolved_warning": 1, "resolved_by_reviewer": 2, "auto_resolved": 3}
     rows.sort(key=lambda c: (c.kind != "cross_document", order.get(c.status, 9), c.conflict_code))
     counts = Counter(c.status for c in rows if c.kind == "cross_document")
