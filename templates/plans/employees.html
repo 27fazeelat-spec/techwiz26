@@ -12,7 +12,10 @@
       {% else %}<span class="badge badge--bad">No matrix yet: build one first</span>{% endif %}
     </p>
   </div>
-  {% if can('employees.create') %}<a class="btn btn--primary" href="{{ url_for('people.employee_new') }}">{{ icon('user', 16) }}Add employee</a>{% endif %}
+  <div class="pagehead__actions">
+    <a class="btn" href="{{ url_for('plans.compare') }}">{{ icon('split', 16) }}Compare plans</a>
+    {% if can('employees.create') %}<a class="btn btn--primary" href="{{ url_for('people.employee_new') }}">{{ icon('user', 16) }}Add employee</a>{% endif %}
+  </div>
 </div>
 
 {% set ns = namespace(verified=0, attention=0, none=0) %}
@@ -26,6 +29,22 @@
   <div class="kpi {{ 'kpi--warn' if ns.attention }}"><span class="kpi__label">Need attention</span><span class="kpi__value">{{ ns.attention }}</span><span class="kpi__note">missing, unsupported or for review</span></div>
   <div class="kpi"><span class="kpi__label">No plan yet</span><span class="kpi__value">{{ ns.none }}</span><span class="kpi__note">ready to generate</span></div>
 </section>
+
+<form class="filters" method="get" role="search">
+  <div class="field field--grow"><label for="q">Name or code</label><input id="q" name="q" type="search" value="{{ args.q or '' }}" placeholder="e.g. Leila or E001"></div>
+  <div class="field"><label for="f-role">Role</label><select id="f-role" name="role" data-autosubmit><option value="">All roles</option>
+    {% for r in roles %}<option value="{{ r.code }}" {{ 'selected' if args.role == r.code }}>{{ r.name }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-dept">Department</label><select id="f-dept" name="department" data-autosubmit><option value="">All</option>
+    {% for d in departments %}<option value="{{ d }}" {{ 'selected' if args.department == d }}>{{ d }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-prop">Property</label><select id="f-prop" name="property" data-autosubmit><option value="">All</option>
+    {% for p in properties %}<option value="{{ p.code }}" {{ 'selected' if args.property == p.code }}>{{ p.name }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-result">Verification result</label><select id="f-result" name="result" data-autosubmit><option value="">Any</option>
+    {% for r in results %}<option value="{{ r }}" {{ 'selected' if args.result == r }}>{{ r }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-progress">Progress</label><select id="f-progress" name="progress" data-autosubmit><option value="">Any</option>
+    {% for r in progress_statuses %}<option value="{{ r }}" {{ 'selected' if args.progress == r }}>{{ r }}</option>{% endfor %}</select></div>
+  <button class="btn btn--primary" type="submit">Apply</button>
+  {% if args %}<a class="btn btn--ghost" href="{{ url_for('plans.employees') }}">Clear</a>{% endif %}
+</form>
 
 <section class="panel panel--flush">
   <div class="panel__bar">

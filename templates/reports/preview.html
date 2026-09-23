@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ t.title }}{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <div><p class="eyebrow"><a href="{{ url_for('reports.index') }}">Reports</a></p><h1>{{ t.title }}</h1>
+    <p class="pagehead__meta">{{ t.description }}</p></div>
+  <div class="pagehead__actions">{% for f in ['csv', 'xlsx', 'pdf'] %}<a class="btn {{ 'btn--primary' if f == 'xlsx' }}" href="{{ url_for('reports.export', name=t.name, fmt=f, role=role or None) }}">{{ icon('upload', 15) }}{{ f|upper }}</a>{% endfor %}</div>
+</div>
+
+<form class="filters" method="get">
+  <div class="field"><label for="role">Role</label>
+    <select id="role" name="role" data-autosubmit><option value="">All roles</option>
+      {% for r in roles %}<option value="{{ r.code }}" {{ 'selected' if role == r.code }}>{{ r.code }} · {{ r.name }}</option>{% endfor %}</select></div>
+  <button class="btn" type="submit">Apply</button>
+  <p class="small muted" style="margin-left: auto">{{ t.rows|length }} rows · generated {{ t.generated_at.strftime('%d %b %Y %H:%M') }} UTC</p>
+</form>
+
+<section class="panel panel--flush">
+  {% if rows %}
+  <div class="tablewrap">
+    <table class="table table--compact">
+      <thead><tr>{% for c in t.columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+      <tbody>{% for r in rows %}<tr>{% for v in r %}<td class="small">{{ '' if v is none else v }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  {% if t.rows|length > limit %}<div class="tablefoot">Showing the first {{ limit }} of {{ t.rows|length }} rows. The exports contain every row.</div>{% endif %}
+  {% else %}{{ empty('No rows yet', 'This report fills in as plans are generated, validated and worked through.', 'list') }}{% endif %}
+</section>
+{% endblock %}

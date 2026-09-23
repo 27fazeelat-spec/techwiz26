@@ -18,12 +18,44 @@ bp = Blueprint("plans", __name__)
 @bp.route("/employees")
 @require_permission("plans.view")
 def employees():
-    people = db.session.scalars(select(Employee).order_by(Employee.employee_code)).all()
+    """Employees with their latest plan. Server-side filters (SRS FR lx): text, role, department, property,
+    verification result of the latest plan, and progress status of the assigned plan."""
+    from config.settings import today
+    from database.models import JobRole, Property
+    from src.services import progress
+    args = {k: v for k, v in request.args.items() if v}
+    query = select(Employee).join(JobRole, Employee.job_role_id == JobRole.id).order_by(Employee.employee_code)
+    if args.get("q"):
+        like = f"%{args['q'].strip()}%"
+        query = query.where(Employee.name.ilike(like) | Employee.employee_code.ilike(like))
+    if args.get("role"):
+        query = query.where(JobRole.code == args["role"])
+    if args.get("department"):
+        query = query.where(Employee.department == args["department"])
+    if args.get("property"):
+        query = query.join(Property, Employee.property_id == Property.id).where(Property.code == args["property"])
+    people = db.session.scalars(query).all()
     latest = {}
-    for p in db.session.scalars(select(Plan).order_by(Plan.version)):
+    for p in db.session.scalars(select(Plan).where(Plan.status != "superseded").order_by(Plan.version)):
         latest[p.employee_id] = p
+    status = {}
+    if args.get("progress"):
+        day = today(current_app.config)
+        for e in people:
+            plan = progress.assigned_plan(e)
+            status[e.id] = progress.summary(plan, e, day)["status"] if plan else "Not assigned"
+        people = [e for e in people if status[e.id] == args["progress"]]
+    if args.get("result"):
+        want = args["result"]
+        people = [e for e in people if (latest.get(e.id).status if latest.get(e.id) else "No plan") == want]
     matrix = planning.current_matrix()
-    return render_template("plans/employees.html", people=people, latest=latest, matrix=matrix)
+    return render_template("plans/employees.html", people=people, latest=latest, matrix=matrix, args=args,
+                           roles=db.session.scalars(select(JobRole).order_by(JobRole.code)).all(),
+                           properties=db.session.scalars(select(Property).order_by(Property.name)).all(),
+                           departments=sorted(set(db.session.scalars(select(Employee.department)))),
+                           results=["No plan", "Verified", "Verified with Warning", "Incomplete", "Unsupported",
+                                    "Contradictory", "Manual Review Required", "Failed"],
+                           progress_statuses=["Not assigned"] + list(progress.cfg()["status_order"]))
 
 
 @bp.route("/employees/<code>/generate", methods=["POST"])
@@ -102,3 +134,14 @@ def assign(pk):
     except ReviewError as exc:
         flash(f"The plan cannot be assigned yet: {exc}", "error")
     return redirect(url_for("plans.plan_detail", pk=pk))
+
+
+@bp.route("/plans/compare")
+@require_permission("plans.view")
+def compare():
+    options = db.session.scalars(select(Plan).where(Plan.status.notin_(["generating", "Failed"]))
+                                 .order_by(Plan.plan_code, Plan.version.desc())).all()
+    a = db.session.get(Plan, request.args.get("a", type=int)) if request.args.get("a") else None
+    b = db.session.get(Plan, request.args.get("b", type=int)) if request.args.get("b") else None
+    result = planning.compare_plans(a, b) if a and b else None
+    return render_template("plans/compare.html", options=options, a=a, b=b, r=result)

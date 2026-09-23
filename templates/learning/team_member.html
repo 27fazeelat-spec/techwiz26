@@ -27,11 +27,25 @@
       <li class="rows__item"><span><span class="tag mono">{{ x.module.module_key }}</span> {{ x.module.title }}</span>
         <span class="coverage" style="min-width: 160px">{{ meter(x.pct, 'ok' if x.pct == 100 else '') }}<b>{{ x.done }}/{{ x.total }}</b></span></li>{% endfor %}</ul>
   </section>
+  <div class="stack">
   <section class="panel">
-    <h2 class="panel__title">Weak areas <span class="muted small">requirements answered wrongly in quizzes</span></h2>
-    {% if weak %}<ul class="rows">{% for rid, n in weak.most_common(8) %}<li class="rows__item"><span class="reqid">{{ rid }}</span><span class="badge badge--warn">{{ n }} wrong</span></li>{% endfor %}</ul>
+    <h2 class="panel__title">Recommendations <span class="muted small">rules in config/progress.yaml</span></h2>
+    {% if recs %}<ul class="rows">{% for r in recs %}<li class="rows__item"><span>{{ r.text }}{% if r.module_key %} <span class="tag mono">{{ r.module_key }}</span>{% endif %}
+        <span class="small muted" style="display: block">{{ r.rule_id }} · {{ r.type|replace('_', ' ') }}</span></span>
+      {% if r.status == 'open' %}<form method="post" action="{{ url_for('learning.recommendation', pk=r.id) }}" class="actions">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn--sm btn--primary" name="decision" value="accept" type="submit">Agree</button>
+        <button class="btn btn--sm" name="decision" value="dismiss" type="submit">Dismiss</button></form>
+      {% else %}<span class="badge badge--info">Agreed</span>{% endif %}</li>{% endfor %}</ul>
+    {% else %}<p class="muted small">No recommendations: nothing in the progress data calls for one.</p>{% endif %}
+  </section>
+  <section class="panel">
+    <h2 class="panel__title">Weak areas <span class="muted small">from quiz answers and returned tasks</span></h2>
+    {% if weak %}<ul class="rows">{% for w in weak[:8] %}<li class="rows__item"><span><span class="reqid">{{ w.requirement_id }}</span> <span class="small muted">{{ w.competency }}</span>
+        <span class="reqtext" style="display: block">{{ w.text }}</span></span><span class="badge badge--warn">{{ w.wrong }} wrong</span></li>{% endfor %}</ul>
     {% else %}<p class="muted small">No wrong quiz answers yet.</p>{% endif %}
   </section>
+  </div>
 </div>
 
 <section class="panel panel--flush">

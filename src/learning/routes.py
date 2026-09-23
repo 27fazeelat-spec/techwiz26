@@ -120,8 +120,25 @@ def team_member(code):
                                   .where(Progress.plan_id == plan.id, Progress.employee_id == employee.id,
                                          PlanItem.item_type.in_(["task", "scenario", "assessment"]))
                                   .order_by(Progress.due_date, PlanItem.item_key)).all()
+    recs = progress.refresh_recommendations(employee, plan, today(current_app.config)) if plan else []
     return render_template("learning/team_member.html", employee=employee, plan=plan, summary=summary, rows=rows,
-                           weak=progress.weak_requirements(employee, plan) if plan else {})
+                           weak=progress.weak_areas(employee, plan) if plan else [], recs=recs)
+
+
+@bp.route("/team/recommendation/<int:pk>", methods=["POST"])
+@login_required
+def recommendation(pk):
+    from database.models import Recommendation
+    rec = db.session.get(Recommendation, pk) or abort(404)
+    employee = db.session.get(Employee, rec.employee_id)
+    if not _can_manage(employee):
+        abort(403)
+    try:
+        progress.decide_recommendation(rec, request.form.get("decision") == "accept", audit.actor_from_user(current_user))
+        flash("Recorded.", "success")
+    except progress.ProgressError as exc:
+        flash(str(exc), "error")
+    return redirect(url_for("learning.team_member", code=employee.employee_code))
 
 
 @bp.route("/team/progress/<int:pk>/signoff", methods=["POST"])

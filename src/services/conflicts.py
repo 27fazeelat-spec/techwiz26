@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 from contradiction_checks import detect, resolve
 from database import audit, db, utcnow
-from database.models import Conflict, Document, Requirement
+from database.models import Chunk, Conflict, Document, Requirement
 
 RESOLVED = ("auto_resolved", "auto_resolved_warning", "resolved_by_reviewer")
 
@@ -24,9 +24,14 @@ def _pair_key(kind, a, b):
 
 
 def detect_and_store(actor=None):
-    rows = db.session.execute(select(Requirement, Document).join(Document, Requirement.document_id == Document.id)
-                              .where(Requirement.review_status != "rejected")).all()
-    current = [_as_dict(r, d) for r, d in rows if d.status in ("active", "expired") and not r.chunk.quarantined]
+    # One query, with the chunk's quarantine flag joined in: a lazy load per requirement costs a network
+    # round trip each on a hosted database.
+    triples = db.session.execute(select(Requirement, Document, Chunk.quarantined)
+                                 .join(Document, Requirement.document_id == Document.id)
+                                 .join(Chunk, Requirement.chunk_id == Chunk.id)
+                                 .where(Requirement.review_status != "rejected")).all()
+    rows = [(r, d) for r, d, _ in triples]
+    current = [_as_dict(r, d) for r, d, quarantined in triples if d.status in ("active", "expired") and not quarantined]
     by_req = {c["req_id"]: c for c in current}
     previous = []
     for r, d in rows:

@@ -614,6 +614,29 @@ class QuizAttempt(db.Model):
     submitted_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
+RECOMMENDATION_TYPES = ("revision_module", "additional_quiz", "additional_task", "advanced_module", "manager_review")
+
+
+class Recommendation(db.Model):
+    """A rule-based suggestion from measured progress signals (SRS Steps 55-56). A person decides."""
+    __tablename__ = "recommendations"
+    __table_args__ = (UniqueConstraint("employee_id", "plan_id", "rule_id", "module_key"),
+                      CheckConstraint(_in("type", RECOMMENDATION_TYPES), name="ck_recommendations_type"),
+                      CheckConstraint(_in("status", ("open", "accepted", "dismissed", "done")), name="ck_recommendations_status"))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id", ondelete="CASCADE"))
+    plan_id: Mapped[int] = mapped_column(ForeignKey("plans.id", ondelete="CASCADE"))
+    rule_id: Mapped[str] = mapped_column(String(30))
+    type: Mapped[str] = mapped_column(String(20))
+    module_key: Mapped[str] = mapped_column(String(10), default="")
+    text: Mapped[str] = mapped_column(Text)
+    signals: Mapped[dict] = mapped_column(JSONType, default=dict)
+    status: Mapped[str] = mapped_column(String(20), default="open")
+    decided_by: Mapped[str | None] = mapped_column(String(254))
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
 # --------------------------------------------------------------------------- audit trail
 
 class AuditLog(db.Model):

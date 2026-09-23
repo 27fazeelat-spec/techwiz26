@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from "_macros.html" import plan_badge, empty %}
+{% block title %}Compare plans{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow"><a href="{{ url_for('plans.employees') }}">Employees &amp; plans</a></p><h1>Compare plans</h1>
+  <p class="pagehead__meta">Compare two plans across roles, departments, experience levels or document versions: which requirements, stages and knowledge areas differ.</p></div></div>
+
+<form class="filters" method="get">
+  {% for key, current in [('a', a), ('b', b)] %}
+  <div class="field field--grow"><label for="{{ key }}">Plan {{ key|upper }}</label>
+    <select id="{{ key }}" name="{{ key }}"><option value="">Choose…</option>
+      {% for p in options %}<option value="{{ p.id }}" {{ 'selected' if current and current.id == p.id }}>{{ p.plan_code }} v{{ p.version }} · {{ p.employee.name }} · {{ p.job_role.code }} · {{ p.status }}</option>{% endfor %}</select></div>
+  {% endfor %}
+  <button class="btn btn--primary" type="submit">Compare</button>
+</form>
+
+{% if r %}
+<section class="kpis" aria-label="Summary">
+  <div class="kpi"><span class="kpi__label">Requirement overlap</span><span class="kpi__value">{{ r.overlap }}<small>%</small></span><span class="kpi__note">{{ r.both|length }} shared</span></div>
+  <div class="kpi"><span class="kpi__label">Only in A</span><span class="kpi__value">{{ r.only_a|length }}</span><span class="kpi__note">{{ a.plan_code }} v{{ a.version }}</span></div>
+  <div class="kpi"><span class="kpi__label">Only in B</span><span class="kpi__value">{{ r.only_b|length }}</span><span class="kpi__note">{{ b.plan_code }} v{{ b.version }}</span></div>
+  <div class="kpi"><span class="kpi__label">Different due stage</span><span class="kpi__value">{{ r.stage_diff|length }}</span><span class="kpi__note">{{ r.mandatory_diff|length }} differ in mandatory status</span></div>
+</section>
+
+<section class="panel panel--flush">
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th></th><th>Plan A</th><th>Plan B</th></tr></thead>
+      <tbody>
+        <tr><td class="muted">Plan</td><td><a class="mono" href="{{ url_for('plans.plan_detail', pk=a.id) }}">{{ a.plan_code }} v{{ a.version }}</a> {{ plan_badge(a.status) }}</td>
+          <td><a class="mono" href="{{ url_for('plans.plan_detail', pk=b.id) }}">{{ b.plan_code }} v{{ b.version }}</a> {{ plan_badge(b.status) }}</td></tr>
+        <tr><td class="muted">Employee</td><td>{{ a.employee.name }}</td><td>{{ b.employee.name }}</td></tr>
+        {% for label, (x, y) in r.differences.items() %}<tr><td class="muted">{{ label }}</td><td>{{ x }}</td><td {{ 'style=font-weight:700' if x != y }}>{{ y }}</td></tr>{% endfor %}
+        <tr><td class="muted">Requirements</td><td>{{ r.fa.reqs|length }} ({{ r.fa.mandatory|length }} mandatory)</td><td>{{ r.fb.reqs|length }} ({{ r.fb.mandatory|length }} mandatory)</td></tr>
+        <tr><td class="muted">Coverage</td><td>{{ a.score_coverage }}%</td><td>{{ b.score_coverage }}%</td></tr>
+        <tr><td class="muted">Modules</td><td>{{ a.modules|length }} · {{ r.fa.minutes }} min</td><td>{{ b.modules|length }} · {{ r.fb.minutes }} min</td></tr>
+        <tr><td class="muted">Items</td><td>{% for t, n in r.fa.by_type.items() if n %}{{ n }} {{ t|replace('_', ' ') }}{{ ', ' if not loop.last }}{% endfor %}</td>
+          <td>{% for t, n in r.fb.by_type.items() if n %}{{ n }} {{ t|replace('_', ' ') }}{{ ', ' if not loop.last }}{% endfor %}</td></tr>
+        <tr><td class="muted">Knowledge areas only here</td><td>{{ r.categories_only_a|join(', ') or '—' }}</td><td>{{ r.categories_only_b|join(', ') or '—' }}</td></tr>
+        <tr><td class="muted">Source documents</td><td class="small">{{ r.fa.documents|join(', ') }}</td><td class="small">{{ r.fb.documents|join(', ') }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="grid-2">
+  <section class="panel"><h2 class="panel__title">Only in A <span class="muted small">{{ r.only_a|length }}</span></h2>
+    <p class="small mono">{{ r.only_a|join(', ') or '—' }}</p></section>
+  <section class="panel"><h2 class="panel__title">Only in B <span class="muted small">{{ r.only_b|length }}</span></h2>
+    <p class="small mono">{{ r.only_b|join(', ') or '—' }}</p></section>
+</div>
+{% if r.stage_diff %}
+<section class="panel"><h2 class="panel__title">Same requirement, different due stage</h2>
+  <ul class="rows">{% for rid in r.stage_diff %}<li class="rows__item"><span class="reqid">{{ rid }}</span><span class="small">{{ r.fa.reqs[rid].due_stage }} → {{ r.fb.reqs[rid].due_stage }}</span></li>{% endfor %}</ul></section>
+{% endif %}
+{% else %}
+<section class="panel">{{ empty('Choose two plans', 'For example two employees in different roles, or two versions of the same plan before and after a policy update.', 'split') }}</section>
+{% endif %}
+{% endblock %}

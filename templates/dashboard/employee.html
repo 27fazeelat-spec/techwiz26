@@ -16,6 +16,14 @@
   {% endfor %}
 </section>
 
+{% if recs %}
+<section class="panel">
+  <h2 class="panel__title">Suggested next steps <span class="muted small">based on your quiz results and progress</span></h2>
+  <ul class="rows">{% for r in recs %}<li class="rows__item"><span>{{ r.text }}{% if r.module_key %} <span class="tag mono">{{ r.module_key }}</span>{% endif %}</span>
+    <span class="badge badge--{{ 'info' if r.status == 'accepted' else 'neutral' }}">{{ 'Agreed with your manager' if r.status == 'accepted' else 'Suggested' }}</span></li>{% endfor %}</ul>
+</section>
+{% endif %}
+
 <section class="panel panel--flush">
   <div class="panel__bar"><h2 class="panel__title">Your modules</h2><span class="panel__aside mono">{{ plan.plan_code }} v{{ plan.version }}</span></div>
   <div class="tablewrap">

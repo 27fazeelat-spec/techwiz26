@@ -15,3 +15,14 @@ completion:
 
 # Progress status, first matching rule wins (see src/services/progress.py).
 status_order: [Completed, Behind Schedule, Assessment Required, Requires Attention, On Track]
+
+# Adaptive recommendations (SRS Steps 55-56). Each rule turns a measured signal into a suggestion a
+# person accepts or dismisses; nothing is changed in the plan automatically.
+recommendations:
+  R-QUIZ-FAIL:     {enabled: true, type: revision_module, text: "Revise this module before retaking its quiz"}
+  R-REPEAT-ERROR:  {enabled: true, type: additional_quiz, min_wrong: 2, text: "Extra practice on requirements answered wrongly more than once"}
+  R-ATTEMPTS-USED: {enabled: true, type: manager_review, text: "All quiz attempts used without passing: go through the module with the manager"}
+  R-TASK-RETURNED: {enabled: true, type: additional_task, text: "A task was returned: repeat it with the manager's feedback"}
+  R-ASSESS-FAIL:   {enabled: true, type: manager_review, text: "Assessment not passed: plan a re-assessment with the manager"}
+  R-OVERDUE:       {enabled: true, type: manager_review, min_days: 3, text: "Items overdue for several days: agree a new schedule"}
+  R-FAST-TRACK:    {enabled: true, type: advanced_module, min_score: 100, levels: [Intermediate, Advanced], text: "Passed first time with full marks: offer the advanced material"}

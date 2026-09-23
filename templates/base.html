@@ -57,6 +57,13 @@
   </nav>
   {% endif %}
 
+  {% if can('reports.view') or can('reports.team') %}
+  <nav class="navgroup">
+    <p class="navgroup__label">Evidence</p>
+    {{ navlink(url_for('reports.index'), 'Reports', 'file', request.blueprint == 'reports') }}
+  </nav>
+  {% endif %}
+
   <p class="sidebar__foot">Gemini writes. Python verifies.<br>People approve.</p>
 </aside>
 <div class="scrim" data-nav-close hidden></div>

@@ -6,6 +6,7 @@
   set-password      set a user's password and clear a lockout
   detect-changes    compare document versions and record policy changes
   route-reviews     create review items for plans validated before the review queue existed
+  export-reports    write every report as CSV, Excel and PDF
 """
 import csv
 import json
@@ -272,6 +273,22 @@ def register_cli(app):
         audit.record("user.password_set", "user", user.email, actor={"user_id": "cli", "app_role": "system"}, commit=False)
         db.session.commit()
         click.echo(f"Password set for {user.email}." + (f" New password: {password}" if generate else ""))
+
+    @app.cli.command("export-reports")
+    @click.option("--out", default="reports/generated", show_default=True, help="Folder to write the files to.")
+    @click.option("--formats", default="csv,xlsx,pdf", show_default=True)
+    def export_reports_command(out, formats):
+        """Write every report as CSV, Excel and PDF (read-only: nothing in the database changes)."""
+        from src.services import reports
+        folder = ROOT / out
+        folder.mkdir(parents=True, exist_ok=True)
+        for name in reports.REPORTS:
+            table = reports.build(name)
+            for fmt in formats.split(","):
+                path = folder / f"{name}.{fmt}"
+                path.write_bytes(reports.FORMATS[fmt][1](table))
+            click.echo(f"  {name}: {len(table.rows)} rows")
+        click.echo(f"Written to {folder}")
 
     @app.cli.command("db-check")
     def db_check():

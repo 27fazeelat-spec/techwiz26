@@ -252,3 +252,93 @@ def weak_requirements(employee, plan):
             if not ans["correct"] and ans.get("requirement_id"):
                 wrong[ans["requirement_id"]] += 1
     return wrong
+
+
+# --------------------------------------------------------------------------- weak areas and recommendations
+
+def weak_areas(employee, plan):
+    """Requirements and knowledge areas the employee struggles with, from stored quiz answers and task
+    returns only (SRS Step 56). Returns [{requirement_id, competency, wrong, text}] worst first."""
+    from database.models import Requirement
+    wrong = weak_requirements(employee, plan)
+    returned = db.session.scalars(select(Progress).join(PlanItem, Progress.plan_item_id == PlanItem.id).where(
+        Progress.plan_id == plan.id, Progress.employee_id == employee.id, Progress.status == "in_progress",
+        Progress.verified_by.is_not(None))).all()
+    for r in returned:
+        rid = r.plan_item.content.get("requirement_id")
+        if rid:
+            wrong[rid] += 1
+    if not wrong:
+        return []
+    rows = {r.req_id: r for r in db.session.scalars(select(Requirement).where(Requirement.req_id.in_(list(wrong))))}
+    return [{"requirement_id": rid, "wrong": n, "competency": rows[rid].competency if rid in rows else "",
+             "text": rows[rid].text if rid in rows else ""} for rid, n in wrong.most_common()]
+
+
+def refresh_recommendations(employee, plan, today):
+    """Apply the recommendation rules to current signals. Idempotent: one row per rule and module."""
+    from database.models import Recommendation
+    rules = {k: v for k, v in cfg().get("recommendations", {}).items() if v.get("enabled", True)}
+    found = {}                                      # (rule, module) -> signals
+
+    attempts = db.session.scalars(select(QuizAttempt).where(QuizAttempt.employee_id == employee.id,
+                                                            QuizAttempt.plan_id == plan.id).order_by(QuizAttempt.attempt_no)).all()
+    by_module = {}
+    for a in attempts:
+        by_module.setdefault(a.module_key, []).append(a)
+    for module, tries in by_module.items():
+        last, passed = tries[-1], any(t.passed for t in tries)
+        if "R-QUIZ-FAIL" in rules and not last.passed:
+            found[("R-QUIZ-FAIL", module)] = {"attempt": last.attempt_no, "score": last.score}
+        if "R-ATTEMPTS-USED" in rules and not passed and len(tries) >= cfg()["max_quiz_attempts"]:
+            found[("R-ATTEMPTS-USED", module)] = {"attempts": len(tries), "best": max(t.score for t in tries)}
+        if "R-REPEAT-ERROR" in rules:
+            counts = Counter(a["requirement_id"] for t in tries for a in t.answers if not a["correct"] and a.get("requirement_id"))
+            repeated = sorted(r for r, n in counts.items() if n >= rules["R-REPEAT-ERROR"].get("min_wrong", 2))
+            if repeated:
+                found[("R-REPEAT-ERROR", module)] = {"requirements": repeated}
+        rule = rules.get("R-FAST-TRACK")
+        if rule and tries[0].passed and tries[0].score >= rule.get("min_score", 100) \
+                and employee.experience_level in rule.get("levels", []):
+            found[("R-FAST-TRACK", module)] = {"score": tries[0].score, "level": employee.experience_level}
+
+    rows = db.session.execute(select(Progress, PlanItem, PlanModule).join(PlanItem, Progress.plan_item_id == PlanItem.id)
+                              .join(PlanModule, PlanItem.module_id == PlanModule.id)
+                              .where(Progress.plan_id == plan.id, Progress.employee_id == employee.id)).all()
+    overdue_days = rules.get("R-OVERDUE", {}).get("min_days", 3)
+    late = [r for r, _, _ in rows if r.due_date and r.status not in DONE and (today - r.due_date).days >= overdue_days]
+    if "R-OVERDUE" in rules and late:
+        found[("R-OVERDUE", "")] = {"items": len(late), "oldest_due": min(r.due_date for r in late).isoformat()}
+    for r, item, module in rows:
+        if "R-TASK-RETURNED" in rules and item.item_type in ("task", "scenario") and r.status == "in_progress" and r.verified_by:
+            found[("R-TASK-RETURNED", module.module_key)] = {"item": item.item_key, "note": r.note}
+        if "R-ASSESS-FAIL" in rules and item.item_type == "assessment" and r.status == "failed":
+            found[("R-ASSESS-FAIL", module.module_key)] = {"item": item.item_key, "score": r.score}
+
+    existing = {(x.rule_id, x.module_key): x for x in db.session.scalars(select(Recommendation).where(
+        Recommendation.employee_id == employee.id, Recommendation.plan_id == plan.id))}
+    for (rule_id, module), signals in found.items():
+        x = existing.get((rule_id, module))
+        if x is None:
+            db.session.add(Recommendation(employee_id=employee.id, plan_id=plan.id, rule_id=rule_id, module_key=module,
+                                          type=rules[rule_id]["type"], text=rules[rule_id]["text"], signals=signals))
+        elif x.status == "open":
+            x.signals = signals
+    for key, x in existing.items():                 # the signal went away (e.g. the quiz was passed)
+        if key not in found and x.status in ("open", "accepted"):
+            x.status = "done"
+    db.session.commit()
+    return db.session.scalars(select(Recommendation).where(Recommendation.employee_id == employee.id,
+                                                           Recommendation.plan_id == plan.id,
+                                                           Recommendation.status.in_(("open", "accepted")))
+                              .order_by(Recommendation.created_at)).all()
+
+
+def decide_recommendation(rec, accept, actor):
+    if rec.status != "open":
+        raise ProgressError("This recommendation already has a decision.")
+    rec.status = "accepted" if accept else "dismissed"
+    rec.decided_by, rec.decided_at = (actor or {}).get("email", "system"), utcnow()
+    audit.record(f"recommendation.{rec.status}", "recommendation", f"{rec.rule_id}:{rec.module_key}", actor=actor,
+                 after={"type": rec.type}, commit=False)
+    db.session.commit()

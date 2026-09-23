@@ -84,7 +84,8 @@ def employee_dashboard():
     employee = db.session.scalar(select(Employee).where(Employee.employee_code == current_user.employee_code))
     plan = progress.assigned_plan(employee) if employee else None
     summary = progress.summary(plan, employee, today(current_app.config)) if plan else None
-    return render_template("dashboard/employee.html", employee=employee, plan=plan, summary=summary)
+    recs = progress.refresh_recommendations(employee, plan, today(current_app.config)) if plan else []
+    return render_template("dashboard/employee.html", employee=employee, plan=plan, summary=summary, recs=recs)
 
 
 @bp.route("/healthz")

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+{% set about = {
+  'comparison': ('GenAI vs Python comparison', 'Every requirement of every current plan, field by field (the 100-row report).'),
+  'validation': ('Validation report', 'Status, scores and finding counts per plan.'),
+  'findings': ('Validation findings', 'Every finding raised by the Python rules.'),
+  'hallucination': ('Hallucination and unsupported content', 'Claims the cited source does not support, invalid or inapplicable sources.'),
+  'traceability': ('Source traceability', 'Every generated item with its requirements, cited source, model and prompt.'),
+  'mandatory_training': ('Mandatory training coverage', 'Each mandatory requirement per plan and whether it is covered.'),
+  'role_coverage': ('Role coverage', 'Matrix requirements, employees, plans and average coverage per role.'),
+  'policy_coverage': ('Policy coverage', 'Requirements per source document and how many reach plans.'),
+  'progress': ('Employee progress', 'Completion, status and overdue items per employee.'),
+  'assessment_results': ('Quiz and assessment results', 'Every quiz attempt and assessment result.'),
+  'security': ('Security findings', 'Prompt-injection and adversarial content caught at ingestion.'),
+  'audit': ('Audit trail', 'The most recent entries of the append-only audit log.')} %}
+<div class="pagehead"><div><p class="eyebrow">Reports</p><h1>Reports</h1>
+  <p class="pagehead__meta">Every report is computed from stored runs, findings, progress and audit records. Export as CSV, Excel or PDF.</p></div></div>
+
+<section class="panel panel--flush">
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Report</th><th>What it contains</th><th>Export</th></tr></thead>
+      <tbody>
+      {% for n in names %}
+        <tr><td class="middle"><a href="{{ url_for('reports.preview', name=n) }}"><strong>{{ about[n][0] }}</strong></a></td>
+          <td class="middle small muted">{{ about[n][1] }}</td>
+          <td class="middle nowrap">{% for f in ['csv', 'xlsx', 'pdf'] %}<a class="btn btn--sm" href="{{ url_for('reports.export', name=n, fmt=f) }}">{{ f|upper }}</a> {% endfor %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

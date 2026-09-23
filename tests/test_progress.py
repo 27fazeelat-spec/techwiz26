@@ -140,3 +140,31 @@ def test_employee_and_manager_pages(corpus):
     assert b"Leila Haddad" in client.get("/dashboard/team").data
     assert client.get("/team/E001").status_code == 200
     assert client.get("/team/E002").status_code == 403                      # not Omar's report
+
+
+def test_recommendations_follow_the_rules_and_need_a_person(corpus):
+    from database.models import Recommendation
+    plan = assigned()
+    me = leila()
+    module = next(m.module_key for m in plan.modules if progress.quiz_questions(plan, m.module_key))
+    questions = progress.quiz_questions(plan, module)
+    wrong = {q.item_key: [len(q.content["options"]) - 1] for q in questions}
+    right = {q.item_key: q.content["correct_options"] for q in questions}
+    progress.submit_quiz(me, plan, module, wrong, ACTOR)
+    recs = {r.rule_id: r for r in progress.refresh_recommendations(me, plan, TODAY)}
+    assert "R-QUIZ-FAIL" in recs and recs["R-QUIZ-FAIL"].type == "revision_module"
+    progress.submit_quiz(me, plan, module, wrong, ACTOR)
+    recs = {r.rule_id: r for r in progress.refresh_recommendations(me, plan, TODAY)}
+    assert recs["R-REPEAT-ERROR"].signals["requirements"]                    # same requirements wrong twice
+    assert progress.weak_areas(me, plan)[0]["wrong"] >= 2
+    progress.decide_recommendation(recs["R-REPEAT-ERROR"], True, MANAGER)
+    with pytest.raises(progress.ProgressError):
+        progress.decide_recommendation(recs["R-REPEAT-ERROR"], False, MANAGER)
+    progress.submit_quiz(me, plan, module, right, ACTOR)
+    recs = {r.rule_id: r for r in progress.refresh_recommendations(me, plan, TODAY)}
+    assert "R-QUIZ-FAIL" not in recs                                         # the signal went away
+    closed = db.session.scalar(select(Recommendation).where(Recommendation.plan_id == plan.id,
+                                                            Recommendation.rule_id == "R-QUIZ-FAIL"))
+    assert closed.status == "done"
+    late = progress.refresh_recommendations(me, plan, date(2027, 1, 31))
+    assert any(r.rule_id == "R-OVERDUE" for r in late)

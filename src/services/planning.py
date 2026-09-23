@@ -559,3 +559,37 @@ def run_consistency(plan, app_config, provider=None):
                  after={"score": score, "runs": len(sets)}, commit=False)
     db.session.commit()
     return plan
+
+
+# --------------------------------------------------------------------------- plan comparison (SRS Step 60)
+
+def compare_plans(a, b):
+    """Structured comparison of two plans: across roles, departments, experience levels or plan versions."""
+    def facts(p):
+        reqs = {r["requirement_id"]: r for r in p.outline.get("requirements", [])}
+        items = [i for m in p.modules for i in m.items]
+        docs = sorted({(r.get("source_document_id"), ) for r in reqs.values()})
+        return {"reqs": reqs, "mandatory": {k for k, r in reqs.items() if r.get("mandatory")},
+                "categories": {m.category for m in p.modules}, "items": items,
+                "by_type": {t: sum(1 for i in items if i.item_type == t) for t in ITEM_PREFIX},
+                "minutes": sum(m.estimated_minutes or 0 for m in p.modules),
+                "documents": sorted({d[0] for d in docs if d[0]})}
+    fa, fb = facts(a), facts(b)
+    both = set(fa["reqs"]) & set(fb["reqs"])
+    stage_diff = sorted(r for r in both if fa["reqs"][r].get("due_stage") != fb["reqs"][r].get("due_stage"))
+    mand_diff = sorted(r for r in both if bool(fa["reqs"][r].get("mandatory")) != bool(fb["reqs"][r].get("mandatory")))
+    union = set(fa["reqs"]) | set(fb["reqs"])
+    return {
+        "a": a, "b": b, "fa": fa, "fb": fb,
+        "only_a": sorted(set(fa["reqs"]) - set(fb["reqs"])), "only_b": sorted(set(fb["reqs"]) - set(fa["reqs"])),
+        "both": sorted(both), "overlap": round(100.0 * len(both) / len(union), 1) if union else 100.0,
+        "stage_diff": stage_diff, "mandatory_diff": mand_diff,
+        "categories_only_a": sorted(fa["categories"] - fb["categories"]),
+        "categories_only_b": sorted(fb["categories"] - fa["categories"]),
+        "differences": {
+            "Role": (a.job_role.name, b.job_role.name), "Department": (a.employee.department, b.employee.department),
+            "Experience": (a.employee.experience_level, b.employee.experience_level),
+            "Matrix": (f"v{a.matrix_version.version_no}" if a.matrix_version else "-",
+                       f"v{b.matrix_version.version_no}" if b.matrix_version else "-"),
+        },
+    }
