@@ -49,6 +49,10 @@ def create_app(overrides=None):
         if db.engine.dialect.name == "postgresql":
             from database import install_idle_ping
             install_idle_ping(db.engine)
+            # pg8000's executemany sends one statement per row (a network round trip each). Let SQLAlchemy
+            # render many-row INSERTs as one multi-VALUES statement instead, as it already does when a
+            # primary key is returned.
+            db.engine.dialect.use_insertmanyvalues_wo_returning = True
         try:
             db.create_all()
         except (OperationalError, InterfaceError) as exc:

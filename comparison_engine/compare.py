@@ -49,7 +49,7 @@ def compare(ctx, requirement_statuses):
             "mandatory": gen["mandatory"] if gen else None,
             "priority": gen["priority"] if gen else None,
             "due_stage": gen["due_stage"] if gen else None,
-            "module_category": module["category"] if module else None,
+            "module_category": gen.get("category") if gen else None,
             "source_document": gen["source_document_id"] if gen else None,
             "source_section": gen["source_section_id"] if gen else None,
             "task": req_id in tasks if gen else None,

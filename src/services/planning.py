@@ -9,7 +9,8 @@ import json
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
+from sqlalchemy.orm.attributes import set_committed_value
 
 from comparison_engine import compare
 from config.loader import load_config
@@ -121,8 +122,10 @@ def compose_modules(requirements, max_modules, min_size):
     """Deterministic module grouping from Gemini's knowledge-area categories.
 
     One module per category; categories smaller than min_size are merged into the module with the
-    nearest stage, and the smallest are merged while there are more than max_modules. Modules are
-    ordered by their earliest stage. Returns (modules, requirements with module_key assigned).
+    nearest stage (the smaller one on a tie, so one module does not absorb everything), and the
+    smallest are merged while there are more than max_modules. A merged module is named after its
+    largest category and lists every category it holds. Modules are ordered by their earliest stage.
+    Returns (modules, requirements with module_key assigned).
     """
     order = {s["code"]: i for i, s in enumerate(load_config("stages")["stages"])}
     groups = {}
@@ -132,17 +135,21 @@ def compose_modules(requirements, max_modules, min_size):
     def earliest(reqs):
         return min(order.get(r["due_stage"], 99) for r in reqs)
 
-    merged = sorted(groups.items(), key=lambda kv: (earliest(kv[1]), kv[0]))
-    while len(merged) > 1 and (len(merged) > max_modules or min(len(v) for _, v in merged) < min_size):
+    merged = sorted(([[cat], reqs] for cat, reqs in groups.items()), key=lambda g: (earliest(g[1]), g[0][0]))
+    while len(merged) > 1 and (len(merged) > max_modules or min(len(g[1]) for g in merged) < min_size):
         i = min(range(len(merged)), key=lambda k: len(merged[k][1]))
-        name, reqs = merged.pop(i)
-        j = min(range(len(merged)), key=lambda k: abs(earliest(merged[k][1]) - earliest(reqs)))
-        merged[j] = (f"{merged[j][0]} & {name}", merged[j][1] + reqs)
+        cats, reqs = merged.pop(i)
+        j = min(range(len(merged)), key=lambda k: (abs(earliest(merged[k][1]) - earliest(reqs)), len(merged[k][1])))
+        merged[j] = [merged[j][0] + cats, merged[j][1] + reqs]
     modules, assigned = [], []
-    for n, (category, reqs) in enumerate(sorted(merged, key=lambda kv: (earliest(kv[1]), kv[0])), start=1):
+    for n, (cats, reqs) in enumerate(sorted(merged, key=lambda g: (earliest(g[1]), g[0][0])), start=1):
         key = f"M{n:02d}"
         stage = min((r["due_stage"] for r in reqs), key=lambda s: order.get(s, 99))
-        modules.append({"module_key": key, "title": category, "category": category, "stage": stage})
+        size = {c: sum(1 for r in reqs if r["category"] == c) for c in cats}
+        main = max(cats, key=lambda c: (size[c], -cats.index(c)))
+        others = len(cats) - 1
+        title = main if not others else f"{main} and {others} related area{'s' if others > 1 else ''}"
+        modules.append({"module_key": key, "title": title, "category": main, "categories": cats, "stage": stage})
         assigned += [{**r, "module_key": key} for r in reqs]
     return modules, assigned
 
@@ -242,8 +249,8 @@ def _store_modules(plan, jobs, results, bundle, reqs_by_module, params):
         db.session.add(run)
         db.session.flush()
         title = result.parsed.title if result.ok and result.parsed.title else module["title"]
-        pm = PlanModule(plan=plan, module_key=module["module_key"], position=position, title=title,
-                        category=module["category"], stage=module["stage"], run_id=run.id, content_ok=result.ok)
+        pm = PlanModule(plan=plan, module_key=module["module_key"], position=position, title=title[:300],
+                        category=module["category"][:60], stage=module["stage"], run_id=run.id, content_ok=result.ok)
         db.session.add(pm)
         if not result.ok:
             continue
@@ -289,7 +296,7 @@ def _current_requirements():
 
 def _nearest_module(modules, req, order):
     """The module for an added requirement: same knowledge area if there is one, else the closest stage."""
-    same = [m for m in modules if req["category"] in m["category"].split(" & ")]
+    same = [m for m in modules if req["category"] in m.get("categories", [m["category"]])]
     if same:
         return same[0]["module_key"]
     return min(modules, key=lambda m: abs(order.get(m["stage"], 99) - order.get(req["due_stage"], 99)))["module_key"]
@@ -502,9 +509,17 @@ def validate_plan(plan):
     run.comparison_rows = [ComparisonRow(**row) for row in rows]
     db.session.add(run)
     statuses = item_statuses(ctx, findings)
+    db.session.flush()
+    by_status = {}
     for m in plan.modules:
         for item in m.items:
-            item.status = statuses.get(item.item_key, "Verified")
+            new = statuses.get(item.item_key, "Verified")
+            if item.status != new:
+                by_status.setdefault(new, []).append(item.id)
+            set_committed_value(item, "status", new)
+    for status_value, ids in by_status.items():     # one UPDATE per status, not one per item
+        db.session.execute(update(PlanItem).where(PlanItem.id.in_(ids)).values(status=status_value)
+                           .execution_options(synchronize_session=False))
     plan.status = status
     plan.score_coverage, plan.score_traceability = s["coverage"], s["traceability"]
     plan.score_traceability_mandatory = s["traceability_mandatory"]

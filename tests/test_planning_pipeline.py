@@ -68,3 +68,15 @@ def test_consistency_check_compares_structured_sets(corpus):
     assert plan.consistency["runs"] == 3                  # the plan's own outline + 2 re-runs
     assert plan.score_generation_consistency == 100.0     # a deterministic provider is perfectly consistent
     assert set(plan.consistency["dimensions"]) == {"mandatory_requirements", "sources", "module_categories", "due_stages"}
+
+
+def test_many_small_categories_do_not_produce_one_giant_module():
+    cats = ["Company Orientation", "Health & Safety", "HR Essentials", "Revenue Management", "Data Privacy",
+            "Fire & Life Safety", "Guest Service Recovery", "Finance Controls", "IT Security"]
+    reqs = [{"requirement_id": f"R-{i}", "category": c, "due_stage": "D1"} for i, c in enumerate(cats)]
+    reqs += [{"requirement_id": f"R-X{i}", "category": "Company Orientation", "due_stage": "D1"} for i in range(4)]
+    modules, assigned = compose_modules(reqs, max_modules=8, min_size=2)
+    assert all(len(m["category"]) <= 60 and len(m["title"]) <= 300 for m in modules)
+    assert all(m["category"] in cats for m in modules)                 # a real knowledge area, not a joined string
+    assert sorted(c for m in modules for c in m["categories"]) == sorted(cats)
+    assert max(len(m["categories"]) for m in modules) < len(cats)       # the load is spread, not one blob
