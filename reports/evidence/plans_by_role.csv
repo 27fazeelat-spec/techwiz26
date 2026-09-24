@@ -1,0 +1,12 @@
+role,role_name,employee,plan,version,status,coverage_pct,traceability_pct,requirement_consistency_pct,assigned_at
+DMG,Duty Manager,E011,P-E011,3,Incomplete,97.0,99.4,80.1,
+FBA,F&B Associate,E005,P-E005,1,Incomplete,90.8,99.2,81.5,
+FNA,Finance Associate,E009,P-E009,1,Incomplete,90.0,100.0,81.2,
+FOA,Front Office Associate,E001,P-E001,1,Incomplete,88.5,100.0,79.4,2026-09-24T05:58:46.846343
+FOA,Front Office Associate,E001,P-E001,2,Failed,,,,
+GRE,Guest Relations Executive,E003,P-E003,1,Incomplete,96.0,100.0,78.9,
+HKS,Housekeeping Supervisor,E004,P-E004,1,Incomplete,81.2,100.0,76.1,
+HRE,HR Executive,E010,P-E010,1,Incomplete,78.9,100.0,78.2,
+MTT,Maintenance Technician,E006,P-E006,1,Incomplete,86.1,100.0,77.5,
+RVA,Revenue Analyst,E008,P-E008,1,Incomplete,88.6,100.0,78.3,
+SEE,Sales & Events Executive,E007,P-E007,1,Incomplete,89.0,99.2,77.8,

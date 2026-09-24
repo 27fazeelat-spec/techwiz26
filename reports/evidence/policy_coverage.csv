@@ -1,0 +1,31 @@
+﻿Document,Version,Title,Category,Status,Requirements,Mandatory,In approved matrix,Used by plan items,Version changes
+CMP-01,2.0,Compliance Instructions & Mandatory Training Calendar,Compliance,active,6,6,6,6,1
+COC-01,2.0,Code of Workplace Conduct,Policy,active,7,7,7,7,0
+ESC-01,2.0,Incident & Escalation Matrix,SOP,active,6,6,5,5,1
+FAQ-01,2.0,Staff FAQ,FAQ,active,5,1,2,2,1
+FIN-01,2.0,"Finance Procedures: Expense, Purchase & Credit",SOP,active,6,6,6,5,0
+FLS-01,4.0,Fire & Life Safety Manual,Policy,active,7,7,7,7,0
+FSA-01,2.0,Food Safety & Allergen SOP,SOP,active,7,6,7,7,1
+GDP-01,2.0,Guest Data Privacy Policy,Policy,active,9,9,9,9,1
+HBK-01,3.0,Employee Handbook,Handbook,active,7,6,4,4,0
+HRP-01,2.1,HR Policy,Policy,active,7,6,7,7,0
+HRS-01,1.0,"Recruitment, Onboarding & Personnel Files SOP",SOP,active,6,6,6,5,0
+HSP-01,1.0,"Health, Safety & PPE Policy",Policy,active,7,7,6,6,1
+IRD-01,1.0,In-Room Dining SOP,SOP,active,5,5,5,5,0
+ISP-01,2.0,Information Security Policy,Policy,active,8,8,8,8,1
+ITA-01,1.3,IT Access & Acceptable Use Procedure,SOP,active,6,5,5,5,0
+LVP-01,2.0,Leave Policy,Policy,active,5,5,5,5,1
+MEM-01,1.0,Peak season: a few reminders,Informal Guidance,active,2,0,1,1,0
+NEWS-01,1.0,Social Club News - September,SOP,active,0,0,0,0,0
+PCH-01,2.0,Payment Card & Cash Handling Policy,Policy,active,8,8,8,8,1
+REV-01,2.0,Revenue & Rate Management Policy,Policy,active,6,6,6,6,1
+ROL-01,2.0,Role Descriptions: Guest-Facing Roles,Role Description,active,8,6,7,7,0
+ROL-02,2.0,Role Descriptions: Operations & Support Roles,Role Description,active,6,5,5,5,0
+ROL-03,2.0,Role Descriptions: Corporate Roles,Role Description,active,5,5,5,5,0
+SAL-01,1.1,"Sales, Contracts & Events SOP",SOP,active,6,5,6,6,0
+SOP-EN-01,3.0,Engineering Work Permit & Lockout/Tagout SOP,SOP,active,6,6,6,6,0
+SOP-FO-01,2.0,"Check-in, Check-out & Guest Identification SOP",SOP,active,9,8,9,8,1
+SOP-FO-02,1.2,Night Audit Procedure,SOP,active,6,6,6,6,0
+SOP-GR-01,2.0,Guest Complaint & Service Recovery SOP,SOP,active,6,6,6,6,1
+SOP-HK-01,2.0,Room Cleaning & Inspection SOP,SOP,active,6,5,6,6,0
+SOP-HK-02,1.0,Lost & Found SOP,SOP,expired,5,4,5,5,0

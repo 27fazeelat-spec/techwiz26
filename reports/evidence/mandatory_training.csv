@@ -1,0 +1,806 @@
+﻿Plan,Employee,Requirement,Source,Covered,Validation status
+P-E001 v1,Leila Haddad,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E001 v1,Leila Haddad,R-FIN-01-001,FIN-01 §2.1,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-FIN-01-002,FIN-01 §2.4,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-FIN-01-003,FIN-01 §3.1,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-FIN-01-004,FIN-01 §4.2,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-FLS-01-005,FLS-01 §3.4,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-FLS-01-007,FLS-01 §5.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E001 v1,Leila Haddad,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-HRP-01-001,HRP-01 §2.1,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-HSP-01-002,HSP-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-HSP-01-003,HSP-01 §3.3,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-HSP-01-004,HSP-01 §4.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-HSP-01-005,HSP-01 §5.2,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-HSP-01-007,HSP-01 §5.5,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-ISP-01-001,ISP-01 §2.1,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-ISP-01-003,ISP-01 §3.3,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E001 v1,Leila Haddad,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-PCH-01-001,PCH-01 §1.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-PCH-01-003,PCH-01 §2.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-PCH-01-004,PCH-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-PCH-01-005,PCH-01 §3.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-PCH-01-006,PCH-01 §3.6,Yes,Verified
+P-E001 v1,Leila Haddad,R-PCH-01-007,PCH-01 §4.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-PCH-01-009,PCH-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-REV-01-002,REV-01 §2.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-REV-01-005,REV-01 §4.3,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-REV-01-006,REV-01 §5.1,No,Requirement Missing
+P-E001 v1,Leila Haddad,R-ROL-01-001,ROL-01 §1.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-ROL-01-002,ROL-01 §1.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-01-001,SOP-FO-01 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-01-002,SOP-FO-01 §2.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-01-003,SOP-FO-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-01-004,SOP-FO-01 §3.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-01-005,SOP-FO-01 §4.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-01-006,SOP-FO-01 §5.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-01-007,SOP-FO-01 §6.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-02-001,SOP-FO-02 §2.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-02-002,SOP-FO-02 §2.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-02-003,SOP-FO-02 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-02-004,SOP-FO-02 §3.4,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-FO-02-005,SOP-FO-02 §4.2,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-GR-01-001,SOP-GR-01 §2.1,Yes,Verified with Warning
+P-E001 v1,Leila Haddad,R-SOP-GR-01-002,SOP-GR-01 §2.3,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-GR-01-003,SOP-GR-01 §3.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-GR-01-006,SOP-GR-01 §5.1,Yes,Verified
+P-E001 v1,Leila Haddad,R-SOP-HK-02-001,SOP-HK-02 §2.1,Yes,Outdated Source
+P-E001 v1,Leila Haddad,R-SOP-HK-02-002,SOP-HK-02 §2.3,Yes,Outdated Source
+P-E001 v1,Leila Haddad,R-SOP-HK-02-003,SOP-HK-02 §3.1,Yes,Outdated Source
+P-E001 v1,Leila Haddad,R-SOP-HK-02-004,SOP-HK-02 §3.4,Yes,Outdated Source
+P-E003 v1,Nurul Aina Rahman,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E003 v1,Nurul Aina Rahman,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-COC-01-003,COC-01 §3.2,Yes,Partially Verified
+P-E003 v1,Nurul Aina Rahman,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FIN-01-001,FIN-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FIN-01-002,FIN-01 §2.4,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FIN-01-003,FIN-01 §3.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FIN-01-004,FIN-01 §4.2,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E003 v1,Nurul Aina Rahman,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-FLS-01-005,FLS-01 §3.4,No,Requirement Missing
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-006,GDP-01 §5.4,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HRP-01-001,HRP-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HSP-01-002,HSP-01 §3.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HSP-01-003,HSP-01 §3.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HSP-01-004,HSP-01 §4.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HSP-01-005,HSP-01 §5.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-HSP-01-007,HSP-01 §5.5,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-001,ISP-01 §2.1,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-003,ISP-01 §3.3,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ITA-01-002,ITA-01 §2.3,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-ROL-01-003,ROL-01 §2.3,Yes,Verified with Warning
+P-E003 v1,Nurul Aina Rahman,R-ROL-01-004,ROL-01 §2.4,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-SOP-GR-01-001,SOP-GR-01 §2.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-SOP-GR-01-002,SOP-GR-01 §2.3,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-SOP-GR-01-003,SOP-GR-01 §3.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-SOP-GR-01-005,SOP-GR-01 §4.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-SOP-GR-01-006,SOP-GR-01 §5.1,Yes,Verified
+P-E003 v1,Nurul Aina Rahman,R-SOP-HK-02-001,SOP-HK-02 §2.1,Yes,Outdated Source
+P-E003 v1,Nurul Aina Rahman,R-SOP-HK-02-002,SOP-HK-02 §2.3,Yes,Outdated Source
+P-E003 v1,Nurul Aina Rahman,R-SOP-HK-02-003,SOP-HK-02 §3.1,Yes,Outdated Source
+P-E003 v1,Nurul Aina Rahman,R-SOP-HK-02-004,SOP-HK-02 §3.4,Yes,Outdated Source
+P-E005 v1,Grace Tan,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E005 v1,Grace Tan,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E005 v1,Grace Tan,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E005 v1,Grace Tan,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E005 v1,Grace Tan,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E005 v1,Grace Tan,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E005 v1,Grace Tan,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E005 v1,Grace Tan,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E005 v1,Grace Tan,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E005 v1,Grace Tan,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E005 v1,Grace Tan,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E005 v1,Grace Tan,R-FIN-01-001,FIN-01 §2.1,No,Requirement Missing
+P-E005 v1,Grace Tan,R-FIN-01-002,FIN-01 §2.4,No,Requirement Missing
+P-E005 v1,Grace Tan,R-FIN-01-003,FIN-01 §3.1,No,Requirement Missing
+P-E005 v1,Grace Tan,R-FIN-01-004,FIN-01 §4.2,Yes,Verified with Warning
+P-E005 v1,Grace Tan,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E005 v1,Grace Tan,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E005 v1,Grace Tan,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E005 v1,Grace Tan,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E005 v1,Grace Tan,R-FLS-01-005,FLS-01 §3.4,No,Requirement Missing
+P-E005 v1,Grace Tan,R-FSA-01-001,FSA-01 §1.2,Yes,Verified
+P-E005 v1,Grace Tan,R-FSA-01-002,FSA-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-FSA-01-003,FSA-01 §2.3,Yes,Verified
+P-E005 v1,Grace Tan,R-FSA-01-004,FSA-01 §3.1,Yes,Verified
+P-E005 v1,Grace Tan,R-FSA-01-005,FSA-01 §3.2,Yes,Verified
+P-E005 v1,Grace Tan,R-FSA-01-006,FSA-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-006,GDP-01 §5.4,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E005 v1,Grace Tan,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E005 v1,Grace Tan,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E005 v1,Grace Tan,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E005 v1,Grace Tan,R-HRP-01-001,HRP-01 §2.1,Yes,Verified with Warning
+P-E005 v1,Grace Tan,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E005 v1,Grace Tan,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E005 v1,Grace Tan,R-HRP-01-004,HRP-01 §3.4,Yes,Verified
+P-E005 v1,Grace Tan,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E005 v1,Grace Tan,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E005 v1,Grace Tan,R-HSP-01-002,HSP-01 §3.1,Yes,Verified
+P-E005 v1,Grace Tan,R-HSP-01-003,HSP-01 §3.3,Yes,Verified
+P-E005 v1,Grace Tan,R-HSP-01-004,HSP-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-HSP-01-005,HSP-01 §5.2,No,Requirement Missing
+P-E005 v1,Grace Tan,R-HSP-01-007,HSP-01 §5.5,No,Requirement Missing
+P-E005 v1,Grace Tan,R-IRD-01-001,IRD-01 §1.1,Yes,Verified
+P-E005 v1,Grace Tan,R-IRD-01-002,IRD-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-IRD-01-003,IRD-01 §2.4,Yes,Verified
+P-E005 v1,Grace Tan,R-IRD-01-004,IRD-01 §3.2,Yes,Verified
+P-E005 v1,Grace Tan,R-IRD-01-005,IRD-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-001,ISP-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-003,ISP-01 §3.3,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E005 v1,Grace Tan,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E005 v1,Grace Tan,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E005 v1,Grace Tan,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E005 v1,Grace Tan,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E005 v1,Grace Tan,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E005 v1,Grace Tan,R-LVP-01-004,LVP-01 §3.3,Yes,Verified
+P-E005 v1,Grace Tan,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E005 v1,Grace Tan,R-PCH-01-001,PCH-01 §1.2,Yes,Verified
+P-E005 v1,Grace Tan,R-PCH-01-003,PCH-01 §2.3,Yes,Verified
+P-E005 v1,Grace Tan,R-PCH-01-004,PCH-01 §3.1,Yes,Verified
+P-E005 v1,Grace Tan,R-PCH-01-005,PCH-01 §3.4,Yes,Verified
+P-E005 v1,Grace Tan,R-PCH-01-006,PCH-01 §3.6,Yes,Verified
+P-E005 v1,Grace Tan,R-PCH-01-007,PCH-01 §4.1,Yes,Verified
+P-E005 v1,Grace Tan,R-PCH-01-009,PCH-01 §2.1,Yes,Verified
+P-E005 v1,Grace Tan,R-ROL-01-007,ROL-01 §4.3,Yes,Verified
+P-E005 v1,Grace Tan,R-SOP-GR-01-001,SOP-GR-01 §2.1,Yes,Verified with Warning
+P-E005 v1,Grace Tan,R-SOP-GR-01-002,SOP-GR-01 §2.3,Yes,Verified
+P-E005 v1,Grace Tan,R-SOP-GR-01-006,SOP-GR-01 §5.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E009 v1,Hana Kobayashi,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FIN-01-001,FIN-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FIN-01-002,FIN-01 §2.4,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FIN-01-003,FIN-01 §3.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FIN-01-004,FIN-01 §4.2,Yes,Verified with Warning
+P-E009 v1,Hana Kobayashi,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-FIN-01-006,FIN-01 §6.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E009 v1,Hana Kobayashi,R-FLS-01-005,FLS-01 §3.4,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HRP-01-001,HRP-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-HSP-01-002,HSP-01 §3.1,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-HSP-01-003,HSP-01 §3.3,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-HSP-01-004,HSP-01 §4.1,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-HSP-01-005,HSP-01 §5.2,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-HSP-01-007,HSP-01 §5.5,No,Requirement Missing
+P-E009 v1,Hana Kobayashi,R-ISP-01-001,ISP-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ISP-01-003,ISP-01 §3.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E009 v1,Hana Kobayashi,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E009 v1,Hana Kobayashi,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-001,PCH-01 §1.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-003,PCH-01 §2.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-004,PCH-01 §3.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-005,PCH-01 §3.4,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-006,PCH-01 §3.6,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-007,PCH-01 §4.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-008,PCH-01 §5.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-PCH-01-009,PCH-01 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ROL-03-003,ROL-03 §2.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-ROL-03-004,ROL-03 §2.4,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-SOP-FO-02-001,SOP-FO-02 §2.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-SOP-FO-02-002,SOP-FO-02 §2.3,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-SOP-FO-02-003,SOP-FO-02 §3.1,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-SOP-FO-02-004,SOP-FO-02 §3.4,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-SOP-FO-02-005,SOP-FO-02 §4.2,Yes,Verified
+P-E009 v1,Hana Kobayashi,R-SOP-FO-02-006,SOP-FO-02 §5.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E004 v1,Mateus Oliveira,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-FIN-01-001,FIN-01 §2.1,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-FIN-01-002,FIN-01 §2.4,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-FIN-01-003,FIN-01 §3.1,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-FIN-01-004,FIN-01 §4.2,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E004 v1,Mateus Oliveira,R-FLS-01-005,FLS-01 §3.4,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HRP-01-001,HRP-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HSP-01-002,HSP-01 §3.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HSP-01-003,HSP-01 §3.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HSP-01-004,HSP-01 §4.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-HSP-01-005,HSP-01 §5.2,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-HSP-01-007,HSP-01 §5.5,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-ISP-01-001,ISP-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ISP-01-003,ISP-01 §3.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E004 v1,Mateus Oliveira,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E004 v1,Mateus Oliveira,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-ROL-01-006,ROL-01 §3.4,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-SOP-FO-01-001,SOP-FO-01 §2.1,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-SOP-FO-01-002,SOP-FO-01 §2.4,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-SOP-FO-01-003,SOP-FO-01 §3.1,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-SOP-FO-01-004,SOP-FO-01 §3.3,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-SOP-FO-01-005,SOP-FO-01 §4.2,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-SOP-FO-01-006,SOP-FO-01 §5.2,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-SOP-FO-01-007,SOP-FO-01 §6.1,No,Requirement Missing
+P-E004 v1,Mateus Oliveira,R-SOP-HK-01-001,SOP-HK-01 §2.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-SOP-HK-01-002,SOP-HK-01 §2.4,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-SOP-HK-01-003,SOP-HK-01 §3.1,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-SOP-HK-01-004,SOP-HK-01 §3.3,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-SOP-HK-01-005,SOP-HK-01 §4.2,Yes,Verified
+P-E004 v1,Mateus Oliveira,R-SOP-HK-02-001,SOP-HK-02 §2.1,Yes,Outdated Source
+P-E004 v1,Mateus Oliveira,R-SOP-HK-02-002,SOP-HK-02 §2.3,Yes,Outdated Source
+P-E004 v1,Mateus Oliveira,R-SOP-HK-02-003,SOP-HK-02 §3.1,Yes,Outdated Source
+P-E004 v1,Mateus Oliveira,R-SOP-HK-02-004,SOP-HK-02 §3.4,Yes,Outdated Source
+P-E010 v1,Priya Raman,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E010 v1,Priya Raman,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E010 v1,Priya Raman,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E010 v1,Priya Raman,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E010 v1,Priya Raman,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E010 v1,Priya Raman,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E010 v1,Priya Raman,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-COC-01-003,COC-01 §3.2,Yes,Partially Verified
+P-E010 v1,Priya Raman,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E010 v1,Priya Raman,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E010 v1,Priya Raman,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E010 v1,Priya Raman,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E010 v1,Priya Raman,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E010 v1,Priya Raman,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E010 v1,Priya Raman,R-FIN-01-001,FIN-01 §2.1,No,Requirement Missing
+P-E010 v1,Priya Raman,R-FIN-01-002,FIN-01 §2.4,No,Requirement Missing
+P-E010 v1,Priya Raman,R-FIN-01-003,FIN-01 §3.1,No,Requirement Missing
+P-E010 v1,Priya Raman,R-FIN-01-004,FIN-01 §4.2,No,Requirement Missing
+P-E010 v1,Priya Raman,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E010 v1,Priya Raman,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E010 v1,Priya Raman,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E010 v1,Priya Raman,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E010 v1,Priya Raman,R-FLS-01-005,FLS-01 §3.4,No,Requirement Missing
+P-E010 v1,Priya Raman,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E010 v1,Priya Raman,R-GDP-01-003,GDP-01 §4.1,No,Requirement Missing
+P-E010 v1,Priya Raman,R-GDP-01-004,GDP-01 §4.2,No,Requirement Missing
+P-E010 v1,Priya Raman,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E010 v1,Priya Raman,R-GDP-01-006,GDP-01 §5.4,Yes,Verified
+P-E010 v1,Priya Raman,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E010 v1,Priya Raman,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E010 v1,Priya Raman,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E010 v1,Priya Raman,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E010 v1,Priya Raman,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E010 v1,Priya Raman,R-HRP-01-001,HRP-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E010 v1,Priya Raman,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E010 v1,Priya Raman,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E010 v1,Priya Raman,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E010 v1,Priya Raman,R-HRS-01-001,HRS-01 §2.1,No,Requirement Missing
+P-E010 v1,Priya Raman,R-HRS-01-002,HRS-01 §2.3,Yes,Verified
+P-E010 v1,Priya Raman,R-HRS-01-003,HRS-01 §3.1,Yes,Verified
+P-E010 v1,Priya Raman,R-HRS-01-004,HRS-01 §4.2,Yes,Verified
+P-E010 v1,Priya Raman,R-HRS-01-005,HRS-01 §5.1,Yes,Verified
+P-E010 v1,Priya Raman,R-HRS-01-006,HRS-01 §6.1,Yes,Verified
+P-E010 v1,Priya Raman,R-HSP-01-002,HSP-01 §3.1,No,Requirement Missing
+P-E010 v1,Priya Raman,R-HSP-01-003,HSP-01 §3.3,No,Requirement Missing
+P-E010 v1,Priya Raman,R-HSP-01-004,HSP-01 §4.1,No,Requirement Missing
+P-E010 v1,Priya Raman,R-HSP-01-005,HSP-01 §5.2,No,Requirement Missing
+P-E010 v1,Priya Raman,R-HSP-01-007,HSP-01 §5.5,No,Requirement Missing
+P-E010 v1,Priya Raman,R-ISP-01-001,ISP-01 §2.1,Yes,Verified with Warning
+P-E010 v1,Priya Raman,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E010 v1,Priya Raman,R-ISP-01-003,ISP-01 §3.3,Yes,Verified with Warning
+P-E010 v1,Priya Raman,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E010 v1,Priya Raman,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E010 v1,Priya Raman,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E010 v1,Priya Raman,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E010 v1,Priya Raman,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E010 v1,Priya Raman,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E010 v1,Priya Raman,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E010 v1,Priya Raman,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E010 v1,Priya Raman,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E010 v1,Priya Raman,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E010 v1,Priya Raman,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E010 v1,Priya Raman,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E010 v1,Priya Raman,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E010 v1,Priya Raman,R-ROL-03-005,ROL-03 §3.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-CMP-01-002,CMP-01 §2.2,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-COC-01-004,COC-01 §4.1,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-COC-01-005,COC-01 §4.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E006 v1,Yusuf Al-Balushi,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-FIN-01-001,FIN-01 §2.1,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-FIN-01-002,FIN-01 §2.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-FIN-01-003,FIN-01 §3.1,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-FIN-01-004,FIN-01 §4.2,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E006 v1,Yusuf Al-Balushi,R-FLS-01-005,FLS-01 §3.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-001,GDP-01 §2.1,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-003,GDP-01 §4.1,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-004,GDP-01 §4.2,No,Requirement Missing
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HRP-01-001,HRP-01 §2.1,Yes,Verified with Warning
+P-E006 v1,Yusuf Al-Balushi,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HSP-01-002,HSP-01 §3.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HSP-01-003,HSP-01 §3.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HSP-01-004,HSP-01 §4.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HSP-01-005,HSP-01 §5.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HSP-01-006,HSP-01 §5.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-HSP-01-007,HSP-01 §5.5,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-001,ISP-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-003,ISP-01 §3.3,Yes,Verified with Warning
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E006 v1,Yusuf Al-Balushi,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E006 v1,Yusuf Al-Balushi,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-ROL-02-002,ROL-02 §1.4,Yes,Verified with Warning
+P-E006 v1,Yusuf Al-Balushi,R-SOP-EN-01-001,SOP-EN-01 §1.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-SOP-EN-01-002,SOP-EN-01 §2.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-SOP-EN-01-003,SOP-EN-01 §2.3,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-SOP-EN-01-004,SOP-EN-01 §3.1,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-SOP-EN-01-005,SOP-EN-01 §4.2,Yes,Verified
+P-E006 v1,Yusuf Al-Balushi,R-SOP-EN-01-006,SOP-EN-01 §5.1,Yes,Verified with Warning
+P-E008 v1,Daniel Okafor,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E008 v1,Daniel Okafor,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FIN-01-001,FIN-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FIN-01-002,FIN-01 §2.4,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FIN-01-003,FIN-01 §3.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FIN-01-004,FIN-01 §4.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E008 v1,Daniel Okafor,R-FLS-01-005,FLS-01 §3.4,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HRP-01-001,HRP-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-HSP-01-002,HSP-01 §3.1,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-HSP-01-003,HSP-01 §3.3,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-HSP-01-004,HSP-01 §4.1,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-HSP-01-005,HSP-01 §5.2,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-HSP-01-007,HSP-01 §5.5,No,Requirement Missing
+P-E008 v1,Daniel Okafor,R-ISP-01-001,ISP-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ISP-01-003,ISP-01 §3.3,Yes,Verified with Warning
+P-E008 v1,Daniel Okafor,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E008 v1,Daniel Okafor,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E008 v1,Daniel Okafor,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E008 v1,Daniel Okafor,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E008 v1,Daniel Okafor,R-REV-01-001,REV-01 §2.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-REV-01-002,REV-01 §2.4,Yes,Verified
+P-E008 v1,Daniel Okafor,R-REV-01-004,REV-01 §4.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-REV-01-005,REV-01 §4.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-REV-01-006,REV-01 §5.1,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ROL-03-001,ROL-03 §1.3,Yes,Verified
+P-E008 v1,Daniel Okafor,R-ROL-03-002,ROL-03 §1.4,Yes,Verified
+P-E007 v1,Sofia Petrova,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-CMP-01-006,CMP-01 §4.1,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E007 v1,Sofia Petrova,R-FIN-01-001,FIN-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-FIN-01-002,FIN-01 §2.4,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-FIN-01-003,FIN-01 §3.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-FIN-01-004,FIN-01 §4.2,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-FLS-01-005,FLS-01 §3.4,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HRP-01-001,HRP-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HSP-01-002,HSP-01 §3.1,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-HSP-01-003,HSP-01 §3.3,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-HSP-01-004,HSP-01 §4.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-HSP-01-005,HSP-01 §5.2,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-HSP-01-007,HSP-01 §5.5,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-ISP-01-001,ISP-01 §2.1,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ISP-01-003,ISP-01 §3.3,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E007 v1,Sofia Petrova,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E007 v1,Sofia Petrova,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-REV-01-002,REV-01 §2.4,Yes,Verified
+P-E007 v1,Sofia Petrova,R-REV-01-005,REV-01 §4.3,No,Requirement Missing
+P-E007 v1,Sofia Petrova,R-REV-01-006,REV-01 §5.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ROL-02-005,ROL-02 §3.3,Yes,Verified
+P-E007 v1,Sofia Petrova,R-ROL-02-006,ROL-02 §3.4,Yes,Verified
+P-E007 v1,Sofia Petrova,R-SAL-01-001,SAL-01 §2.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-SAL-01-002,SAL-01 §3.2,Yes,Verified
+P-E007 v1,Sofia Petrova,R-SAL-01-003,SAL-01 §4.1,Yes,Verified
+P-E007 v1,Sofia Petrova,R-SAL-01-004,SAL-01 §4.4,Yes,Verified
+P-E007 v1,Sofia Petrova,R-SAL-01-005,SAL-01 §5.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-CMP-01-001,CMP-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-CMP-01-002,CMP-01 §2.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-CMP-01-003,CMP-01 §2.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-CMP-01-004,CMP-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-CMP-01-005,CMP-01 §3.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-CMP-01-006,CMP-01 §4.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-COC-01-001,COC-01 §1.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-COC-01-002,COC-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-COC-01-003,COC-01 §3.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-COC-01-004,COC-01 §4.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-COC-01-006,COC-01 §5.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-COC-01-007,COC-01 §6.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-ESC-01-001,ESC-01 §2.1,Yes,Verified with Warning
+P-E011 v3,Karim Mansour,R-ESC-01-003,ESC-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-ESC-01-004,ESC-01 §3.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-ESC-01-005,ESC-01 §4.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-ESC-01-006,ESC-01 §5.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-FAQ-01-002,FAQ-01 §Q7,Yes,Verified
+P-E011 v3,Karim Mansour,R-FIN-01-001,FIN-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-FIN-01-002,FIN-01 §2.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-FIN-01-003,FIN-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-FIN-01-004,FIN-01 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-FIN-01-005,FIN-01 §5.2,No,Requirement Missing
+P-E011 v3,Karim Mansour,R-FLS-01-001,FLS-01 §1.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-FLS-01-002,FLS-01 §1.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-FLS-01-003,FLS-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-FLS-01-004,FLS-01 §3.1,Yes,Verified with Warning
+P-E011 v3,Karim Mansour,R-FLS-01-005,FLS-01 §3.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-FLS-01-006,FLS-01 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-001,GDP-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-002,GDP-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-003,GDP-01 §4.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-004,GDP-01 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-005,GDP-01 §5.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-007,GDP-01 §6.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-008,GDP-01 §7.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-GDP-01-009,GDP-01 §4.5,Yes,Verified
+P-E011 v3,Karim Mansour,R-HBK-01-001,HBK-01 §1.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-HBK-01-002,HBK-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-HBK-01-003,HBK-01 §2.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-HRP-01-001,HRP-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-HRP-01-002,HRP-01 §2.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-HRP-01-003,HRP-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-HRP-01-004,HRP-01 §3.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-HRP-01-005,HRP-01 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-HRP-01-006,HRP-01 §5.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-HSP-01-002,HSP-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-HSP-01-003,HSP-01 §3.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-HSP-01-004,HSP-01 §4.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-HSP-01-005,HSP-01 §5.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-HSP-01-007,HSP-01 §5.5,Yes,Verified
+P-E011 v3,Karim Mansour,R-ISP-01-001,ISP-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-ISP-01-002,ISP-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-ISP-01-003,ISP-01 §3.3,Yes,Verified with Warning
+P-E011 v3,Karim Mansour,R-ISP-01-004,ISP-01 §3.5,Yes,Verified
+P-E011 v3,Karim Mansour,R-ISP-01-005,ISP-01 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-ISP-01-006,ISP-01 §5.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-ISP-01-007,ISP-01 §6.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-ISP-01-008,ISP-01 §7.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-ITA-01-001,ITA-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-ITA-01-002,ITA-01 §2.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-ITA-01-004,ITA-01 §3.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-ITA-01-005,ITA-01 §4.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-LVP-01-001,LVP-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-LVP-01-002,LVP-01 §2.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-LVP-01-003,LVP-01 §3.1,Yes,Verified with Warning
+P-E011 v3,Karim Mansour,R-LVP-01-004,LVP-01 §3.3,Yes,Verified with Warning
+P-E011 v3,Karim Mansour,R-LVP-01-005,LVP-01 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-PCH-01-001,PCH-01 §1.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-PCH-01-003,PCH-01 §2.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-PCH-01-004,PCH-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-PCH-01-005,PCH-01 §3.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-PCH-01-006,PCH-01 §3.6,Yes,Verified
+P-E011 v3,Karim Mansour,R-PCH-01-007,PCH-01 §4.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-PCH-01-009,PCH-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-REV-01-002,REV-01 §2.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-REV-01-003,REV-01 §3.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-REV-01-005,REV-01 §4.3,No,Requirement Missing
+P-E011 v3,Karim Mansour,R-REV-01-006,REV-01 §5.1,No,Requirement Missing
+P-E011 v3,Karim Mansour,R-ROL-02-003,ROL-02 §2.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-ROL-02-004,ROL-02 §2.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-01-001,SOP-FO-01 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-01-002,SOP-FO-01 §2.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-01-003,SOP-FO-01 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-01-004,SOP-FO-01 §3.3,Yes,Partially Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-01-005,SOP-FO-01 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-01-006,SOP-FO-01 §5.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-01-007,SOP-FO-01 §6.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-02-001,SOP-FO-02 §2.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-02-002,SOP-FO-02 §2.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-02-003,SOP-FO-02 §3.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-02-004,SOP-FO-02 §3.4,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-FO-02-005,SOP-FO-02 §4.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-GR-01-001,SOP-GR-01 §2.1,Yes,Verified with Warning
+P-E011 v3,Karim Mansour,R-SOP-GR-01-002,SOP-GR-01 §2.3,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-GR-01-004,SOP-GR-01 §3.2,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-GR-01-006,SOP-GR-01 §5.1,Yes,Verified
+P-E011 v3,Karim Mansour,R-SOP-HK-02-001,SOP-HK-02 §2.1,Yes,Outdated Source
+P-E011 v3,Karim Mansour,R-SOP-HK-02-002,SOP-HK-02 §2.3,Yes,Outdated Source
+P-E011 v3,Karim Mansour,R-SOP-HK-02-003,SOP-HK-02 §3.1,Yes,Outdated Source
+P-E011 v3,Karim Mansour,R-SOP-HK-02-004,SOP-HK-02 §3.4,Yes,Outdated Source

@@ -1,0 +1,834 @@
+﻿Plan,Rule,Severity,Implied status,Item,Requirement,Message
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-REV-01-006,Mandatory requirement R-REV-01-006 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-FLS-01-005,Mandatory requirement R-FLS-01-005 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-005,Mandatory requirement R-HSP-01-005 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-007,Mandatory requirement R-HSP-01-007 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-REV-01-005,Mandatory requirement R-REV-01-005 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-001,Mandatory requirement R-FIN-01-001 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-002,Mandatory requirement R-FIN-01-002 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-003,Mandatory requirement R-FIN-01-003 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-004,Mandatory requirement R-FIN-01-004 is not in the plan.
+P-E001 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-003,R-REV-01-003 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-001,R-REV-01-001 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-SOP-GR-01-004,R-SOP-GR-01-004 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-SOP-FO-02-006,R-SOP-FO-02-006 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-PCH-01-008,R-PCH-01-008 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-STAGE,info,Verified,,R-HRP-01-007,R-HRP-01-007 is scheduled for D90; the source suggests D30.
+P-E001 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-GDP-01-003,R-GDP-01-003 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-GDP-01-007,R-GDP-01-007 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-FLS-01-007,R-FLS-01-007 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-FO-01-001,R-SOP-FO-01-001 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-FO-01-002,R-SOP-FO-01-002 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-FO-01-006,R-SOP-FO-01-006 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-FO-01-003,R-SOP-FO-01-003 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-FO-01-004,R-SOP-FO-01-004 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-FO-01-005,R-SOP-FO-01-005 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-ROL-01-001,R-ROL-01-001 is scheduled for W2; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ROL-01-002,R-ROL-01-002 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W1; the source suggests D30.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-GR-01-002,R-SOP-GR-01-002 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-GR-01-003,R-SOP-GR-01-003 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-GR-01-006,R-SOP-GR-01-006 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-HRP-01-001,R-HRP-01-001 is scheduled for D30; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E001 v1,V-STAGE,info,Verified,,R-PCH-01-001,R-PCH-01-001 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-PCH-01-004,R-PCH-01-004 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-PCH-01-005,R-PCH-01-005 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-PCH-01-009,R-PCH-01-009 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-HK-02-001,R-SOP-HK-02-001 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-HK-02-002,R-SOP-HK-02-002 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-HK-02-004,R-SOP-HK-02-004 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-SOP-HK-02-005,R-SOP-HK-02-005 is scheduled for W2; the source suggests D30.
+P-E001 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W1; the source suggests D30.
+P-E001 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-HSP-01-002,R-HSP-01-002 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-HSP-01-004,R-HSP-01-004 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-REV-01-002,R-REV-01-002 is scheduled for W1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E001 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E001 v1,V-CHECKLIST,warning,Verified with Warning,,R-SOP-GR-01-001,R-SOP-GR-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E001 v1,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E001 v1,V-CHECKLIST,warning,Verified with Warning,,R-HRP-01-001,R-HRP-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E001 v1,V-CHECKLIST,warning,Verified with Warning,,R-HSP-01-003,R-HSP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E001 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-001,R-ISP-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E001 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-003,R-ISP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E001 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E001 v1,V-HALLUCINATION,warning,Verified with Warning,P-E001-v1.M08.S01,,Scenario detail 45 minute is not from the sources (illustrative).
+P-E001 v1,V-HALLUCINATION,warning,Verified with Warning,P-E001-v1.M04.S01,,"Scenario detail 05:30, 08:00 is not from the sources (illustrative)."
+P-E001 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E001 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-001,"R-SOP-HK-02-001 comes from SOP-HK-02, which has expired with no replacement."
+P-E001 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-003,"R-SOP-HK-02-003 comes from SOP-HK-02, which has expired with no replacement."
+P-E001 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-005,"R-SOP-HK-02-005 comes from SOP-HK-02, which has expired with no replacement."
+P-E001 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-004,"R-SOP-HK-02-004 comes from SOP-HK-02, which has expired with no replacement."
+P-E001 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-002,"R-SOP-HK-02-002 comes from SOP-HK-02, which has expired with no replacement."
+P-E001 v1,V-QUIZ-SOURCE,warning,Verified with Warning,P-E001-v1.M04.Q01,,Wrong option 'Every month for six months' matches the source better than the marked answer.
+P-E001 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E001 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E001 v1,V-STAGE,warning,Verified with Warning,,,52 requirements are placed on Day 1 (limit 12).
+P-E003 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E003 v1,V-COVERAGE,error,Requirement Missing,,R-FLS-01-005,Mandatory requirement R-FLS-01-005 is not in the plan.
+P-E003 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-FLS-01-007,R-FLS-01-007 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-SOP-GR-01-004,R-SOP-GR-01-004 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-006,R-ISP-01-006 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-GDP-01-003,R-GDP-01-003 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-GDP-01-006,R-GDP-01-006 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W2; the source suggests D30.
+P-E003 v1,V-STAGE,info,Verified,,R-ROL-01-003,R-ROL-01-003 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ROL-01-004,R-ROL-01-004 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-HRP-01-007,R-HRP-01-007 is scheduled for D90; the source suggests D30.
+P-E003 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-GR-01-002,R-SOP-GR-01-002 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-GR-01-003,R-SOP-GR-01-003 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-GR-01-005,R-SOP-GR-01-005 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-GR-01-006,R-SOP-GR-01-006 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-HSP-01-002,R-HSP-01-002 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-HSP-01-003,R-HSP-01-003 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-HSP-01-004,R-HSP-01-004 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-HSP-01-005,R-HSP-01-005 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-HSP-01-007,R-HSP-01-007 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E003 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E003 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-HK-02-001,R-SOP-HK-02-001 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-HK-02-002,R-SOP-HK-02-002 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-HK-02-004,R-SOP-HK-02-004 is scheduled for W1; the source suggests W2.
+P-E003 v1,V-STAGE,info,Verified,,R-SOP-HK-02-005,R-SOP-HK-02-005 is scheduled for W2; the source suggests D30.
+P-E003 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W1; the source suggests D30.
+P-E003 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-003,R-ISP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E003 v1,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E003 v1,V-CHECKLIST,warning,Verified with Warning,,R-ROL-01-003,R-ROL-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E003 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-001,R-ISP-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E003 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E003 v1,V-HALLUCINATION,warning,Verified with Warning,P-E003-v1.M04.S01,,Scenario detail 20:30 is not from the sources (illustrative).
+P-E003 v1,V-HALLUCINATION,warning,Verified with Warning,P-E003-v1.M03.S01,,"usd 100 is company policy, but not from the cited section."
+P-E003 v1,V-HALLUCINATION,warning,Verified with Warning,P-E003-v1.M06.S01,,"usd 50 is company policy, but not from the cited section."
+P-E003 v1,V-MANDATORY,warning,Partially Verified,,R-FAQ-01-004,GenAI marked R-FAQ-01-004 as mandatory; the matrix says optional.
+P-E003 v1,V-MANDATORY,warning,Partially Verified,,R-COC-01-003,GenAI marked R-COC-01-003 as optional; the matrix says mandatory.
+P-E003 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E003 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-003,"R-SOP-HK-02-003 comes from SOP-HK-02, which has expired with no replacement."
+P-E003 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-002,"R-SOP-HK-02-002 comes from SOP-HK-02, which has expired with no replacement."
+P-E003 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-005,"R-SOP-HK-02-005 comes from SOP-HK-02, which has expired with no replacement."
+P-E003 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-004,"R-SOP-HK-02-004 comes from SOP-HK-02, which has expired with no replacement."
+P-E003 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-001,"R-SOP-HK-02-001 comes from SOP-HK-02, which has expired with no replacement."
+P-E003 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E003 v1,V-SOURCE,warning,Verified with Warning,,R-ITA-01-002,"R-ITA-01-002 is cited as ITA-01 §2.2, but the clause is in ITA-01 §2.3."
+P-E003 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E003 v1,V-STAGE,warning,Verified with Warning,,,45 requirements are placed on Day 1 (limit 12).
+P-E003 v1,V-STAGE,warning,Verified with Warning,,R-FIN-01-004,R-FIN-01-004 is scheduled for W1; the source states D30.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-002,Mandatory requirement R-FIN-01-002 is not in the plan.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-001,Mandatory requirement R-FIN-01-001 is not in the plan.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-003,Mandatory requirement R-FIN-01-003 is not in the plan.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-FLS-01-005,Mandatory requirement R-FLS-01-005 is not in the plan.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-005,Mandatory requirement R-HSP-01-005 is not in the plan.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-007,Mandatory requirement R-HSP-01-007 is not in the plan.
+P-E005 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E005 v1,V-REQ-ID,error,Unsupported Requirement,P-E005-v1.M03.O02,HSP-01,Item cites unknown requirement HSP-01.
+P-E005 v1,V-ROLE,error,Unsupported Requirement,,R-PCH-01-008,R-PCH-01-008 is valid company content but does not apply to the FBA role.
+P-E005 v1,V-STAGE,info,Verified,,R-HRP-01-007,R-HRP-01-007 is scheduled for D90; the source suggests D30.
+P-E005 v1,V-STAGE,info,Verified,,R-ROL-01-007,R-ROL-01-007 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for D30; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for W1; the source suggests D30.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-003,R-GDP-01-003 is scheduled for D30; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-004,R-GDP-01-004 is scheduled for D30; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-006,R-GDP-01-006 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-007,R-GDP-01-007 is scheduled for D30; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-HSP-01-002,R-HSP-01-002 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-HSP-01-004,R-HSP-01-004 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-SOP-GR-01-002,R-SOP-GR-01-002 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-SOP-GR-01-006,R-SOP-GR-01-006 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W1; the source suggests D30.
+P-E005 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W2; the source suggests D30.
+P-E005 v1,V-STAGE,info,Verified,,R-FSA-01-001,R-FSA-01-001 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FSA-01-002,R-FSA-01-002 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FSA-01-003,R-FSA-01-003 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FSA-01-004,R-FSA-01-004 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FSA-01-005,R-FSA-01-005 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-FSA-01-006,R-FSA-01-006 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-HRP-01-004,R-HRP-01-004 is scheduled for W1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for D30; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for D60; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-IRD-01-001,R-IRD-01-001 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-IRD-01-002,R-IRD-01-002 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-IRD-01-003,R-IRD-01-003 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-IRD-01-004,R-IRD-01-004 is scheduled for W1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-IRD-01-005,R-IRD-01-005 is scheduled for W1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-HRP-01-001,R-HRP-01-001 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for W1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for D1; the source suggests W2.
+P-E005 v1,V-STAGE,info,Verified,,R-PCH-01-001,R-PCH-01-001 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-PCH-01-004,R-PCH-01-004 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-PCH-01-009,R-PCH-01-009 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E005 v1,V-CHECKLIST,warning,Verified with Warning,,R-HRP-01-001,R-HRP-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E005 v1,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E005 v1,V-CHECKLIST,warning,Verified with Warning,,R-SOP-GR-01-001,R-SOP-GR-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E005 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E005 v1,V-HALLUCINATION,warning,Verified with Warning,P-E005-v1.M05.S01,,Scenario detail 02:30 is not from the sources (illustrative).
+P-E005 v1,V-HALLUCINATION,warning,Verified with Warning,P-E005-v1.M01.S01,,"usd 30 is company policy, but not from the cited section."
+P-E005 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E005 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W2; the source states D1.
+P-E005 v1,V-STAGE,warning,Verified with Warning,,R-FIN-01-004,R-FIN-01-004 is scheduled for W1; the source states D30.
+P-E005 v1,V-STAGE,warning,Verified with Warning,,,48 requirements are placed on Day 1 (limit 12).
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-007,Mandatory requirement R-HSP-01-007 is not in the plan.
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-004,Mandatory requirement R-HSP-01-004 is not in the plan.
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-005,Mandatory requirement R-HSP-01-005 is not in the plan.
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-FLS-01-005,Mandatory requirement R-FLS-01-005 is not in the plan.
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-002,Mandatory requirement R-HSP-01-002 is not in the plan.
+P-E009 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-003,Mandatory requirement R-HSP-01-003 is not in the plan.
+P-E009 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the FNA role.
+P-E009 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the FNA role.
+P-E009 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W2; the source suggests D30.
+P-E009 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-PCH-01-001,R-PCH-01-001 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-PCH-01-009,R-PCH-01-009 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W1; the source suggests D30.
+P-E009 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for D1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E009 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-GDP-01-004,R-GDP-01-004 is scheduled for D30; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-FIN-01-001,R-FIN-01-001 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-FIN-01-002,R-FIN-01-002 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-FIN-01-006,R-FIN-01-006 is scheduled for D30; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-ROL-03-003,R-ROL-03-003 is scheduled for D1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-ROL-03-004,R-ROL-03-004 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E009 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E009 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E009 v1,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E009 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E009 v1,V-DUPLICATE,warning,Verified with Warning,P-E009-v1.M01.C03,,Substantially duplicates P-E009-v1.M01.C01.
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M08.S01,,"18 % is company policy, but not from the cited section."
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M02.S01,,"usd 7500 is company policy, but not from the cited section."
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M06.T01,,"usd 200 is company policy, but not from the cited section."
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M04.S01,,Scenario detail 05:30 is not from the sources (illustrative).
+P-E009 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E009 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E009 v1,V-STAGE,warning,Verified with Warning,,R-FIN-01-004,R-FIN-01-004 is scheduled for W1; the source states D30.
+P-E009 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E009 v1,V-STAGE,warning,Verified with Warning,,,32 requirements are placed on Day 1 (limit 12).
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-SOP-FO-01-004,Mandatory requirement R-SOP-FO-01-004 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-001,Mandatory requirement R-FIN-01-001 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-002,Mandatory requirement R-FIN-01-002 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-003,Mandatory requirement R-FIN-01-003 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-004,Mandatory requirement R-FIN-01-004 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-005,Mandatory requirement R-HSP-01-005 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-007,Mandatory requirement R-HSP-01-007 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-SOP-FO-01-001,Mandatory requirement R-SOP-FO-01-001 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-SOP-FO-01-002,Mandatory requirement R-SOP-FO-01-002 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-SOP-FO-01-003,Mandatory requirement R-SOP-FO-01-003 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-SOP-FO-01-005,Mandatory requirement R-SOP-FO-01-005 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-SOP-FO-01-007,Mandatory requirement R-SOP-FO-01-007 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E004 v1,V-COVERAGE,error,Requirement Missing,,R-SOP-FO-01-006,Mandatory requirement R-SOP-FO-01-006 is not in the plan.
+P-E004 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the HKS role.
+P-E004 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the HKS role.
+P-E004 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-HRP-01-001,R-HRP-01-001 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-HRP-01-007,R-HRP-01-007 is scheduled for D90; the source suggests D30.
+P-E004 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-HSP-01-002,R-HSP-01-002 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-HSP-01-004,R-HSP-01-004 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W2; the source suggests D30.
+P-E004 v1,V-STAGE,info,Verified,,R-ROL-01-006,R-ROL-01-006 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-HSP-01-003,R-HSP-01-003 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-01-001,R-SOP-HK-01-001 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-01-002,R-SOP-HK-01-002 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-01-003,R-SOP-HK-01-003 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-01-004,R-SOP-HK-01-004 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-01-005,R-SOP-HK-01-005 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-01-006,R-SOP-HK-01-006 is scheduled for W2; the source suggests D30.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-02-001,R-SOP-HK-02-001 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-02-002,R-SOP-HK-02-002 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-02-003,R-SOP-HK-02-003 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-02-004,R-SOP-HK-02-004 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-SOP-HK-02-005,R-SOP-HK-02-005 is scheduled for W2; the source suggests D30.
+P-E004 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W1; the source suggests D30.
+P-E004 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for D30; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E004 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E004 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E004 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for W1; the source suggests W2.
+P-E004 v1,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E004 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E004 v1,V-HALLUCINATION,warning,Verified with Warning,P-E004-v1.M05.S01,,Scenario detail 15:10 is not from the sources (illustrative).
+P-E004 v1,V-HALLUCINATION,warning,Verified with Warning,P-E004-v1.M04.S01,,"25 kg is company policy, but not from the cited section."
+P-E004 v1,V-MANDATORY,warning,Partially Verified,,R-FAQ-01-004,GenAI marked R-FAQ-01-004 as mandatory; the matrix says optional.
+P-E004 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E004 v1,V-MANDATORY,warning,Partially Verified,,R-SOP-HK-02-005,GenAI marked R-SOP-HK-02-005 as mandatory; the matrix says optional.
+P-E004 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-001,"R-SOP-HK-02-001 comes from SOP-HK-02, which has expired with no replacement."
+P-E004 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-002,"R-SOP-HK-02-002 comes from SOP-HK-02, which has expired with no replacement."
+P-E004 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-003,"R-SOP-HK-02-003 comes from SOP-HK-02, which has expired with no replacement."
+P-E004 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-005,"R-SOP-HK-02-005 comes from SOP-HK-02, which has expired with no replacement."
+P-E004 v1,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-004,"R-SOP-HK-02-004 comes from SOP-HK-02, which has expired with no replacement."
+P-E004 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E004 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E004 v1,V-STAGE,warning,Verified with Warning,,,43 requirements are placed on Day 1 (limit 12).
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-001,Mandatory requirement R-FIN-01-001 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-003,Mandatory requirement R-FIN-01-003 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-004,Mandatory requirement R-FIN-01-004 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-FLS-01-005,Mandatory requirement R-FLS-01-005 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-GDP-01-003,Mandatory requirement R-GDP-01-003 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-GDP-01-004,Mandatory requirement R-GDP-01-004 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-004,Mandatory requirement R-HSP-01-004 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-HRS-01-001,Mandatory requirement R-HRS-01-001 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-002,Mandatory requirement R-HSP-01-002 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-002,Mandatory requirement R-FIN-01-002 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-003,Mandatory requirement R-HSP-01-003 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-005,Mandatory requirement R-HSP-01-005 is not in the plan.
+P-E010 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-007,Mandatory requirement R-HSP-01-007 is not in the plan.
+P-E010 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the HRE role.
+P-E010 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the HRE role.
+P-E010 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-GDP-01-006,R-GDP-01-006 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-HRS-01-004,R-HRS-01-004 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-HRP-01-001,R-HRP-01-001 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-HRP-01-007,R-HRP-01-007 is scheduled for D90; the source suggests D30.
+P-E010 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-ROL-03-005,R-ROL-03-005 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-HRS-01-002,R-HRS-01-002 is scheduled for D1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-GDP-01-007,R-GDP-01-007 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ISP-01-006,R-ISP-01-006 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W2; the source suggests D30.
+P-E010 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W1; the source suggests D30.
+P-E010 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for D30; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E010 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for W1; the source suggests D30.
+P-E010 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for W1; the source suggests W2.
+P-E010 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-001,R-ISP-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E010 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-003,R-ISP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E010 v1,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E010 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E010 v1,V-HALLUCINATION,warning,Verified with Warning,P-E010-v1.M05.S01,,"10 day is company policy, but not from the cited section."
+P-E010 v1,V-HALLUCINATION,warning,Verified with Warning,P-E010-v1.M06.S01,,"10 minute is company policy, but not from the cited section."
+P-E010 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E010 v1,V-MANDATORY,warning,Partially Verified,,R-COC-01-003,GenAI marked R-COC-01-003 as optional; the matrix says mandatory.
+P-E010 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E010 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E010 v1,V-STAGE,warning,Verified with Warning,,,36 requirements are placed on Day 1 (limit 12).
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-001,Mandatory requirement R-FIN-01-001 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-003,Mandatory requirement R-FIN-01-003 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-004,Mandatory requirement R-FIN-01-004 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-COC-01-004,Mandatory requirement R-COC-01-004 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-GDP-01-004,Mandatory requirement R-GDP-01-004 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-GDP-01-003,Mandatory requirement R-GDP-01-003 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-GDP-01-001,Mandatory requirement R-GDP-01-001 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-002,Mandatory requirement R-CMP-01-002 is not in the plan.
+P-E006 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E006 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-HRP-01-001,R-HRP-01-001 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-COC-01-005,R-COC-01-005 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-FLS-01-005,R-FLS-01-005 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-HSP-01-002,R-HSP-01-002 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-HSP-01-003,R-HSP-01-003 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-SOP-EN-01-001,R-SOP-EN-01-001 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-SOP-EN-01-002,R-SOP-EN-01-002 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-SOP-EN-01-003,R-SOP-EN-01-003 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-SOP-EN-01-004,R-SOP-EN-01-004 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-SOP-EN-01-005,R-SOP-EN-01-005 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W1; the source suggests D30.
+P-E006 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for D1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-HSP-01-004,R-HSP-01-004 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-HSP-01-005,R-HSP-01-005 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-HSP-01-006,R-HSP-01-006 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-HSP-01-007,R-HSP-01-007 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E006 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E006 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E006 v1,V-CHECKLIST,warning,Verified with Warning,,R-HRP-01-001,R-HRP-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E006 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-003,R-ISP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E006 v1,V-CHECKLIST,warning,Verified with Warning,,R-ROL-02-002,R-ROL-02-002 asks the employee to complete or acknowledge something but has no checklist item.
+P-E006 v1,V-CHECKLIST,warning,Verified with Warning,,R-SOP-EN-01-006,R-SOP-EN-01-006 asks the employee to complete or acknowledge something but has no checklist item.
+P-E006 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E006 v1,V-HALLUCINATION,warning,Verified with Warning,P-E006-v1.M05.S01,,Scenario detail 08:00 is not from the sources (illustrative).
+P-E006 v1,V-HALLUCINATION,warning,Verified with Warning,P-E006-v1.M06.S01,,Scenario detail 19:45 is not from the sources (illustrative).
+P-E006 v1,V-HALLUCINATION,warning,Verified with Warning,P-E006-v1.M06.T01,,"25 kg is company policy, but not from the cited section."
+P-E006 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E006 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E006 v1,V-STAGE,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 is scheduled for D30; the source states D90.
+P-E006 v1,V-STAGE,warning,Verified with Warning,,,42 requirements are placed on Day 1 (limit 12).
+P-E006 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-003,Mandatory requirement R-HSP-01-003 is not in the plan.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-004,Mandatory requirement R-HSP-01-004 is not in the plan.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-005,Mandatory requirement R-HSP-01-005 is not in the plan.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-007,Mandatory requirement R-HSP-01-007 is not in the plan.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-FLS-01-005,Mandatory requirement R-FLS-01-005 is not in the plan.
+P-E008 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-002,Mandatory requirement R-HSP-01-002 is not in the plan.
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-FIN-01-006,R-FIN-01-006 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-006,R-ESC-01-006 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W2; the source suggests D30.
+P-E008 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-GDP-01-003,R-GDP-01-003 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-GDP-01-004,R-GDP-01-004 is scheduled for D30; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-HRP-01-001,R-HRP-01-001 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for D30; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for D30; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for D1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-REV-01-001,R-REV-01-001 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-REV-01-002,R-REV-01-002 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-REV-01-004,R-REV-01-004 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-REV-01-005,R-REV-01-005 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-REV-01-006,R-REV-01-006 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-ROL-03-001,R-ROL-03-001 is scheduled for D1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-ROL-03-002,R-ROL-03-002 is scheduled for D1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E008 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E008 v1,V-STAGE,info,Verified,,R-FIN-01-001,R-FIN-01-001 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-FIN-01-002,R-FIN-01-002 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-FIN-01-003,R-FIN-01-003 is scheduled for W1; the source suggests W2.
+P-E008 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E008 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-003,R-ISP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E008 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M06.S01,,"12 room, 18 % is company policy, but not from the cited section."
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M07.S01,,"4 day is company policy, but not from the cited section."
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M08.S01,,Scenario detail 45 day is not from the sources (illustrative).
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M04.S01,,"09:00 is company policy, but not from the cited section."
+P-E008 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E008 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E008 v1,V-STAGE,warning,Verified with Warning,,,34 requirements are placed on Day 1 (limit 12).
+P-E008 v1,V-STAGE,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 is scheduled for D30; the source states D90.
+P-E008 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-003,Mandatory requirement R-HSP-01-003 is not in the plan.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-002,Mandatory requirement R-HSP-01-002 is not in the plan.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-REV-01-005,Mandatory requirement R-REV-01-005 is not in the plan.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-007,Mandatory requirement R-HSP-01-007 is not in the plan.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-HSP-01-005,Mandatory requirement R-HSP-01-005 is not in the plan.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-CMP-01-006,Mandatory requirement R-CMP-01-006 is not in the plan.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E007 v1,V-COVERAGE,error,Requirement Missing,,R-FLS-01-005,Mandatory requirement R-FLS-01-005 is not in the plan.
+P-E007 v1,V-QUIZ-SOURCE,error,Source Support Missing,P-E007-v1.M04.Q04,,The correct answer 'Lock your workstation.' is not supported by the cited section.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-001,R-REV-01-001 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-003,R-REV-01-003 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-REV-01-002,R-REV-01-002 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-REV-01-006,R-REV-01-006 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-GDP-01-003,R-GDP-01-003 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-GDP-01-004,R-GDP-01-004 is scheduled for D30; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W1; the source suggests D30.
+P-E007 v1,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-HRP-01-007,R-HRP-01-007 is scheduled for D90; the source suggests D30.
+P-E007 v1,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-SAL-01-001,R-SAL-01-001 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-ISP-01-006,R-ISP-01-006 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-SAL-01-002,R-SAL-01-002 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-SAL-01-003,R-SAL-01-003 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-SAL-01-004,R-SAL-01-004 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ROL-02-005,R-ROL-02-005 is scheduled for D30; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ROL-02-006,R-ROL-02-006 is scheduled for W2; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E007 v1,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E007 v1,V-STAGE,info,Verified,,R-FIN-01-001,R-FIN-01-001 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-FIN-01-002,R-FIN-01-002 is scheduled for W1; the source suggests W2.
+P-E007 v1,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W1; the source suggests D30.
+P-E007 v1,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E007 v1,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E007 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-001,R-ISP-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E007 v1,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-003,R-ISP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E007 v1,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M06.T01,,"15 room is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M07.S01,,"usd 150 is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M06.S01,,"12 room is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M08.S01,,"24 kg is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M05.S01,,"20 % is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M03.S01,,"20 day is company policy, but not from the cited section."
+P-E007 v1,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E007 v1,V-MANDATORY,warning,Partially Verified,,R-FAQ-01-004,GenAI marked R-FAQ-01-004 as mandatory; the matrix says optional.
+P-E007 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E007 v1,V-SOURCE,warning,Verified with Warning,,R-FIN-01-002,"R-FIN-01-002 is cited as FIN-01 §2.3, but the clause is in FIN-01 §2.4."
+P-E007 v1,V-STAGE,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 is scheduled for D60; the source states D90.
+P-E007 v1,V-STAGE,warning,Verified with Warning,,,36 requirements are placed on Day 1 (limit 12).
+P-E007 v1,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.
+P-E007 v1,V-STAGE,warning,Verified with Warning,,R-FIN-01-004,R-FIN-01-004 is scheduled for W1; the source states D30.
+P-E011 v3,V-COVERAGE,error,Requirement Missing,,R-REV-01-005,Mandatory requirement R-REV-01-005 is not in the plan.
+P-E011 v3,V-COVERAGE,error,Requirement Missing,,R-FIN-01-005,Mandatory requirement R-FIN-01-005 is not in the plan.
+P-E011 v3,V-COVERAGE,error,Requirement Missing,,R-REV-01-006,Mandatory requirement R-REV-01-006 is not in the plan.
+P-E011 v3,V-QUIZ-SOURCE,error,Source Support Missing,P-E011-v3.M06.Q04,,The correct answer 'Lock your workstation' is not supported by the cited section.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-FLS-01-007,R-FLS-01-007 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-SOP-FO-01-008,R-SOP-FO-01-008 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-PCH-01-008,R-PCH-01-008 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-SOP-FO-02-006,R-SOP-FO-02-006 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-01-007,R-SOP-FO-01-007 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ROL-02-003,R-ROL-02-003 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ROL-02-004,R-ROL-02-004 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-FAQ-01-004,R-FAQ-01-004 is scheduled for W1; the source suggests D30.
+P-E011 v3,V-STAGE,info,Verified,,R-CMP-01-005,R-CMP-01-005 is scheduled for D30; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-COC-01-007,R-COC-01-007 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-HRP-01-001,R-HRP-01-001 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-HRP-01-002,R-HRP-01-002 is scheduled for D30; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-HRP-01-003,R-HRP-01-003 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-HRP-01-004,R-HRP-01-004 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-HRP-01-005,R-HRP-01-005 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-HRP-01-006,R-HRP-01-006 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-GDP-01-002,R-GDP-01-002 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-GDP-01-009,R-GDP-01-009 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-GR-01-002,R-SOP-GR-01-002 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-GR-01-004,R-SOP-GR-01-004 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-GR-01-006,R-SOP-GR-01-006 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-PCH-01-001,R-PCH-01-001 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-PCH-01-003,R-PCH-01-003 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-PCH-01-004,R-PCH-01-004 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-PCH-01-005,R-PCH-01-005 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-PCH-01-007,R-PCH-01-007 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-PCH-01-009,R-PCH-01-009 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-FIN-01-001,R-FIN-01-001 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-FIN-01-002,R-FIN-01-002 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-COC-01-004,R-COC-01-004 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-HBK-01-003,R-HBK-01-003 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-FLS-01-006,R-FLS-01-006 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-GDP-01-003,R-GDP-01-003 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-GDP-01-004,R-GDP-01-004 is scheduled for D30; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-GDP-01-005,R-GDP-01-005 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-GDP-01-007,R-GDP-01-007 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-HRP-01-007,R-HRP-01-007 is scheduled for D90; the source suggests D30.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-01-001,R-SOP-FO-01-001 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-01-002,R-SOP-FO-01-002 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-01-003,R-SOP-FO-01-003 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-01-004,R-SOP-FO-01-004 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-01-005,R-SOP-FO-01-005 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-01-006,R-SOP-FO-01-006 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-ITA-01-005,R-ITA-01-005 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-COC-01-002,R-COC-01-002 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-COC-01-003,R-COC-01-003 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-ESC-01-005,R-ESC-01-005 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-FAQ-01-002,R-FAQ-01-002 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-MEM-01-002,R-MEM-01-002 is scheduled for D1; the source suggests D30.
+P-E011 v3,V-STAGE,info,Verified,,R-FLS-01-002,R-FLS-01-002 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-FLS-01-003,R-FLS-01-003 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-FLS-01-005,R-FLS-01-005 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-HK-02-001,R-SOP-HK-02-001 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-HK-02-002,R-SOP-HK-02-002 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-HK-02-003,R-SOP-HK-02-003 is scheduled for D30; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-HK-02-004,R-SOP-HK-02-004 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-REV-01-002,R-REV-01-002 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-REV-01-003,R-REV-01-003 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-ITA-01-006,R-ITA-01-006 is scheduled for W2; the source suggests D30.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-02-001,R-SOP-FO-02-001 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-02-002,R-SOP-FO-02-002 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-02-003,R-SOP-FO-02-003 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-02-004,R-SOP-FO-02-004 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-SOP-FO-02-005,R-SOP-FO-02-005 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-LVP-01-001,R-LVP-01-001 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-LVP-01-002,R-LVP-01-002 is scheduled for D90; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-LVP-01-004,R-LVP-01-004 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-LVP-01-005,R-LVP-01-005 is scheduled for W1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-GDP-01-008,R-GDP-01-008 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ESC-01-001,R-ESC-01-001 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ESC-01-003,R-ESC-01-003 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ESC-01-004,R-ESC-01-004 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-HSP-01-004,R-HSP-01-004 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-HSP-01-005,R-HSP-01-005 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-HSP-01-007,R-HSP-01-007 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-COC-01-006,R-COC-01-006 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-001,R-ISP-01-001 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-002,R-ISP-01-002 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-003,R-ISP-01-003 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-004,R-ISP-01-004 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-005,R-ISP-01-005 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-006,R-ISP-01-006 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-007,R-ISP-01-007 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ISP-01-008,R-ISP-01-008 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ITA-01-001,R-ITA-01-001 is scheduled for D1; the source suggests W1.
+P-E011 v3,V-STAGE,info,Verified,,R-ITA-01-002,R-ITA-01-002 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-STAGE,info,Verified,,R-ITA-01-004,R-ITA-01-004 is scheduled for D1; the source suggests W2.
+P-E011 v3,V-CHECKLIST,warning,Verified with Warning,,R-ISP-01-003,R-ISP-01-003 asks the employee to complete or acknowledge something but has no checklist item.
+P-E011 v3,V-CHECKLIST,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 asks the employee to complete or acknowledge something but has no checklist item.
+P-E011 v3,V-CHECKLIST,warning,Verified with Warning,,R-SOP-GR-01-001,R-SOP-GR-01-001 asks the employee to complete or acknowledge something but has no checklist item.
+P-E011 v3,V-CONTRADICTION,warning,Verified with Warning,,R-ESC-01-001,R-ESC-01-001 applies because of the life-safety rule (CF-0003): Life-safety topic: the stricter rule in ESC-01 v2.0 (SOP / Procedure) applies even though the other source ranks higher (deadline: 15 vs 480 minutes). The document owner should align the texts.
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M05.S01,,Scenario detail 21:00 is not from the sources (illustrative).
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M07.S01,,"usd 150 is company policy, but not from the cited section."
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M08.S01,,"3 day is company policy, but not from the cited section."
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M04.S01,,"8 day is company policy, but not from the cited section."
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M02.S01,,"usd 1200, usd 6000 is company policy, but not from the cited section."
+P-E011 v3,V-MANDATORY,warning,Partially Verified,,R-MEM-01-002,GenAI marked R-MEM-01-002 as mandatory; the matrix says optional.
+P-E011 v3,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-005,"R-SOP-HK-02-005 comes from SOP-HK-02, which has expired with no replacement."
+P-E011 v3,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-002,"R-SOP-HK-02-002 comes from SOP-HK-02, which has expired with no replacement."
+P-E011 v3,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-001,"R-SOP-HK-02-001 comes from SOP-HK-02, which has expired with no replacement."
+P-E011 v3,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-004,"R-SOP-HK-02-004 comes from SOP-HK-02, which has expired with no replacement."
+P-E011 v3,V-OUTDATED,warning,Outdated Source,,R-SOP-HK-02-003,"R-SOP-HK-02-003 comes from SOP-HK-02, which has expired with no replacement."
+P-E011 v3,V-QUIZ-SOURCE,warning,Verified with Warning,P-E011-v3.M04.Q01,,Wrong option 'Monthly for all six months' matches the source better than the marked answer.
+P-E011 v3,V-SEQUENCE,warning,Partially Verified,,R-SOP-FO-01-004,R-SOP-FO-01-004 (D1) comes before its prerequisite R-REV-01-003 (W1).
+P-E011 v3,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E011 v3,V-STAGE,warning,Verified with Warning,,,64 requirements are placed on Day 1 (limit 12).
+P-E011 v3,V-STAGE,warning,Verified with Warning,,R-FLS-01-004,R-FLS-01-004 is scheduled for D30; the source states D90.
+P-E011 v3,V-STAGE,warning,Verified with Warning,,R-LVP-01-003,R-LVP-01-003 is scheduled for W1; the source states D1.

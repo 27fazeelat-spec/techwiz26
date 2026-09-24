@@ -1,0 +1,11 @@
+﻿Role,Name,Status,Matrix requirements,Mandatory,Employees,Current plans,Verified plans,Average coverage %,Assigned plans
+DMG,Duty Manager,active,110,104,1,1,0,97.0,0
+FBA,F&B Associate,active,95,88,2,1,0,90.8,0
+FNA,Finance Associate,active,88,83,1,1,0,90.0,0
+FOA,Front Office Associate,active,107,100,2,2,0,88.5,1
+GRE,Guest Relations Executive,active,83,77,1,1,0,96.0,0
+HKS,Housekeeping Supervisor,active,91,84,1,1,0,81.2,0
+HRE,HR Executive,active,78,73,1,1,0,78.9,0
+MTT,Maintenance Technician,active,79,74,1,1,0,86.1,0
+RVA,Revenue Analyst,active,78,73,1,1,0,88.6,0
+SEE,Sales & Events Executive,active,82,76,1,1,0,89.0,0

@@ -1,0 +1,12 @@
+﻿Plan,Employee,Role,Matrix,Matrix approved,Status,Coverage %,Traceability %,Mandatory traceability %,Requirement consistency %,Generation consistency %,Missing,Unsupported,Contradictions,Duplicates,Errors,Warnings,Ruleset,Validated at (UTC),Assigned
+P-E001 v1,Leila Haddad,FOA,v2,Yes,Incomplete,88.5,100.0,100.0,79.4,,11,7,0,0,18,19,5963b956a41f,2026-09-23 18:24,Yes
+P-E001 v2,Leila Haddad,FOA,v2,No,Failed,,,,,,0,0,0,0,0,0,,,No
+P-E003 v1,Nurul Aina Rahman,GRE,v2,Yes,Incomplete,96.0,100.0,100.0,78.9,,3,4,0,0,7,21,5963b956a41f,2026-09-23 18:32,No
+P-E004 v1,Mateus Oliveira,HKS,v2,Yes,Incomplete,81.2,100.0,100.0,76.1,,15,2,0,0,17,15,5963b956a41f,2026-09-23 18:41,No
+P-E005 v1,Grace Tan,FBA,v2,Yes,Incomplete,90.8,99.2,99.1,81.5,,8,2,0,0,10,10,5963b956a41f,2026-09-23 18:38,No
+P-E006 v1,Yusuf Al-Balushi,MTT,v2,Yes,Incomplete,86.1,100.0,100.0,77.5,,10,0,0,0,10,13,5963b956a41f,2026-09-23 18:44,No
+P-E007 v1,Sofia Petrova,SEE,v2,Yes,Incomplete,89.0,99.2,99.1,77.8,,8,5,0,0,13,18,5963b956a41f,2026-09-23 18:48,No
+P-E008 v1,Daniel Okafor,RVA,v2,Yes,Incomplete,88.6,100.0,100.0,78.3,,8,4,0,0,12,11,5963b956a41f,2026-09-23 18:46,No
+P-E009 v1,Hana Kobayashi,FNA,v2,Yes,Incomplete,90.0,100.0,100.0,81.2,,8,2,0,1,10,12,5963b956a41f,2026-09-23 18:39,No
+P-E010 v1,Priya Raman,HRE,v2,Yes,Incomplete,78.9,100.0,100.0,78.2,,15,2,0,0,17,11,5963b956a41f,2026-09-23 18:42,No
+P-E011 v3,Karim Mansour,DMG,v2,Yes,Incomplete,97.0,99.4,99.3,80.1,,3,5,0,0,8,21,5963b956a41f,2026-09-24 19:13,No

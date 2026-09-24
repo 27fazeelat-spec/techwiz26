@@ -1,0 +1,80 @@
+﻿Plan,Rule,Severity,Implied status,Item,Requirement,Message
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-003,R-REV-01-003 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-001,R-REV-01-001 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-SOP-GR-01-004,R-SOP-GR-01-004 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-SOP-FO-02-006,R-SOP-FO-02-006 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-ROLE,error,Unsupported Requirement,,R-PCH-01-008,R-PCH-01-008 is valid company content but does not apply to the FOA role.
+P-E001 v1,V-HALLUCINATION,warning,Verified with Warning,P-E001-v1.M08.S01,,Scenario detail 45 minute is not from the sources (illustrative).
+P-E001 v1,V-HALLUCINATION,warning,Verified with Warning,P-E001-v1.M04.S01,,"Scenario detail 05:30, 08:00 is not from the sources (illustrative)."
+P-E001 v1,V-QUIZ-SOURCE,warning,Verified with Warning,P-E001-v1.M04.Q01,,Wrong option 'Every month for six months' matches the source better than the marked answer.
+P-E001 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-FLS-01-007,R-FLS-01-007 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-SOP-GR-01-004,R-SOP-GR-01-004 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the GRE role.
+P-E003 v1,V-HALLUCINATION,warning,Verified with Warning,P-E003-v1.M04.S01,,Scenario detail 20:30 is not from the sources (illustrative).
+P-E003 v1,V-HALLUCINATION,warning,Verified with Warning,P-E003-v1.M03.S01,,"usd 100 is company policy, but not from the cited section."
+P-E003 v1,V-HALLUCINATION,warning,Verified with Warning,P-E003-v1.M06.S01,,"usd 50 is company policy, but not from the cited section."
+P-E003 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E003 v1,V-SOURCE,warning,Verified with Warning,,R-ITA-01-002,"R-ITA-01-002 is cited as ITA-01 §2.2, but the clause is in ITA-01 §2.3."
+P-E005 v1,V-REQ-ID,error,Unsupported Requirement,P-E005-v1.M03.O02,HSP-01,Item cites unknown requirement HSP-01.
+P-E005 v1,V-ROLE,error,Unsupported Requirement,,R-PCH-01-008,R-PCH-01-008 is valid company content but does not apply to the FBA role.
+P-E005 v1,V-HALLUCINATION,warning,Verified with Warning,P-E005-v1.M05.S01,,Scenario detail 02:30 is not from the sources (illustrative).
+P-E005 v1,V-HALLUCINATION,warning,Verified with Warning,P-E005-v1.M01.S01,,"usd 30 is company policy, but not from the cited section."
+P-E009 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the FNA role.
+P-E009 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the FNA role.
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M08.S01,,"18 % is company policy, but not from the cited section."
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M02.S01,,"usd 7500 is company policy, but not from the cited section."
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M06.T01,,"usd 200 is company policy, but not from the cited section."
+P-E009 v1,V-HALLUCINATION,warning,Verified with Warning,P-E009-v1.M04.S01,,Scenario detail 05:30 is not from the sources (illustrative).
+P-E009 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E004 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the HKS role.
+P-E004 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the HKS role.
+P-E004 v1,V-HALLUCINATION,warning,Verified with Warning,P-E004-v1.M05.S01,,Scenario detail 15:10 is not from the sources (illustrative).
+P-E004 v1,V-HALLUCINATION,warning,Verified with Warning,P-E004-v1.M04.S01,,"25 kg is company policy, but not from the cited section."
+P-E004 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E010 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the HRE role.
+P-E010 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the HRE role.
+P-E010 v1,V-HALLUCINATION,warning,Verified with Warning,P-E010-v1.M05.S01,,"10 day is company policy, but not from the cited section."
+P-E010 v1,V-HALLUCINATION,warning,Verified with Warning,P-E010-v1.M06.S01,,"10 minute is company policy, but not from the cited section."
+P-E010 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E006 v1,V-HALLUCINATION,warning,Verified with Warning,P-E006-v1.M05.S01,,Scenario detail 08:00 is not from the sources (illustrative).
+P-E006 v1,V-HALLUCINATION,warning,Verified with Warning,P-E006-v1.M06.S01,,Scenario detail 19:45 is not from the sources (illustrative).
+P-E006 v1,V-HALLUCINATION,warning,Verified with Warning,P-E006-v1.M06.T01,,"25 kg is company policy, but not from the cited section."
+P-E006 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-FIN-01-006,R-FIN-01-006 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-006,R-ESC-01-006 is valid company content but does not apply to the RVA role.
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M06.S01,,"12 room, 18 % is company policy, but not from the cited section."
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M07.S01,,"4 day is company policy, but not from the cited section."
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M08.S01,,Scenario detail 45 day is not from the sources (illustrative).
+P-E008 v1,V-HALLUCINATION,warning,Verified with Warning,P-E008-v1.M04.S01,,"09:00 is company policy, but not from the cited section."
+P-E008 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E007 v1,V-QUIZ-SOURCE,error,Source Support Missing,P-E007-v1.M04.Q04,,The correct answer 'Lock your workstation.' is not supported by the cited section.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-003,R-ESC-01-003 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-001,R-REV-01-001 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-REV-01-003,R-REV-01-003 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-ROLE,error,Unsupported Requirement,,R-ESC-01-004,R-ESC-01-004 is valid company content but does not apply to the SEE role.
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M06.T01,,"15 room is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M07.S01,,"usd 150 is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M06.S01,,"12 room is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M08.S01,,"24 kg is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M05.S01,,"20 % is company policy, but not from the cited section."
+P-E007 v1,V-HALLUCINATION,warning,Verified with Warning,P-E007-v1.M03.S01,,"20 day is company policy, but not from the cited section."
+P-E007 v1,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
+P-E007 v1,V-SOURCE,warning,Verified with Warning,,R-FIN-01-002,"R-FIN-01-002 is cited as FIN-01 §2.3, but the clause is in FIN-01 §2.4."
+P-E011 v3,V-QUIZ-SOURCE,error,Source Support Missing,P-E011-v3.M06.Q04,,The correct answer 'Lock your workstation' is not supported by the cited section.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-FLS-01-007,R-FLS-01-007 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-SOP-FO-01-008,R-SOP-FO-01-008 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-PCH-01-008,R-PCH-01-008 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-ROLE,error,Unsupported Requirement,,R-SOP-FO-02-006,R-SOP-FO-02-006 is valid company content but does not apply to the DMG role.
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M05.S01,,Scenario detail 21:00 is not from the sources (illustrative).
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M07.S01,,"usd 150 is company policy, but not from the cited section."
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M08.S01,,"3 day is company policy, but not from the cited section."
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M04.S01,,"8 day is company policy, but not from the cited section."
+P-E011 v3,V-HALLUCINATION,warning,Verified with Warning,P-E011-v3.M02.S01,,"usd 1200, usd 6000 is company policy, but not from the cited section."
+P-E011 v3,V-QUIZ-SOURCE,warning,Verified with Warning,P-E011-v3.M04.Q01,,Wrong option 'Monthly for all six months' matches the source better than the marked answer.
+P-E011 v3,V-SOURCE,warning,Verified with Warning,,R-LVP-01-004,"R-LVP-01-004 is cited as LVP-01 §3.4, but the clause is in LVP-01 §3.3."
