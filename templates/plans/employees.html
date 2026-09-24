@@ -72,7 +72,8 @@
           <td class="middle small">{{ e.experience_level }}</td>
           <td class="middle small nowrap">{{ e.joining_date.strftime('%d %b %Y') }}</td>
           <td class="middle">{% if p %}<a href="{{ url_for('plans.plan_detail', pk=p.id) }}" class="nowrap"><span class="mono">{{ p.plan_code }} v{{ p.version }}</span></a><br>{{ plan_badge(p.status) }}
-              {% else %}<span class="muted small">None yet</span>{% endif %}</td>
+              {% else %}<span class="muted small">None yet</span>{% endif %}
+              {% set f = failed.get(e.id) %}{% if f %}<br><a class="badge badge--bad" href="{{ url_for('plans.plan_detail', pk=f.id) }}" title="{{ f.error }}">Last attempt failed (v{{ f.version }})</a>{% endif %}</td>
           <td class="middle">{% if p and p.score_coverage is not none %}
               <span class="coverage">{{ meter(p.score_coverage, score_tone(p.score_coverage)) }}<b>{{ p.score_coverage }}%</b></span>
               {% else %}<span class="muted small">—</span>{% endif %}</td>

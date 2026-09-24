@@ -75,3 +75,17 @@ def test_employee_filters_and_plan_comparison(corpus):
     assert b"Grace Tan" not in client.get("/employees?q=leila").data
     assert client.get("/employees?progress=On+Track&result=Verified").status_code == 200
     assert client.get(f"/plans/compare?a={a.id}&b={b.id}").status_code == 200
+
+
+def test_a_failed_attempt_never_hides_the_last_good_plan(corpus):
+    from database.models import Plan
+    good = fresh_plan()
+    bad = Plan(plan_code=good.plan_code, version=good.version + 1, employee_id=good.employee_id,
+               job_role_id=good.job_role_id, matrix_version_id=good.matrix_version_id, status="Failed",
+               error="auth: 403 PERMISSION_DENIED", created_by="test")
+    db.session.add(bad)
+    db.session.commit()
+    client = current_app.test_client()
+    login(client, "training@aurelle.example")
+    page = client.get("/employees?q=E001").data.decode()
+    assert f"{good.plan_code} v{good.version}" in page and f"Last attempt failed (v{bad.version})" in page

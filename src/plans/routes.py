@@ -35,9 +35,14 @@ def employees():
     if args.get("property"):
         query = query.join(Property, Employee.property_id == Property.id).where(Property.code == args["property"])
     people = db.session.scalars(query).all()
-    latest = {}
+    # Show the newest usable plan; a later failed attempt is flagged next to it, never shown in its place.
+    latest, failed = {}, {}
     for p in db.session.scalars(select(Plan).where(Plan.status != "superseded").order_by(Plan.version)):
-        latest[p.employee_id] = p
+        if p.status == "Failed":
+            failed[p.employee_id] = p
+        else:
+            latest[p.employee_id] = p
+            failed.pop(p.employee_id, None)
     status = {}
     if args.get("progress"):
         day = today(current_app.config)
@@ -49,7 +54,7 @@ def employees():
         want = args["result"]
         people = [e for e in people if (latest.get(e.id).status if latest.get(e.id) else "No plan") == want]
     matrix = planning.current_matrix()
-    return render_template("plans/employees.html", people=people, latest=latest, matrix=matrix, args=args,
+    return render_template("plans/employees.html", people=people, latest=latest, failed=failed, matrix=matrix, args=args,
                            roles=db.session.scalars(select(JobRole).order_by(JobRole.code)).all(),
                            properties=db.session.scalars(select(Property).order_by(Property.name)).all(),
                            departments=sorted(set(db.session.scalars(select(Employee.department)))),
