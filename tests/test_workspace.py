@@ -76,3 +76,13 @@ def test_reviewer_decides_conflicts_but_does_not_rerun_detection(corpus):
     client.post("/logout")
     login(client, "admin@aurelle.example")
     assert "Run contradiction check" in client.get("/conflicts").get_data(as_text=True)
+
+
+def test_line_manager_panel_and_team_search(corpus):
+    client = current_app.test_client()
+    login(client, "omar.siddiqui@aurelle.example")
+    home = client.get("/dashboard/team").get_data(as_text=True)
+    assert "theme-terra" in home and "Waiting for your sign-off" in home and 'href="#"' not in home
+    data = client.get("/api/search?q=Leila").get_json()
+    assert data["groups"][0]["label"] == "My team" and data["groups"][0]["items"][0]["code"] == "E001"
+    assert client.get("/api/search?q=GDP").get_json() == {"groups": []}      # no policy browsing for managers

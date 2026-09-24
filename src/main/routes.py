@@ -171,7 +171,8 @@ def team_dashboard():
     for e in team:
         plan = progress.assigned_plan(e)
         states[e.id] = (plan, progress.summary(plan, e, today(current_app.config)) if plan else None)
-    return render_template("dashboard/team.html", team=team, states=states, pending=progress.pending_signoffs(team))
+    return render_template("dashboard/team.html", team=team, states=states, pending=progress.pending_signoffs(team),
+                           today=today(current_app.config))
 
 
 @bp.route("/dashboard/me")

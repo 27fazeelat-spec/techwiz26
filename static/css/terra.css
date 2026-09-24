@@ -328,3 +328,17 @@
 .todo--people .avatar { background: var(--surface-sunk); color: var(--ink-soft); }
 @media (max-width: 1100px) { .tstats--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tstats--4 div:nth-child(3) { border-left: 0; padding-left: 0; } .tstats--4 div:nth-child(n + 3) { border-top: 1px solid var(--line); } }
 @media (max-width: 1100px) { .tstats--4 div:nth-child(4) { border-left: 1px solid var(--line); padding-left: 18px; } }
+
+/* ======================================================================
+   Line manager home
+   ====================================================================== */
+.people { list-style: none; margin: 0; padding: 0; }
+.people li > a, .people li > div { display: grid; grid-template-columns: 40px minmax(0, 1fr) minmax(0, 190px); gap: 14px; align-items: center; padding: 13px 20px; border-top: 1px solid var(--line); color: inherit; text-decoration: none; transition: background 160ms; }
+.people li > a:hover { background: var(--surface-hover); }
+.people .avatar { background: var(--surface-sunk); color: var(--ink-soft); }
+.people__who strong { display: block; font-size: 14px; font-weight: 600; }
+.people__who span { font-size: 12.5px; color: var(--muted); }
+.people__prog { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.people__prog em { color: var(--bad); font-style: normal; font-weight: 600; }
+.people__prog .badge { font-size: 11px; }
+@media (max-width: 760px) { .people li > a, .people li > div { grid-template-columns: 40px minmax(0, 1fr); } .people__prog { grid-column: 2; } }

@@ -125,6 +125,13 @@ def search():
             {"title": e.name, "code": e.employee_code, "meta": "open plan" if e.id in latest else "no plan yet",
              "url": url_for("plans.plan_detail", pk=latest[e.id]) if e.id in latest else url_for("plans.employees", q=e.employee_code)}
             for e in people]})
+    elif has_permission(current_user, "employees.view_team") and current_user.employee_code:     # line managers: their own team
+        team = db.session.scalars(select(Employee).where(Employee.reporting_manager_code == current_user.employee_code,
+                                                         or_(Employee.name.ilike(like), Employee.employee_code.ilike(like)))
+                                  .order_by(Employee.name).limit(6)).all()
+        groups.append({"label": "My team", "items": [
+            {"title": e.name, "code": e.employee_code, "meta": e.job_role.name,
+             "url": url_for("learning.team_member", code=e.employee_code)} for e in team]})
     if has_permission(current_user, "conflicts.view") or has_permission(current_user, "requirements.view"):
         found = db.session.scalars(select(Conflict).where(Conflict.conflict_code.ilike(like)).limit(4)).all()
         groups.append({"label": "Conflicts", "items": [

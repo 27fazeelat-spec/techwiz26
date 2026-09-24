@@ -1,48 +1,67 @@
 {% extends "base.html" %}
-{% from "_macros.html" import icon, initials, empty, progress_badge %}
+{% from "_macros.html" import icon, initials, progress_badge %}
 {% block title %}My team{% endblock %}
 {% block content %}
-<section class="heroband rise">
-  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/photos/team.jpg') }}" alt="">
-  <div class="heroband__row">
-    <div>
-      <p class="heroband__kicker">My team</p>
-      <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}</h1>
-      <p>Follow your new hires' onboarding, sign off the tasks they submit and record their assessments.</p>
-      {% if pending %}<div class="heroband__actions"><a class="btn btn--gold" href="#signoffs" data-cursor="Review">{{ icon('check', 15) }}{{ pending|length }} waiting for your sign-off</a></div>{% endif %}
-    </div>
-    <div class="heroband__stats">
-      <div class="glass"><b data-count="{{ team|length }}">{{ team|length }}</b><span>people</span></div>
-      <div class="glass"><b data-count="{{ pending|length }}">{{ pending|length }}</b><span>to sign off</span></div>
+{% set ns = namespace(behind=0, done=0, names=[]) %}
+{% for e in team %}{% set plan, s = states[e.id] %}{% if s and s.status == 'Behind Schedule' %}{% set ns.behind = ns.behind + 1 %}{% set ns.names = ns.names + [e.name.split(' ')[0]] %}{% endif %}{% if s and s.status == 'Completed' %}{% set ns.done = ns.done + 1 %}{% endif %}{% endfor %}
+
+<header class="ahead">
+  <div class="ahead__text">
+    <p class="eyebrow">{{ today.strftime('%A, %d %B %Y') }}</p>
+    <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}.</h1>
+    <p class="ahead__lead">
+      {% if pending %}{{ pending|length }} submission{{ 's' if pending|length != 1 }} {{ 'is' if pending|length == 1 else 'are' }} waiting for your sign-off.{% endif %}
+      {% if ns.behind %}{{ ns.names|join(', ') }} {{ 'is' if ns.behind == 1 else 'are' }} behind schedule; a short conversation usually helps.{% endif %}
+      {% if not pending and not ns.behind %}{% if team %}Your team is on track and nothing is waiting for you.{% else %}Nobody reports to you yet. New hires appear here once they are assigned to you.{% endif %}{% endif %}
+    </p>
+    <div class="ahead__actions">
+      {% if pending %}<a class="btn btn--primary" href="#signoffs" data-cursor="Sign off">{{ icon('check', 15) }}Sign off now</a>{% endif %}
+      <a class="btn {{ 'btn--ghost' if pending else '' }}" href="{{ url_for('reports.index') }}">{{ icon('file', 15) }}Team reports</a>
     </div>
   </div>
+  <figure class="ahead__photo">
+    <img src="{{ url_for('static', filename='img/aurelle/photos/team.jpg') }}" alt="Colleagues working together at a table">
+    <figcaption>Onboarding is a team effort</figcaption>
+  </figure>
+</header>
+
+<section class="asec">
+  <dl class="tstats tstats--4">
+    <div><dt>People</dt><dd>{{ team|length }}</dd></div>
+    <div><dt>To sign off</dt><dd>{{ pending|length }}</dd></div>
+    <div><dt>Behind schedule</dt><dd>{{ ns.behind }}</dd></div>
+    <div><dt>Completed</dt><dd>{{ ns.done }}</dd></div>
+  </dl>
 </section>
 
-{% if team %}
-<div class="teamgrid">
-  {% for e in team %}{% set plan, s = states[e.id] %}
-  <a class="teamcard rise" href="{{ url_for('learning.team_member', code=e.employee_code) if plan else '#' }}" data-cursor="{{ 'Open' if plan else '' }}">
-    <div class="person"><span class="avatar avatar--lg avatar--gold">{{ initials(e.name) }}</span>
-      <span><span class="person__name">{{ e.name }}</span><span class="person__meta">{{ e.job_role.name }} · {{ e.property.name }}</span></span></div>
-    {% if s %}
-    <div style="display: flex; align-items: center; gap: 14px">
-      <span class="mring" style="--v: {{ s.pct }}"><b>{{ s.pct }}%</b></span>
-      <div>{{ progress_badge(s.status) }}<p class="small muted" style="margin-top: 6px">{{ s.done }} of {{ s.total }} done{% if s.overdue %} · <span style="color: var(--bad); font-weight: 700">{{ s.overdue }} overdue</span>{% endif %}</p></div>
-    </div>
-    {% else %}<span class="badge badge--neutral">Plan not assigned yet</span>{% endif %}
-    <p class="small muted">Joined {{ e.joining_date.strftime('%d %b %Y') }}</p>
-  </a>
-  {% endfor %}
-</div>
-{% else %}<section class="panel">{{ empty('No one reports to you yet', 'When employees are assigned to you, their onboarding progress appears here.', 'users') }}</section>{% endif %}
+<section class="asec acols">
+  <div class="acard" id="signoffs">
+    <div class="acard__head"><h3>Waiting for your sign-off</h3><span>oldest first</span></div>
+    <ul class="todo">
+      {% for row, item, module in pending %}{% set who = (team|selectattr('id', 'equalto', row.employee_id)|first) %}
+      <li><a href="{{ url_for('learning.team_member', code=who.employee_code) }}#{{ item.item_key }}" data-cursor="Review">
+        <span class="todo__kind {{ 'todo__kind--olive' if item.item_type == 'scenario' else '' }}">{{ item.item_type|capitalize }}</span>
+        <span class="todo__text"><strong>{{ (item.content.description or item.content.situation or item.content.topic)[:110] }}</strong>
+          <span>{{ who.name }} · {{ module.title }}{% if row.submitted_at %} · sent {{ row.submitted_at.strftime('%d %b') }}{% endif %}</span></span>
+        <span class="todo__go">Review →</span></a></li>
+      {% else %}<li class="todo__empty">Nothing to sign off right now.</li>{% endfor %}
+    </ul>
+  </div>
 
-<section class="panel rise" id="signoffs">
-  <h2 class="panel__title">Waiting for your sign-off {% if pending %}<span class="badge badge--info">{{ pending|length }}</span>{% endif %}</h2>
-  {% if pending %}<ul class="upnext">{% for row, item, module in pending %}{% set who = (team|selectattr('id', 'equalto', row.employee_id)|first) %}
-    <li><a href="{{ url_for('learning.team_member', code=who.employee_code) }}" data-cursor="Review">
-      <span class="upnext__icon">{{ icon('wrench', 18) }}</span>
-      <span class="upnext__text"><strong>{{ item.content.description or item.content.situation }}</strong><span>{{ who.name }} · {{ module.title }}</span></span>
-      <span class="upnext__due">Review</span></a></li>{% endfor %}</ul>
-  {% else %}<p class="muted small">Nothing to sign off right now.</p>{% endif %}
+  <div class="acard">
+    <div class="acard__head"><h3>Your team</h3><span>{{ team|length }} {{ 'person' if team|length == 1 else 'people' }}</span></div>
+    <ul class="people">
+      {% for e in team %}{% set plan, s = states[e.id] %}
+      <li>{% if plan %}<a href="{{ url_for('learning.team_member', code=e.employee_code) }}" data-cursor="Open">{% else %}<div>{% endif %}
+        <span class="avatar">{{ initials(e.name) }}</span>
+        <span class="people__who"><strong>{{ e.name }}</strong><span>{{ e.job_role.name }} · {{ e.property.name }}</span></span>
+        {% if s %}
+        <span class="people__prog"><span class="bar"><i style="width: {{ s.pct }}%"></i></span>
+          <span>{{ s.pct }}% · {% if s.overdue %}<em>{{ s.overdue }} overdue</em>{% else %}{{ progress_badge(s.status) }}{% endif %}</span></span>
+        {% else %}<span class="people__prog"><span class="small muted">Plan not assigned yet · joins {{ e.joining_date.strftime('%d %b') }}</span></span>{% endif %}
+      {% if plan %}</a>{% else %}</div>{% endif %}</li>
+      {% else %}<li class="todo__empty">No one reports to you yet.</li>{% endfor %}
+    </ul>
+  </div>
 </section>
 {% endblock %}

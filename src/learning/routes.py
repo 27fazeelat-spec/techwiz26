@@ -134,7 +134,8 @@ def team_member(code):
         line_manager = db.session.scalar(select(User.name).where(User.employee_code == employee.reporting_manager_code))             or db.session.scalar(select(Employee.name).where(Employee.employee_code == employee.reporting_manager_code))
     return render_template("learning/team_member.html", employee=employee, plan=plan, summary=summary, rows=rows,
                            weak=progress.weak_areas(employee, plan) if plan else [], recs=recs,
-                           can_sign=_can_sign_off(employee), line_manager=line_manager)
+                           can_sign=_can_sign_off(employee), can_train=has_permission(current_user, "plans.view"),
+                           line_manager=line_manager)
 
 
 @bp.route("/team/recommendation/<int:pk>", methods=["POST"])
@@ -144,7 +145,7 @@ def recommendation(pk):
     rec = db.session.get(Recommendation, pk) or abort(404)
     employee = db.session.get(Employee, rec.employee_id)
     # "Manager review" suggestions (a new schedule, a re-assessment) are the line manager's call; training ones are the trainer's.
-    allowed = _can_sign_off(employee) if rec.type == "manager_review" else _can_manage(employee)
+    allowed = _can_sign_off(employee) if rec.type == "manager_review" else has_permission(current_user, "plans.view")
     if not allowed:
         abort(403)
     try:
