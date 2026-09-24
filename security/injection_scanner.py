@@ -107,13 +107,21 @@ def scan_chunk(chunk, families, cfg):
     return findings
 
 
-def scan_document(chunks, is_draft=False, watermark=""):
-    """Scan all chunks of one document version. chunks: list of dicts."""
+def scan_document(chunks, is_draft=False, watermark="", properties=None):
+    """Scan all chunks of one document version. chunks: list of dicts; properties: the file's own metadata fields."""
     families, cfg = _compiled()
     result = ScanResult()
     if is_draft:
         result.findings.append(Finding(None, "draft_document", "document-status", "medium", "not_a_source",
                                        (watermark or "Document marked as draft / not approved")[:200]))
+    # File properties (DOCX comments, keywords, subject...) are invisible in the page but travel with the file.
+    # They never reach a prompt; an instruction hidden there is still recorded so a reviewer sees the attempt.
+    for field, value in (properties or {}).items():
+        text = normalise_text(str(value or ""))
+        attack = next(_match_families(text, families), None)
+        if attack:
+            result.findings.append(Finding(None, "metadata_instruction", attack[2], "high", "metadata_excluded",
+                                           f"{field}: {_excerpt(text, attack[3])}"))
     for chunk in chunks:
         for f in scan_chunk(chunk, families, cfg):
             result.findings.append(f)

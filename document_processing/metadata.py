@@ -20,7 +20,7 @@ LABELS = {
 }
 FIELDS = ["doc_id", "title", "version", "status", "effective_date", "expiry_date",
           "owner_department", "category", "applies_to", "supersedes"]
-DOC_ID = re.compile(r"\b([A-Z]{2,5}(?:-[A-Z]{2,4})?-\d{2})\b")
+DOC_ID = re.compile(r"(?<![A-Za-z0-9-])([A-Z]{2,5}(?:-[A-Z]{2,4})?-\d{2})(?![0-9A-Za-z])")   # "GDP-01_v3.0.pdf" too
 VERSION = re.compile(r"(?:^|[\s_])v(?:ersion)?\s?(\d+(?:\.\d+)*(?:-[A-Za-z]+)?)", re.I)
 MONTHS = {m: i for i, m in enumerate(
     ["january", "february", "march", "april", "may", "june", "july", "august",
@@ -73,7 +73,31 @@ def read_header(parsed, scan_limit=40):
             if field and field not in values:
                 values[field] = m.group(2).strip()
                 consumed.add(i)
+        elif block.kind in ("paragraph", "letterhead") and len(block.clean) <= 600:
+            pairs = _label_run(block.clean)            # "Label: value" lines a PDF reader joined into one paragraph
+            if pairs:
+                for field, value in pairs:
+                    values.setdefault(field, value)
+                consumed.add(i)
     return values, consumed
+
+
+_LABEL_AT = re.compile(r"(?:^|(?<=\s))(" + "|".join(sorted((re.escape(k) for k in LABELS), key=len, reverse=True))
+                       + r")\s*:\s*", re.I)
+
+
+def _label_run(text):
+    """[(field, value)] when the text is nothing but two or more known 'Label: value' pairs, else []."""
+    marks = list(_LABEL_AT.finditer(text))
+    if len(marks) < 2 or marks[0].start() != 0:
+        return []
+    pairs = []
+    for m, nxt in zip(marks, marks[1:] + [None]):
+        value = text[m.end(): nxt.start() if nxt else len(text)].strip()
+        if not value:
+            return []
+        pairs.append((_label_field(m.group(1)), value))
+    return pairs
 
 
 def heuristics(parsed, filename):

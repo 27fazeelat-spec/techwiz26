@@ -470,7 +470,7 @@ Generation, batch ingestion, consistency runs and regeneration take seconds to m
 
 ## 15. Deployment
 
-- **Hosting:** Render web service (gunicorn, 2 workers × threads) and a managed PostgreSQL database (Render PostgreSQL, Neon or Supabase). Uploaded files are stored in the database, because Render's disk is ephemeral. The app connects through the pure-Python pg8000 driver.
+- **Hosting:** Railway web service (gunicorn, 2 workers × threads; Render works the same way) and a managed PostgreSQL database (Render PostgreSQL, Neon or Supabase). Uploaded files are stored in the database, because Render's disk is ephemeral. The app connects through the pure-Python pg8000 driver.
 - **Health:** `/healthz` checks the database connection; the GenAI provider is reported as degraded without failing the app, so existing plans keep working during an API outage (NFR 5).
 - **Startup:** index creation, config validation (the app refuses to start with an invalid YAML), prompt template hash registration.
 - **Evaluation readiness:** evaluator and administrator logins, seeded roles and employees (input data only), and the sample documents preloaded through the normal ingestion pipeline. **No pre-generated plans are ever seeded** (SRS §1.8.12).

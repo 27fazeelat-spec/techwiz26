@@ -43,6 +43,9 @@ def _line_style(chars):
     return size, bold, hidden
 
 
+NUMBERED = re.compile(r"^\d+(?:\.\d+)*\.?\s+\S")
+
+
 def _heading_level(text, size, heading_sizes, body):
     """Numbering decides the level when present ("2." -> 1, "2.1" -> 2); otherwise font size does."""
     match = re.match(r"^(\d+(?:\.\d+)*)\.?\s", text)
@@ -113,10 +116,13 @@ def parse_pdf(data):
 
             kind, level = "paragraph", 0
             if bold and size > body + 0.5:
-                if not seen_title and size == heading_sizes[0] and size >= body * 1.6:
-                    kind = "title"
+                if not seen_title and size == heading_sizes[0] and (
+                        size >= body * 1.6 or (page_no == 1 and not blocks and not items and not NUMBERED.match(text))):
+                    kind = "title"                 # a large first line, or the unnumbered first line of the file
                 else:
                     kind, level = "heading", _heading_level(text, size, heading_sizes, body)
+            elif bold and size >= body - 0.5 and NUMBERED.match(text) and len(text) <= 90 and not text.endswith("."):
+                kind, level = "heading", _heading_level(text, size, heading_sizes, body)   # "2.1 Scope" at body size
             elif text.startswith("•"):
                 kind = "list_item"
 

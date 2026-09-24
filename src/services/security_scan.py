@@ -10,7 +10,8 @@ def scan_and_record(doc):
     result = scan_document(
         [{"chunk_id": c.chunk_id, "text": c.text, "raw_text": c.raw_text, "hidden_text": c.hidden_text}
          for c in doc.chunks],
-        is_draft=doc.is_draft, watermark=(doc.parse or {}).get("watermark") or "")
+        is_draft=doc.is_draft, watermark=(doc.parse or {}).get("watermark") or "",
+        properties=(doc.parse or {}).get("properties"))
     rows = []
     for f in result.findings:
         chunk = chunk_by_id.get(f.chunk_id)

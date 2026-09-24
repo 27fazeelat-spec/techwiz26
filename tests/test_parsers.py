@@ -82,3 +82,18 @@ def test_chunks_carry_locations():
     assert all("page_start" in c["location"] for c in pdf_chunks)
     docx_chunks = chunk_document(parse("HRP-01_v2.1.docx"), "HRP-01", "2.1")
     assert all("paragraph_start" in c["location"] for c in docx_chunks)
+
+
+def test_unfamiliar_layouts_from_the_hidden_rehearsal_pack():
+    """No letterhead or metadata table: loose 'Label: value' lines, a small title, body-size numbered headings."""
+    from pathlib import Path
+    from document_processing.metadata import DOC_ID, extract_metadata
+    assert DOC_ID.search("GDP-01_v3.0.pdf").group(1) == "GDP-01"
+    assert DOC_ID.search("SOP-FO-03_v1.0.docx").group(1) == "SOP-FO-03"
+    path = Path(__file__).resolve().parents[1] / "hidden_test_ready" / "documents" / "GDP-01_v3.0.pdf"
+    parsed = parse_document(path.read_bytes(), "pdf")
+    meta, sources, _, _ = extract_metadata(parsed, path.name)
+    assert (meta["doc_id"], meta["version"], meta["supersedes"]) == ("GDP-01", "3.0", "GDP-01 v2.0")
+    assert sources["doc_id"] == "header" and str(meta["effective_date"]) == "2026-09-20"
+    assert parsed.blocks[0].kind == "title" and parsed.blocks[0].clean == "Guest Data Privacy Policy"
+    assert any(b.kind == "heading" and b.clean.startswith("4.2") and b.level == 2 for b in parsed.blocks)
