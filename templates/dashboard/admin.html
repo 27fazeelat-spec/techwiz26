@@ -21,8 +21,10 @@
     </div>
   </div>
   <figure class="ahead__photo">
-    <img src="{{ url_for('static', filename='img/aurelle/photos/lobby.jpg') }}" alt="A hotel lobby with tall windows and lounge chairs">
-    <figcaption>The lobby, {{ org_name }}</figcaption>
+    {% if demo_mode %}<img src="{{ url_for('static', filename='img/aurelle/photos/kitchen.jpg') }}" alt="A chef at work in a restaurant kitchen">
+    <figcaption>The kitchen at service time, {{ org_name }}</figcaption>
+    {% else %}<img src="{{ url_for('static', filename='img/aurelle/photos/lobby.jpg') }}" alt="A hotel lobby with tall windows and lounge chairs">
+    <figcaption>The lobby, {{ org_name }}</figcaption>{% endif %}
   </figure>
 </header>
 

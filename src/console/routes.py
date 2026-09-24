@@ -152,13 +152,23 @@ def workspaces():
 @tryout.route("/employee")
 @login_required
 def employee():
-    if current_user.app_role not in ("demo", "admin"):
+    """What a new hire at the sample company sees, read from the sample database (demo visitors only)."""
+    from database import demo_db
+    if current_user.app_role != "demo" or not demo_db.active():
         abort(403)
     from config.settings import today
-    from src.services import progress, sample_employee, workspace
+    from src.services import progress, workspace
     day = today(current_app.config)
-    home = {**workspace.DEFAULT_HOME, "quote_by": "Harbour View Hotels"}
-    html = render_template("dashboard/employee.html", **sample_employee.context(day), today=day, cfg=progress.cfg(),
-                           home=home, caption=workspace.caption, brand=sample_employee.BRAND, learner_preview=True)
-    # A sample, not a real plan: links into the learning pages go nowhere.
-    return re.sub(r'href="/learn[^"]*"', 'href="#" aria-disabled="true" data-tip="Sample only"', html)
+    person = db.session.scalar(select(Employee).where(Employee.employee_code == demo_db.SAMPLE_EMPLOYEE)) or abort(404)
+    plan = progress.assigned_plan(person)
+    home = {**workspace.DEFAULT_HOME, "quote_by": demo_db.ORG_NAME, "quote_photo": "corridor",
+            "slides": {"welcome": {"on": True, "photo": "kitchen"}, "next": {"on": True, "photo": "team"},
+                       "quiz": {"on": True, "photo": "training"}, "certificate": {"on": True, "photo": "interior"}},
+            "welcome_line": "Every lesson here comes from our own kitchen and service standards."}
+    html = render_template("dashboard/employee.html", employee=person, plan=plan, today=day, cfg=progress.cfg(),
+                           summary=progress.summary(plan, person, day) if plan else None,
+                           stages=progress.stages_for(plan, person, day) if plan else [],
+                           upcoming=progress.up_next(plan, person, limit=7) if plan else [],
+                           home=home, caption=workspace.caption, learner_preview=True)
+    # A preview, not the employee's own session: links into the learning pages go nowhere.
+    return re.sub(r'href="/learn[^"]*"', 'href="#" aria-disabled="true" data-tip="Preview only"', html)

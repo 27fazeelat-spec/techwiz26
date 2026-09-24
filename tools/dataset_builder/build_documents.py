@@ -381,10 +381,22 @@ def build_pdf(meta, ver, blocks, path):
 # --------------------------------------------------------------------------- main
 
 def main():
-    OUT.mkdir(exist_ok=True)
-    only = set(sys.argv[1:])
+    """python build_documents.py [--sources DIR] [--out DIR] [DOC-ID ...]  (defaults: sources/ -> sample_documents/)"""
+    global OUT
+    args, sources = sys.argv[1:], SOURCES
+    for flag in ("--sources", "--out"):
+        if flag in args:
+            i = args.index(flag)
+            path = Path(args[i + 1]).resolve()
+            if flag == "--sources":
+                sources = path
+            else:
+                OUT = path
+            del args[i:i + 2]
+    OUT.mkdir(parents=True, exist_ok=True)
+    only = set(args)
     built = 0
-    for src in sorted(SOURCES.glob("*.md")):
+    for src in sorted(sources.glob("*.md")):
         meta, body = load_source(src)
         if only and meta["doc_id"] not in only:
             continue
@@ -395,7 +407,7 @@ def main():
             (build_pdf if ext == "pdf" else build_docx)(meta, ver, blocks, OUT / name)
             print(f"  built {name}")
             built += 1
-    print(f"{built} file(s) written to {OUT.relative_to(ROOT)}")
+    print(f"{built} file(s) written to {OUT}")
 
 
 if __name__ == "__main__":

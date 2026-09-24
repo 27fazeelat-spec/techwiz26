@@ -112,16 +112,17 @@ def default_pages(role):
 
 
 # ---------------------------------------------------------------------------- reading (short cache per worker)
-_CACHE = {"at": 0.0, "value": None}
+_CACHE = {}                       # one entry per database: "main", or "demo" for demo visitors
 TTL = 20                          # seconds; several workers each refresh on their own within this time
 
 
 def _raw():
-    now = time.monotonic()
-    if _CACHE["value"] is None or now - _CACHE["at"] > TTL or current_app.config.get("TESTING"):
+    from database import demo_db
+    now, entry = time.monotonic(), _CACHE.setdefault(demo_db.cache_key(), {"at": 0.0, "value": None})
+    if entry["value"] is None or now - entry["at"] > TTL or current_app.config.get("TESTING"):
         settings = db.session.scalar(select(Organization.settings).limit(1)) or {}
-        _CACHE.update(at=now, value=copy.deepcopy(settings))
-    return _CACHE["value"]
+        entry.update(at=now, value=copy.deepcopy(settings))
+    return entry["value"]
 
 
 def employee_home():
@@ -182,7 +183,7 @@ def _save(key, value, actor, before):
     org.settings = settings
     audit.record(f"settings.{key}", "organization", org.org_code, actor=actor, before=before, after=value, commit=False)
     db.session.commit()
-    _CACHE["value"] = None
+    _CACHE.clear()
 
 
 def save_employee_home(form, actor):

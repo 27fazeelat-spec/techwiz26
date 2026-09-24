@@ -79,13 +79,19 @@ def test_approving_creates_a_read_only_demo_that_ends(corpus):
     login(visitor, req.email, "pearl-demo-2026")
     home = visitor.get("/dashboard/admin").get_data(as_text=True)
     assert "Demo access" in home and "read-only" in home
+    assert "Saffron Table" in home and "Aurelle" not in home                         # the sample company, never the client
+    docs = visitor.get("/documents/").get_data(as_text=True)
+    assert "FSP-01" in docs and "GDP-01" not in docs
     assert visitor.post("/documents/upload", data={}).status_code == 403              # looks, never changes
     assert visitor.get("/settings/employee-home").status_code == 403
     sample = visitor.get("/try/employee").get_data(as_text=True)
-    assert "Welcome</span>, Alex." in sample and "Harbour View" in sample
+    assert "Welcome</span>, Maya." in sample and "Saffron Table" in sample
     assert "Aurelle" not in sample and "Leila" not in sample                          # no client data in the sample
     assert db.session.scalar(select(DemoVisit).where(DemoVisit.endpoint == "tryout.employee")) is not None
 
+    admin = current_app.test_client()                                                # the client's own view is untouched
+    login(admin, "admin@aurelle.example")
+    assert "GDP-01" in admin.get("/documents/").get_data(as_text=True)
     login(staff, STAFF_EMAIL, STAFF_PASSWORD)                                        # test clients share flask.g
     detail = staff.get(f"/console/demos/{account.id}").get_data(as_text=True)
     assert "Employee view (sample)" in detail

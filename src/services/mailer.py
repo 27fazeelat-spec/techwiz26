@@ -11,6 +11,9 @@ from email.message import EmailMessage
 
 
 def configured():
+    from flask import current_app, has_app_context
+    if has_app_context() and current_app.testing:              # tests never send real email
+        return False
     return bool(os.environ.get("MAIL_SERVER") and os.environ.get("MAIL_USERNAME") and os.environ.get("MAIL_PASSWORD"))
 
 

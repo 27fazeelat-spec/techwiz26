@@ -2,7 +2,8 @@
 from datetime import datetime, timezone
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
+from flask_sqlalchemy.session import Session as FlaskSession
+from sqlalchemy import inspect as sa_inspect, text
 from sqlalchemy.orm import DeclarativeBase
 
 
@@ -10,7 +11,26 @@ class Base(DeclarativeBase):
     pass
 
 
-db = SQLAlchemy(model_class=Base)
+class RoutingSession(FlaskSession):
+    """While a demo visitor is being served, client tables come from the sample database (database/demo_db.py);
+    SkillSprint's own tables always come from the main one."""
+
+    def get_bind(self, mapper=None, clause=None, bind=None, **kwargs):
+        if bind is None:
+            from database import demo_db
+            if demo_db.active():
+                table = None
+                if mapper is not None:
+                    try:
+                        table = sa_inspect(mapper).local_table.name
+                    except Exception:
+                        table = None
+                if table not in demo_db.PLATFORM_TABLES:
+                    return demo_db.engine()
+        return super().get_bind(mapper=mapper, clause=clause, bind=bind, **kwargs)
+
+
+db = SQLAlchemy(model_class=Base, session_options={"class_": RoutingSession})
 
 
 def utcnow():

@@ -34,9 +34,9 @@ SAMPLE_DIR = ROOT / "sample_documents"
 DEV_PASSWORD = "skillsprint-demo"
 
 
-def seed_database(password=None):
+def seed_database(password=None, seed_file=None):
     """Insert seed data if missing. Returns {email: password} for accounts created in this call."""
-    data = json.loads(SEED_FILE.read_text(encoding="utf-8"))
+    data = json.loads(Path(seed_file or SEED_FILE).read_text(encoding="utf-8"))
     o = data["organization"]
     org = db.session.scalar(select(Organization).where(Organization.org_code == o["org_id"]))
     if org is None:

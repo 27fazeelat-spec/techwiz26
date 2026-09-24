@@ -79,7 +79,8 @@ def ref(kind, code):
 
 def known_documents():
     """Document IDs for linking codes in page text; cached for five minutes (one query, not one per page)."""
-    cache = current_app.extensions.setdefault("ref_docs", {"at": 0, "ids": []})
+    from database import demo_db
+    cache = current_app.extensions.setdefault("ref_docs_" + demo_db.cache_key(), {"at": 0, "ids": []})
     if time.time() - cache["at"] > 300:
         cache["ids"] = sorted(set(db.session.scalars(select(Document.doc_id))))
         cache["at"] = time.time()

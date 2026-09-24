@@ -28,3 +28,6 @@ reports/generated/
 # Local databases
 *.db
 *.sqlite3
+
+# The sample workspace for demo visitors (no client data; rebuilt with tools/build_demo_db.py)
+!database/demo/saffron_demo.db

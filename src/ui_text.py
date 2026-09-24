@@ -2,6 +2,7 @@
 
 The stored values (e.g. "Requirement Missing") never change; only what people read does.
 """
+import re
 
 ITEM_STATUS = {
     "Verified": ("Verified", "Every check passed: the item matches its source and the approved matrix."),
@@ -82,7 +83,20 @@ def label(kind, value):
     return table.get(value, (value, ""))
 
 
+# "per R-CND-01-001", "(R-FSP-01-003)", "see CND-01 §1.1": citations the model sometimes writes into a sentence.
+_CODE_MENTION = re.compile(
+    r"\s*[\(\[]?\b(?:(?:as\s+)?per|see|under|ref\.?)?\s*"
+    r"(?:R-[A-Z0-9]+(?:-[A-Z0-9]+)+|\b[A-Z]{2,4}(?:-[A-Z]{2,4})?-\d{2}\b(?:\s*§\s*[\d.]+)?)[\)\]]?")
+
+
+def plain_step(text):
+    """A plan step for an employee's eyes: requirement codes the model wrote into the sentence are dropped
+    (the code stays on the item itself, with its hover card)."""
+    return re.sub(r"\s{2,}", " ", _CODE_MENTION.sub("", text or "")).strip(" ,;.") or (text or "")
+
+
 def register(app):
     from src.navigation import is_active, items_for
     app.jinja_env.globals.update(status_label=label, glossary=GLOSSARY, nav_items=items_for, nav_active=is_active,
                                  category_icon=category_icon, category_photo=category_photo)
+    app.jinja_env.filters["plain_step"] = plain_step

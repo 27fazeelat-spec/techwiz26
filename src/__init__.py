@@ -91,11 +91,18 @@ def create_app(overrides=None):
     @app.before_request
     def keep_skillsprint_and_demo_accounts_in_their_lane():
         """Demo visitors may look but never change anything; SkillSprint staff use the console, not a client workspace."""
-        from flask import abort, request
+        from flask import abort, g, request
         from flask_login import current_user
+        g.pop("demo_db", None)                                     # decided afresh for every request
         if not current_user.is_authenticated or not request.endpoint or request.endpoint == "static":
             return None
         open_to_all = {"auth.logout", "auth.login", "main.home", "main.healthz"}
+        if current_user.app_role == "demo":
+            from flask import g
+            from database import demo_db
+            if not demo_db.available():
+                abort(503)                                         # fail closed: never fall back to a client's data
+            g.demo_db = True                                       # from here on, client tables are the sample's
         if current_user.app_role == "demo" and request.method not in ("GET", "HEAD", "OPTIONS")                 and request.endpoint not in open_to_all:
             abort(403)
         if current_user.app_role == "platform_admin" and request.blueprint not in ("console", "site", "auth")                 and request.endpoint not in open_to_all:
@@ -136,7 +143,7 @@ def create_app(overrides=None):
 
     from src.cli import bootstrap_local, register_cli
     register_cli(app)
-    if not app.config.get("TESTING"):
+    if not app.config.get("TESTING") and not app.config.get("SKIP_LOCAL_BOOTSTRAP"):
         with app.app_context():
             if is_sqlite():
                 bootstrap_local(app)
@@ -147,7 +154,8 @@ def create_app(overrides=None):
     def template_helpers():
         from flask_login import current_user
         from database.models import Organization
-        if "org_name" not in app.extensions:            # it rarely changes: read it once (settings page clears it)
+        from database import demo_db
+        if "org_name" not in app.extensions and not demo_db.active():   # read once, only from the client's own database
             org = db.session.query(Organization.name, Organization.settings).first()
             if org is None:
                 return {"can": lambda perm: has_permission(current_user, perm), "org_name": "No organisation set up",
@@ -156,6 +164,10 @@ def create_app(overrides=None):
             app.extensions["org_name"] = org.name
             app.extensions["brand"] = {**load_config("branding"), **((org.settings or {}).get("branding") or {})}
         roles = load_config("permissions")["roles"]
+        if demo_db.active():
+            org_name, brand = demo_db.ORG_NAME, dict(demo_db.BRAND)
+        else:
+            org_name, brand = app.extensions["org_name"], app.extensions["brand"]
         def ref_documents():
             from src.api.routes import known_documents
             return known_documents() if current_user.is_authenticated else []
@@ -170,10 +182,16 @@ def create_app(overrides=None):
             "page_on": page_on,
             "ref_documents": ref_documents,
             "can": lambda perm: has_permission(current_user, perm),
-            "org_name": app.extensions["org_name"],
-            "brand": app.extensions["brand"],
+            "org_name": org_name,
+            "brand": brand,
+            "demo_mode": demo_db.active(),
             "role_label": lambda code: roles.get(code, {}).get("label", code),
         }
+
+    @app.teardown_request
+    def forget_demo_database(exc):
+        from flask import g
+        g.pop("demo_db", None)
 
     @app.teardown_request
     def rollback_on_error(exc):

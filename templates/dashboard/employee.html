@@ -39,7 +39,7 @@
       {% elif key == 'next' %}
         {% if task %}{% set r, item, module = task %}{% set c = item.content %}
         <p class="eyebrow {{ 'is-late' if r.due_date and r.due_date < today }}">{% if r.due_date and r.due_date < today %}Overdue since {{ r.due_date.strftime('%d %B') }}{% elif r.due_date == today %}Due today{% else %}Up next · due {{ r.due_date.strftime('%d %B') if r.due_date }}{% endif %}</p>
-        <h1 class="lslide__title lslide__title--sm">{{ (c.activity or c.description or c.situation or c.question or c.topic)[:110] }}</h1>
+        <h1 class="lslide__title lslide__title--sm">{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:110] }}</h1>
         <p class="lslide__lead">A {{ item.item_type|replace('_', ' ') }} in <strong>{{ module.title }}</strong>. It can still be done late; your manager simply sees that it was.</p>
         <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">Open this step {{ icon('arrow', 15) }}</a>
           {% if page_on('learning.calendar') %}<a class="btn btn--ghost" href="{{ url_for('learning.calendar') }}">My calendar</a>{% endif %}</div>
@@ -125,7 +125,7 @@
       {% for r, item, module in upcoming[:6] %}{% set c = item.content %}{% set late = r.due_date and r.due_date < today %}
       <li><a href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">
         <span class="ltasks__date {{ 'is-late' if late else ('is-today' if r.due_date == today) }}">{% if r.due_date %}<b>{{ r.due_date.strftime('%d') }}</b>{{ r.due_date.strftime('%b') }}{% else %}<b>–</b>{% endif %}</span>
-        <span class="ltasks__text"><strong>{{ (c.activity or c.description or c.situation or c.question or c.topic)[:90] }}</strong>
+        <span class="ltasks__text"><strong>{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:90] }}</strong>
           <span>{{ item.item_type|replace('_', ' ')|capitalize }} · {{ module.title }}{% if late %} · <em>overdue</em>{% endif %}</span></span>
         <span class="ltasks__go">→</span></a></li>
       {% endfor %}

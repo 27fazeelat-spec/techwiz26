@@ -1,0 +1,36 @@
+{
+  "organization": {"org_id": "saffron-table", "name": "Saffron Table Kitchens", "settings": {"sample": true}},
+  "properties": [
+    {"code": "STK-CVG", "name": "Saffron Table Covent Garden", "country": "UK", "type": "Restaurant", "services": {"takeaway": true}},
+    {"code": "STK-MAN", "name": "Saffron Table Manchester", "country": "UK", "type": "Restaurant", "services": {"takeaway": true}}
+  ],
+  "job_roles": [
+    {"code": "SRV", "name": "Server", "department": "Service", "aliases": ["Server", "Servers", "waiting staff"]},
+    {"code": "LCK", "name": "Line Cook", "department": "Kitchen", "aliases": ["Line Cook", "Line cooks", "cooks"]},
+    {"code": "KPT", "name": "Kitchen Porter", "department": "Kitchen", "aliases": ["Kitchen Porter", "Kitchen porters", "porters"]},
+    {"code": "SSV", "name": "Shift Supervisor", "department": "Operations", "aliases": ["Shift Supervisor", "Shift supervisors", "supervisors"]}
+  ],
+  "employees": [
+    {"employee_id": "S001", "name": "Maya Chen", "role_code": "SRV", "department": "Service", "property_code": "STK-CVG",
+     "experience_level": "Beginner", "experience_years": 0, "previous_experience": "Weekend cafe job", "joining_date": "2026-09-21",
+     "reporting_manager_id": "M101", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "S002", "name": "Tomas Rivera", "role_code": "LCK", "department": "Kitchen", "property_code": "STK-CVG",
+     "experience_level": "Intermediate", "experience_years": 2, "previous_experience": "Two years as a commis chef", "joining_date": "2026-09-21",
+     "reporting_manager_id": "M101", "certifications": ["Food Safety Level 1"], "assignments": [], "shift_pattern": "rotating"},
+    {"employee_id": "S003", "name": "Aisha Bello", "role_code": "KPT", "department": "Kitchen", "property_code": "STK-MAN",
+     "experience_level": "Beginner", "experience_years": 0, "previous_experience": "", "joining_date": "2026-09-28",
+     "reporting_manager_id": "M101", "certifications": [], "assignments": [], "shift_pattern": "night"},
+    {"employee_id": "S004", "name": "Noah Williams", "role_code": "SSV", "department": "Operations", "property_code": "STK-MAN",
+     "experience_level": "Advanced", "experience_years": 6, "previous_experience": "Restaurant assistant manager", "joining_date": "2026-10-05",
+     "reporting_manager_id": "M101", "certifications": ["Food Safety Level 2"], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "S005", "name": "Priya Nair", "role_code": "SRV", "department": "Service", "property_code": "STK-MAN",
+     "experience_level": "Intermediate", "experience_years": 1, "previous_experience": "One year in a hotel restaurant", "joining_date": "2026-10-05",
+     "reporting_manager_id": "M101", "certifications": [], "assignments": [], "shift_pattern": "day"},
+    {"employee_id": "S006", "name": "Leo Martin", "role_code": "LCK", "department": "Kitchen", "property_code": "STK-MAN",
+     "experience_level": "Beginner", "experience_years": 0, "previous_experience": "Culinary school graduate", "joining_date": "2026-10-12",
+     "reporting_manager_id": "M101", "certifications": [], "assignments": [], "shift_pattern": "rotating"}
+  ],
+  "users": [
+    {"email": "grace.owusu@saffrontable.example", "name": "Grace Owusu", "app_role": "manager", "employee_id": "M101"}
+  ]
+}

@@ -23,8 +23,10 @@
     </div>
   </div>
   <figure class="ahead__photo">
-    <img src="{{ url_for('static', filename='img/aurelle/photos/reception.jpg') }}" alt="A reception bell on a front desk">
-    <figcaption>The front desk, where every new hire starts</figcaption>
+    {% if demo_mode %}<img src="{{ url_for('static', filename='img/aurelle/photos/training.jpg') }}" alt="A team in a bright meeting room">
+    <figcaption>Where every new hire starts</figcaption>
+    {% else %}<img src="{{ url_for('static', filename='img/aurelle/photos/reception.jpg') }}" alt="A reception bell on a front desk">
+    <figcaption>The front desk, where every new hire starts</figcaption>{% endif %}
   </figure>
 </header>
 
