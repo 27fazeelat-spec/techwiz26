@@ -133,9 +133,40 @@ def search():
         groups.append({"label": "My team", "items": [
             {"title": e.name, "code": e.employee_code, "meta": e.job_role.name,
              "url": url_for("learning.team_member", code=e.employee_code)} for e in team]})
+    groups.append({"label": "Modules", "items": _module_matches(like)})
     if has_permission(current_user, "conflicts.view") or has_permission(current_user, "requirements.view"):
         found = db.session.scalars(select(Conflict).where(Conflict.conflict_code.ilike(like)).limit(4)).all()
         groups.append({"label": "Conflicts", "items": [
             {"title": c.conflict_code, "code": c.status.replace("_", " "), "url": url_for("ground_truth.conflicts") + f"#{c.conflict_code}"}
             for c in found]})
     return jsonify({"groups": [g for g in groups if g["items"]]})
+
+
+def _module_matches(like):
+    """Modules by title, category or key (SRS Step 61): staff search current plans, an employee their own plan."""
+    from flask import url_for
+    from sqlalchemy import or_
+    from database.models import Employee, Plan, PlanModule
+    from src.services import progress
+    match = or_(PlanModule.title.ilike(like), PlanModule.category.ilike(like), PlanModule.module_key.ilike(like))
+    if has_permission(current_user, "plans.view"):
+        rows = db.session.execute(select(PlanModule, Plan, Employee).join(Plan, PlanModule.plan_id == Plan.id)
+                                  .join(Employee, Plan.employee_id == Employee.id)
+                                  .where(Plan.status.notin_(["superseded", "Failed"]), match)
+                                  .order_by(Employee.employee_code, Plan.id.desc(), PlanModule.position).limit(20)).all()
+        seen, items = set(), []
+        for m, plan, e in rows:
+            if (e.id, m.module_key) not in seen and len(items) < 6:
+                seen.add((e.id, m.module_key))
+                items.append({"title": m.title, "code": m.module_key, "meta": f"{e.employee_code} · {m.category}",
+                              "url": url_for("plans.plan_detail", pk=plan.id) + f"#module-{m.module_key}"})
+        return items
+    if has_permission(current_user, "learning.view") and current_user.employee_code:
+        employee = db.session.scalar(select(Employee).where(Employee.employee_code == current_user.employee_code))
+        plan = progress.assigned_plan(employee) if employee else None
+        if plan:
+            found = db.session.scalars(select(PlanModule).where(PlanModule.plan_id == plan.id, match)
+                                       .order_by(PlanModule.position).limit(6)).all()
+            return [{"title": m.title, "code": m.module_key, "meta": m.category,
+                     "url": url_for("learning.module", module_key=m.module_key)} for m in found]
+    return []

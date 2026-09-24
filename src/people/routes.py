@@ -1,7 +1,7 @@
 """Job roles (including new roles added at runtime) and employee profiles (SRS FR iii-iv)."""
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 
 from database import audit, db
 from database.models import Employee, JobRole, Property
@@ -31,7 +31,42 @@ def roles():
             flash(str(exc), "error")
     counts = dict(db.session.execute(select(Employee.job_role_id, func.count()).group_by(Employee.job_role_id)).all())
     rows = db.session.scalars(select(JobRole).order_by(JobRole.status.desc(), JobRole.code)).all()
-    return render_template("people/roles.html", rows=rows, counts=counts, form=request.form)
+    return render_template("people/roles.html", rows=rows, counts=counts, form=request.form, stats=_role_stats())
+
+
+def _role_stats():
+    """Per role (SRS Step 52): required rules in the approved matrix and how far the role's new hires have got."""
+    from flask import current_app
+    from config.settings import today
+    from database.models import MatrixRow, MatrixVersion, Plan
+    from src.services import progress
+    stats = {}
+    matrix = db.session.scalar(select(MatrixVersion).where(MatrixVersion.status == "approved").order_by(MatrixVersion.version_no.desc()))
+    if matrix:
+        for role_id, total, mandatory in db.session.execute(
+                select(MatrixRow.job_role_id, func.count(), func.sum(case((MatrixRow.mandatory.is_(True), 1), else_=0)))
+                .where(MatrixRow.matrix_version_id == matrix.id).group_by(MatrixRow.job_role_id)):
+            stats.setdefault(role_id, {})["rules"], stats[role_id]["mandatory"] = total, int(mandatory or 0)
+    plans = db.session.scalars(select(Plan).where(Plan.status.notin_(["superseded", "Failed"]))).all()
+    latest = {}
+    for plan in sorted(plans, key=lambda x: x.version):
+        latest[plan.employee_id] = plan
+    assigned = [pl for pl in latest.values() if pl.approved_at]
+    overview = progress.overview([pl.id for pl in assigned], today(current_app.config))
+    for pl in latest.values():
+        s = stats.setdefault(pl.job_role_id, {})
+        s["plans"] = s.get("plans", 0) + 1
+        if pl.score_coverage is not None:
+            s.setdefault("coverage", []).append(pl.score_coverage)
+    for pl in assigned:
+        s, o = stats[pl.job_role_id], overview.get(pl.id, {})
+        s["assigned"] = s.get("assigned", 0) + 1
+        s.setdefault("progress", []).append(o.get("pct", 0))
+        s["completed"] = s.get("completed", 0) + (1 if o.get("total") and o.get("done") == o.get("total") else 0)
+    for s in stats.values():
+        s["coverage"] = round(sum(s["coverage"]) / len(s["coverage"]), 1) if s.get("coverage") else None
+        s["progress"] = round(sum(s["progress"]) / len(s["progress"])) if s.get("progress") else None
+    return stats
 
 
 @bp.route("/roles/<code>", methods=["GET", "POST"])

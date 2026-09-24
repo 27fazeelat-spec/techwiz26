@@ -1,4 +1,5 @@
 """Employees and onboarding plans: generate (Pipeline 1), inspect validation (Pipeline 2) and traceability."""
+import json
 from collections import Counter
 
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
@@ -118,6 +119,12 @@ def plan_detail(pk):
             sources.setdefault((doc.doc_id, chunk.section_id), []).append(chunk)
     runs = {r.id: r for r in db.session.scalars(select(GenerationRun).where(GenerationRun.plan_id == plan.id))}
     outline_runs = [r for r in runs.values() if r.phase == "outline"]
+    gaps = []                                     # topics the model said the sources do not cover (outline JSON)
+    for r in outline_runs:
+        try:
+            gaps += [g for g in (json.loads(r.raw_response or "{}").get("insufficient_information") or []) if g not in gaps]
+        except (ValueError, AttributeError):
+            pass
     severity = Counter(f.severity for f in findings)
     from src.services.review import plan_review_state
     review_state = plan_review_state(plan)
@@ -125,7 +132,7 @@ def plan_detail(pk):
     return render_template("plans/plan.html", plan=plan, run=run, findings=findings, by_item=by_item, rows=rows,
                            review_state=review_state, review_by_item=review_by_item,
                            show=show, sources=sources, runs=runs, outline_runs=outline_runs, severity=severity,
-                           total_rows=len(run.comparison_rows) if run else 0)
+                           total_rows=len(run.comparison_rows) if run else 0, gaps=gaps)
 
 
 @bp.route("/plans/<int:pk>/assign", methods=["POST"])

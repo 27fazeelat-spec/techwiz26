@@ -87,3 +87,20 @@ def test_line_manager_panel_and_team_search(corpus):
     data = client.get("/api/search?q=Leila").get_json()
     assert data["groups"][0]["label"] == "My team" and data["groups"][0]["items"][0]["code"] == "E001"
     assert client.get("/api/search?q=GDP").get_json() == {"groups": []}      # no policy browsing for managers
+
+
+def test_search_finds_modules_by_title(corpus):
+    from src.services import progress
+    from tests.test_planning_pipeline import leila
+    from tests.test_progress import assigned
+    assigned()
+    module = progress.assigned_plan(leila()).modules[0]
+    word = max(module.title.split(), key=len)
+    client = current_app.test_client()
+    login(client, "leila.haddad@aurelle.example")                              # her own plan, opened as a learner
+    mine = {g["label"]: g["items"] for g in client.get(f"/api/search?q={word}").get_json()["groups"]}
+    assert any(i["url"] == f"/learn/{module.module_key}" for i in mine["Modules"])
+    client.post("/logout")
+    login(client, "training@aurelle.example")                                  # staff land on the plan page, at the module
+    staff = {g["label"]: g["items"] for g in client.get(f"/api/search?q={word}").get_json()["groups"]}
+    assert any(i["url"].endswith(f"#module-{module.module_key}") for i in staff["Modules"])

@@ -9,7 +9,7 @@
   box.hidden = true;
   box.innerHTML = '<div class="cmdk__box" role="dialog" aria-modal="true" aria-label="Search the workspace">' +
     '<label class="cmdk__field"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
-    '<input type="search" placeholder="Search pages, documents, requirement codes, employees…" aria-label="Search" autocomplete="off" spellcheck="false"></label>' +
+    '<input type="search" placeholder="Search pages, documents, requirement codes, employees, modules…" aria-label="Search" autocomplete="off" spellcheck="false"></label>' +
     '<div class="cmdk__list" role="listbox"></div>' +
     '<div class="cmdk__foot"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></div></div>';
   document.body.appendChild(box);

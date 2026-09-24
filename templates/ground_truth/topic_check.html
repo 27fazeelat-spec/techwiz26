@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Topic check{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Ground truth</p><h1>Topic check</h1>
+  <p class="pagehead__meta">Before anyone writes training about a topic, see whether the approved documents actually cover it.
+    Python decides from the stored passages; no AI model is asked, so nothing can be invented.</p></div></div>
+
+<form method="get" class="topicform">
+  <label class="topicform__field">{{ icon('search', 18) }}
+    <input type="search" name="topic" value="{{ topic }}" placeholder="e.g. how long guest passport scans are kept" aria-label="Topic" maxlength="200" autofocus></label>
+  <button class="btn btn--primary" type="submit">Check the sources</button>
+</form>
+{% if not topic %}
+<p class="small muted">Try a topic from the documents, and one that is not in them, for example
+  <a href="{{ url_for('ground_truth.topic_check', topic='fire assembly point and evacuation') }}">fire assembly point and evacuation</a> or
+  <a href="{{ url_for('ground_truth.topic_check', topic='scuba diving instructor certification') }}">scuba diving instructor certification</a>.</p>
+{% endif %}
+
+{% if result %}
+<section class="topicresult topicresult--{{ result.status }}">
+  <div class="topicresult__head">
+    <span class="topicresult__mark">{{ icon({'supported': 'check', 'review': 'alert', 'unsupported': 'x'}[result.status], 20) }}</span>
+    <div>
+      <p class="topicresult__status">{{ {'supported': 'Covered by the approved documents', 'review': 'Partly covered: a person decides', 'unsupported': 'Not covered: nothing will be generated'}[result.status] }}</p>
+      <p>{{ result.message }}</p>
+      <p class="small muted">Best match {{ (result.score * 100)|round|int }}% of the topic's key words ({{ result.terms|join(', ') }}).
+        Covered from {{ (thresholds.supported_at * 100)|int }}%, a person decides from {{ (thresholds.review_at * 100)|int }}% (config/hallucination.yaml).</p>
+    </div>
+  </div>
+  {% if result.matches %}
+  <ul class="topicmatches">
+    {% for m in result.matches %}
+    <li>
+      <p class="topicmatches__ref"><span class="mono">{{ m.doc_id }}</span> §{{ m.section_id }} · {{ (m.score * 100)|round|int }}% match
+        {% for r in m.requirements[:4] %}<span class="reqid">{{ r }}</span>{% endfor %}</p>
+      <blockquote class="quote">{{ m.text[:420] }}{% if m.text|length > 420 %}…{% endif %}</blockquote>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

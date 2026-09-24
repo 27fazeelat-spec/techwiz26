@@ -1,0 +1,11 @@
+# Topic support check (SRS §1.8 challenge 8, Steps 31-32): before any training is written about a topic, Python
+# decides whether the approved documents cover it. Nothing here calls a GenAI API.
+
+# Share of the topic's key words (weighted by how rare they are) that one approved passage must contain.
+supported_at: 0.6        # at or above: the sources cover the topic
+review_at: 0.3           # between review_at and supported_at: partly covered, a person decides
+max_matches: 6           # passages shown as evidence
+
+# Words ignored when matching a topic (added to the built-in English list).
+extra_stopwords: [training, module, course, onboarding, employee, employees, staff, company, policy, policies,
+                  procedure, procedures, rules, rule, learn, learning, about, how, what, when]

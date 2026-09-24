@@ -3,17 +3,24 @@
 {% block title %}Job roles{% endblock %}
 {% block content %}
 <div class="pagehead"><div><p class="eyebrow">Onboarding</p><h1>Job roles</h1>
-  <p class="pagehead__meta">A new role picks up existing requirements through its name, aliases and department. Nothing changes until you activate it and approve a new matrix.</p></div></div>
+  <p class="pagehead__meta">What each role must learn (mandatory / all rules in the approved matrix) and how far its new hires have got. A new role picks up existing requirements through its name, aliases and department; nothing changes until you activate it and approve a new matrix.</p></div></div>
 
 <section class="panel panel--flush">
   <div class="tablewrap">
     <table class="table">
-      <thead><tr><th>Role</th><th>Department</th><th>Also known as</th><th class="num">Employees</th><th>Status</th></tr></thead>
+      <thead><tr><th>Role</th><th>Department</th><th class="num">Required rules</th><th class="num">Employees</th><th class="num">Plans</th>
+        <th class="num">Avg. coverage</th><th>Onboarding progress</th><th>Status</th></tr></thead>
       <tbody>
       {% for r in rows %}
         <tr><td><a href="{{ url_for('people.role_detail', code=r.code) }}"><span class="mono">{{ r.code }}</span> {{ r.name }}</a></td>
-          <td class="small">{{ r.department }}</td><td class="small muted">{{ (r.aliases or [])|join(', ') or '—' }}</td>
+          {% set st = stats.get(r.id, {}) %}
+          <td class="small">{{ r.department }}{% if r.aliases %}<div class="muted">{{ r.aliases|join(', ')|truncate(40) }}</div>{% endif %}</td>
+          <td class="num">{% if st.rules %}{{ st.mandatory }}<span class="muted"> / {{ st.rules }}</span>{% else %}–{% endif %}</td>
           <td class="num">{{ counts.get(r.id, 0) }}</td>
+          <td class="num">{{ st.plans or 0 }}{% if st.assigned %}<div class="small muted">{{ st.assigned }} assigned</div>{% endif %}</td>
+          <td class="num">{{ '%.1f%%'|format(st.coverage) if st.get('coverage') is not none else '–' }}</td>
+          <td style="min-width: 150px">{% if st.get('progress') is not none %}<span class="hbar__track" style="display: block"><i style="width: {{ st.progress }}%"></i></span>
+            <span class="small muted">{{ st.progress }}% on average{% if st.completed %} · {{ st.completed }} completed{% endif %}</span>{% else %}<span class="small muted">No plan assigned yet</span>{% endif %}</td>
           <td>{% if r.status == 'active' %}<span class="badge badge--ok">Active</span>{% else %}<span class="badge badge--warn">Needs mapping review</span>{% endif %}</td></tr>
       {% endfor %}
       </tbody>

@@ -215,3 +215,29 @@ def security():
     counts = Counter(f.technique for f, _, _ in rows)
     quarantined = db.session.scalar(select(func.count()).select_from(Chunk).where(Chunk.quarantined))
     return render_template("ground_truth/security.html", rows=rows, counts=counts, quarantined=quarantined)
+
+
+@bp.route("/topics")
+@require_permission("requirements.view")
+def topic_check():
+    """Would the approved documents support training on this topic? Python decides; no GenAI call is made."""
+    from hallucination_checks import assess
+    topic = " ".join((request.args.get("topic") or "").split())[:200]
+    result = None
+    if topic:
+        cfg = load_config("hallucination")
+        chunks = db.session.execute(select(Chunk.id, Chunk.chunk_id, Chunk.doc_id, Chunk.section_id, Chunk.heading, Chunk.text)
+                                    .where(Chunk.doc_status == "active", Chunk.quarantined.is_(False))).all()
+        req_ids = defaultdict(list)
+        for chunk_pk, req_id in db.session.execute(select(Requirement.chunk_id, Requirement.req_id)
+                                                   .join(Document, Requirement.document_id == Document.id)
+                                                   .where(Document.status == "active")):
+            req_ids[chunk_pk].append(req_id)
+        passages = [{"ref": cid, "doc_id": doc, "section_id": sec, "text": f"{heading} {text}",
+                     "requirements": req_ids.get(pk, [])} for pk, cid, doc, sec, heading, text in chunks]
+        result = assess(topic, passages, supported_at=cfg["supported_at"], review_at=cfg["review_at"],
+                        max_matches=cfg["max_matches"], extra_stopwords=cfg.get("extra_stopwords", []))
+        if current_user.app_role != "demo":
+            audit.record(f"topic.{result.status}", "topic", topic[:120], actor=audit.actor_from_user(current_user),
+                         detail={"score": result.score, "sources": [m["ref"] for m in result.matches]})
+    return render_template("ground_truth/topic_check.html", topic=topic, result=result, thresholds=load_config("hallucination"))

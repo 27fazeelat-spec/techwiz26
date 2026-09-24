@@ -151,6 +151,13 @@
     {{ meter(gc, score_tone(gc)) }}
     <span class="kpi__note">{% if plan.consistency %}{{ plan.consistency.runs }} runs compared{% else %}not measured yet{% endif %}</span></div>
 </section>
+{% if gaps %}
+<section class="panel">
+  <h2 class="panel__title">What the sources do not cover <span class="panel__aside">reported by the model; nothing was written about these</span></h2>
+  <ul class="warnings">{% for g in gaps %}<li>{{ g }}</li>{% endfor %}</ul>
+  <p class="small muted" style="margin-top: 8px">Check any of these on the <a href="{{ url_for('ground_truth.topic_check') }}">Topic check</a> page.</p>
+</section>
+{% endif %}
 {% endif %}
 </div>
 {% if run %}
@@ -211,7 +218,7 @@
 <h2 class="section-title">Modules <span class="muted small">{{ plan.modules|length }} modules · click an item to see its source trail</span></h2>
 {% endif %}
 {% for m in plan.modules %}
-<section class="panel module">
+<section class="panel module" id="module-{{ m.module_key }}">
   <div class="module__head">
     <span class="module__key">{{ m.module_key }}</span>
     <div style="flex: 1 1 320px; min-width: 0">
