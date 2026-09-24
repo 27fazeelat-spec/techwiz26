@@ -26,7 +26,8 @@ roles:
       - roles.view
       - requirements.view
       - matrix.view
-      - conflicts.*
+      - conflicts.view
+      - conflicts.resolve     # decide conflicts; re-running detection is the administrator's job
       - security.view
       - plans.view
       - review.*

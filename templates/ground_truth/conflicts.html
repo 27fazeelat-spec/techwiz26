@@ -16,7 +16,7 @@
     <h1>Conflicts {{ help('conflict') }}</h1>
     <p class="pagehead__meta">Contradictions between documents, found by deterministic checks and resolved by the documented precedence rules. Overridden clauses are removed from the matrix and never shown to Gemini.</p>
   </div>
-  {% if can('conflicts.resolve') %}
+  {% if can('conflicts.detect') %}
   <form method="post" action="{{ url_for('ground_truth.conflicts_detect') }}" data-busy="Checking for contradictions…">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button class="btn" type="submit">{{ icon('split', 16) }}Run contradiction check</button>

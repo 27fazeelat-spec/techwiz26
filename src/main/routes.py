@@ -92,8 +92,10 @@ def reviewer_dashboard():
     decided_total = db.session.scalar(select(func.count()).select_from(ReviewItem)
                                       .where(ReviewItem.decision_by == current_user.email)) or 0
     kinds = [(k, n, label("item", k)) for k, n in sorted(open_items, key=lambda kv: -kv[1])]
+    from config.settings import today
+    from flask import current_app
     return render_template("dashboard/reviewer.html", kinds=kinds, total=sum(n for _, n in open_items), by_plan=by_plan,
-                           conflicts=conflicts, mine=mine, decided_total=decided_total)
+                           conflicts=conflicts, mine=mine, decided_total=decided_total, today=today(current_app.config))
 
 
 @bp.route("/dashboard/admin")

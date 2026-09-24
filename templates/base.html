@@ -1,6 +1,6 @@
 {% from "_macros.html" import icon, initials %}
 {# Roles moved to the Terracotta & Olive workspace theme so far; the rest follow one panel at a time. #}
-{% set terra = current_user.is_authenticated and current_user.app_role in ['admin', 'training_manager'] %}
+{% set terra = current_user.is_authenticated and current_user.app_role in ['admin', 'training_manager', 'reviewer'] %}
 <!doctype html>
 <html lang="en">
 <head>

@@ -179,7 +179,7 @@ def conflicts():
 
 
 @bp.route("/conflicts/detect", methods=["POST"])
-@require_permission("conflicts.resolve")
+@require_permission("conflicts.detect")
 def conflicts_detect():
     from src.services.conflicts import detect_and_store
     found = detect_and_store(audit.actor_from_user(current_user))

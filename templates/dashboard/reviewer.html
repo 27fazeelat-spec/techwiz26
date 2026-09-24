@@ -1,57 +1,78 @@
 {% extends "base.html" %}
-{% from "_macros.html" import icon, initials, empty, help %}
+{% from "_macros.html" import icon, initials, help %}
 {% block title %}My reviews{% endblock %}
 {% block content %}
-<section class="heroband rise">
-  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/photos/corridor.jpg') }}" alt="">
-  <div class="heroband__row">
-    <div>
-      <p class="heroband__kicker">Reviewer</p>
-      <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}</h1>
-      <p>You decide what Python could not. Each item explains itself in plain words and suggests a decision; similar items can be decided together.</p>
-      <div class="heroband__actions">
-        {% if total %}<a class="btn btn--gold" href="{{ url_for('review.queue') }}" data-cursor="Start">{{ icon('inbox', 15) }}Start reviewing</a>{% endif %}
-        {% if conflicts %}<a class="btn" href="{{ url_for('ground_truth.conflicts') }}">{{ icon('split', 15) }}{{ conflicts|length }} conflict{{ 's' if conflicts|length != 1 }} to decide</a>{% endif %}
-      </div>
+{% set n_conf = conflicts|length %}
+
+<header class="ahead">
+  <div class="ahead__text">
+    <p class="eyebrow">{{ today.strftime('%A, %d %B %Y') }}</p>
+    <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}.</h1>
+    <p class="ahead__lead">
+      {% if total or n_conf %}
+        {% if total %}{{ total }} plan item{{ 's' if total != 1 }}{% endif %}{% if total and n_conf %} and {% endif %}{% if n_conf %}{{ n_conf }} conflict{{ 's' if n_conf != 1 }}{% endif %}
+        {{ 'is' if (total + n_conf) == 1 else 'are' }} waiting for your decision. Each one explains itself and suggests an answer; you have the last word.
+      {% else %}Nothing is waiting. When Python flags something in a new plan, or two policies disagree, it will appear here.{% endif %}
+    </p>
+    <div class="ahead__actions">
+      {% if total %}<a class="btn btn--primary" href="{{ url_for('review.queue') }}" data-cursor="Start">{{ icon('inbox', 15) }}Start reviewing</a>{% endif %}
+      <a class="btn" href="{{ url_for('ground_truth.conflicts') }}">{{ icon('split', 15) }}Conflicts</a>
+      <a class="btn btn--ghost" href="{{ url_for('ground_truth.requirements') }}">{{ icon('list', 15) }}Look up a requirement</a>
     </div>
-    <div class="heroband__stats">
-      <div class="glass"><b data-count="{{ total }}">{{ total }}</b><span>waiting</span></div>
-      <div class="glass"><b data-count="{{ conflicts|length }}">{{ conflicts|length }}</b><span>conflicts</span></div>
-      <div class="glass"><b data-count="{{ decided_total }}">{{ decided_total }}</b><span>decided by you</span></div>
+  </div>
+  <figure class="ahead__photo">
+    <img src="{{ url_for('static', filename='img/aurelle/photos/corridor.jpg') }}" alt="A long, quiet hotel corridor">
+    <figcaption>Slow down; every decision is kept in the audit trail</figcaption>
+  </figure>
+</header>
+
+<section class="asec">
+  <dl class="tstats tstats--4">
+    <div><dt>Items waiting</dt><dd>{{ total }}</dd></div>
+    <div><dt>Conflicts to decide</dt><dd>{{ n_conf }}</dd></div>
+    <div><dt>Plans waiting</dt><dd>{{ by_plan|length }}</dd></div>
+    <div><dt>Decided by you</dt><dd>{{ decided_total }}</dd></div>
+  </dl>
+</section>
+
+<section class="asec acols">
+  <div class="acard">
+    <div class="acard__head"><h3>What is waiting {{ help('review') }}</h3><span>grouped by what Python found</span></div>
+    <ul class="todo todo--count">
+      {% for k, n, (text, tip) in kinds %}
+      <li><a href="{{ url_for('review.queue', kind=k) }}" data-cursor="Decide">
+        <span class="todo__count">{{ n }}</span>
+        <span class="todo__text"><strong>{{ text }}</strong><span>{{ tip }}</span></span>
+        <span class="todo__go">Decide together →</span></a></li>
+      {% endfor %}
+      {% for c in conflicts %}
+      <li><a href="{{ url_for('ground_truth.conflicts') }}#{{ c.conflict_code }}" data-cursor="Decide">
+        <span class="todo__kind">Conflict</span>
+        <span class="todo__text"><strong>{{ c.left.doc_id }} and {{ c.right.doc_id }} disagree</strong><span class="mono">{{ c.conflict_code }}</span><span> · same authority, so a person must choose</span></span>
+        <span class="todo__go">Choose →</span></a></li>
+      {% endfor %}
+      {% if not kinds and not conflicts %}<li class="todo__empty">Your queue is clear.</li>{% endif %}
+    </ul>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 28px">
+    <div class="acard">
+      <div class="acard__head"><h3>By plan</h3><span>whose plan is waiting</span></div>
+      {% if by_plan %}<ul class="todo todo--people">
+        {% for p, n in by_plan %}<li><a href="{{ url_for('review.queue', plan=p.id) }}" data-cursor="Open">
+          <span class="avatar">{{ initials(p.employee.name) }}</span>
+          <span class="todo__text"><strong>{{ p.employee.name }}</strong><span>{{ p.job_role.name }} · <span class="mono">{{ p.plan_code }} v{{ p.version }}</span></span></span>
+          <span class="todo__go">{{ n }} →</span></a></li>{% endfor %}
+      </ul>{% else %}<p class="todo__empty">No plan is waiting.</p>{% endif %}
+    </div>
+    <div class="acard">
+      <div class="acard__head"><h3>Your recent decisions</h3><span>newest first</span></div>
+      {% if mine %}<ul class="alog">
+        {% for r in mine %}<li><time>{{ r.decision_at.strftime('%d %b %H:%M') if r.decision_at }}</time>
+          <div><a href="{{ url_for('review.detail', pk=r.id) }}" style="color: inherit"><b>{{ r.status|capitalize }}</b> · RV-{{ '%05d' % r.id }}</a><br>
+            <span>{{ status_label('item', r.original_status)[0] }}</span></div></li>{% endfor %}
+      </ul>{% else %}<p class="todo__empty">Decisions you make will be listed here.</p>{% endif %}
     </div>
   </div>
 </section>
-
-<section class="rise">
-  <h2 class="section-title" style="margin-bottom: var(--space-4)">What is waiting {{ help('review') }}</h2>
-  {% if kinds %}
-  <div class="kinds">
-    {% for k, n, (text, tip) in kinds %}
-    <a class="kindcard" href="{{ url_for('review.queue', kind=k) }}" data-cursor="Decide">
-      <b data-count="{{ n }}">{{ n }}</b><strong>{{ text }}</strong><p>{{ tip }}</p>
-      <span class="kindcard__go">Decide these together →</span>
-    </a>
-    {% endfor %}
-  </div>
-  {% else %}<section class="panel">{{ empty('Nothing to review', 'When Python flags something in a new plan, it appears here.', 'check') }}</section>{% endif %}
-</section>
-
-<div class="grid-2">
-  <section class="panel rise">
-    <h2 class="panel__title">By plan</h2>
-    {% if by_plan %}<ul class="upnext">
-      {% for p, n in by_plan %}<li><a href="{{ url_for('review.queue', plan=p.id) }}" data-cursor="Open">
-        <span class="avatar">{{ initials(p.employee.name) }}</span>
-        <span class="upnext__text"><strong>{{ p.employee.name }}</strong><span>{{ p.job_role.name }} · {{ p.plan_code }} v{{ p.version }}</span></span>
-        <span class="badge badge--warn">{{ n }}</span></a></li>{% endfor %}
-    </ul>{% else %}<p class="muted small">No plan is waiting.</p>{% endif %}
-  </section>
-  <section class="panel rise">
-    <h2 class="panel__title">Your recent decisions</h2>
-    {% if mine %}<ul class="rows">{% for r in mine %}
-      <li class="rows__item"><a href="{{ url_for('review.detail', pk=r.id) }}">RV-{{ '%05d' % r.id }} · {{ status_label('item', r.original_status)[0] }}</a>
-        <span class="rows__meta"><span class="badge badge--info">{{ r.status|capitalize }}</span><span class="small muted">{{ r.decision_at.strftime('%d %b %H:%M') if r.decision_at }}</span></span></li>{% endfor %}</ul>
-    {% else %}<p class="muted small">Decisions you make will be listed here.</p>{% endif %}
-  </section>
-</div>
 {% endblock %}

@@ -63,3 +63,16 @@ def test_training_manager_gets_the_theme_but_not_other_peoples_decisions(corpus)
     client.post("/logout")
     login(client, "omar.siddiqui@aurelle.example")                            # Leila's manager
     assert 'value="approve"' in client.get("/team/E001").get_data(as_text=True)
+
+
+def test_reviewer_decides_conflicts_but_does_not_rerun_detection(corpus):
+    client = current_app.test_client()
+    login(client, "evaluator@aurelle.example")
+    home = client.get("/dashboard/review").get_data(as_text=True)
+    assert "theme-terra" in home and "What is waiting" in home
+    page = client.get("/conflicts").get_data(as_text=True)
+    assert "Run contradiction check" not in page                              # detection is the administrator's job
+    assert client.post("/conflicts/detect").status_code == 403
+    client.post("/logout")
+    login(client, "admin@aurelle.example")
+    assert "Run contradiction check" in client.get("/conflicts").get_data(as_text=True)
