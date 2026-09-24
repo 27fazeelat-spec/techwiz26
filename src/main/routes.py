@@ -184,6 +184,8 @@ def employee_dashboard():
     from flask import current_app
     from src.services import progress, workspace
     employee = db.session.scalar(select(Employee).where(Employee.employee_code == current_user.employee_code))
+    if employee is None and current_user.app_role != "employee":
+        return redirect(url_for("main.home"))                       # staff without an employee profile: their own home
     plan = progress.assigned_plan(employee) if employee else None
     summary = progress.summary(plan, employee, today(current_app.config)) if plan else None
     day = today(current_app.config)

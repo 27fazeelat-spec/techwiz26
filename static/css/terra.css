@@ -472,3 +472,16 @@
 .botq__actions form.inline { display: inline-flex; gap: 6px; align-items: center; }
 .botreply { display: grid; gap: 8px; justify-items: start; }
 @media (max-width: 640px) { .botq__head { flex-direction: column; } .botq { padding: 14px; } }
+
+/* Small screens: the search opens from an icon, so the theme switch, avatar and sign-out stay on screen. */
+@media (max-width: 720px) {
+  .cmdkbtn { min-width: 0; width: 36px; padding: 0; justify-content: center; flex: 0 0 auto; }
+  .cmdkbtn span, .cmdkbtn kbd { display: none; }
+  .topbar__right { gap: 8px; }
+}
+
+/* Wide tables scroll inside their card instead of widening the page. */
+.page > *, .page form { min-width: 0; }
+.acard { max-width: 100%; }
+/* Long status badges (for example "Assigned ... by ...") wrap on small screens. */
+.badge--lg { white-space: normal; max-width: 100%; }

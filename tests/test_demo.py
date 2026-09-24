@@ -99,6 +99,7 @@ def test_approving_creates_a_read_only_demo_that_ends(corpus, monkeypatch):
     assert asked.status_code == 200 and "are not stored" in html                   # the one thing a visitor may post
     assert ("ALG-01" in html or "FSP-01" in html) and "GDP-01" not in html and "Aurelle" not in html   # sample documents only
     assert db.session.scalar(select(func.count()).select_from(BotQuestion)) == stored
+    assert visitor.get("/reports/bot_questions").status_code == 200                # tables added after the sample was built
 
     admin = current_app.test_client()                                                # the client's own view is untouched
     login(admin, "admin@aurelle.example")

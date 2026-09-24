@@ -457,3 +457,9 @@ body.site { margin: 0; background: var(--bg); color: var(--ink); font-family: va
 .demoform__consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.5; cursor: pointer; }
 .demoform__consent input { margin-top: 3px; accent-color: var(--primary); width: 16px; height: 16px; flex-shrink: 0; }
 @media (max-width: 640px) { .demoform__row { grid-template-columns: 1fr; } }
+
+/* Tablets: the links and both buttons do not fit next to the logo, so the menu button takes over earlier. */
+@media (max-width: 900px) {
+  .nav__links, .nav__signin, .nav .sbtn--primary { display: none; }
+  .nav__menu { display: grid; }
+}

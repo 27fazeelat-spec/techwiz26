@@ -45,5 +45,8 @@ def engine():
                 copy = Path(tempfile.gettempdir()) / f"skillsprint-demo-{os.getpid()}-{id(app)}.db"
                 shutil.copyfile(SOURCE, copy)
                 eng = create_engine("sqlite:///" + str(copy).replace("\\", "/"), connect_args={"check_same_thread": False})
+                from database import db                             # tables added after the sample was built
+                client = [t for name, t in db.metadata.tables.items() if name not in PLATFORM_TABLES]
+                db.metadata.create_all(eng, tables=client, checkfirst=True)
                 app.extensions["demo_engine"] = eng
     return eng

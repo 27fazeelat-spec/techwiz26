@@ -61,7 +61,7 @@
         <dt>Headings</dt><dd>{{ doc.parse.headings }}</dd>
         <dt>Table rows</dt><dd>{{ doc.parse.table_rows }}</dd>
         <dt>Chunks</dt><dd>{{ chunks|length }}</dd>
-        <dt>Hidden text</dt><dd>{% if doc.parse.hidden_blocks %}<span class="badge badge--bad">{{ doc.parse.hidden_blocks }} block(s)</span>{% else %}None{% endif %}</dd>
+        <dt>Hidden text</dt><dd>{% if doc.parse.hidden_blocks %}<span class="badge badge--bad">{{ doc.parse.hidden_blocks }} block(s)</span>{% else %}None found{% endif %}</dd>
         {% if doc.parse.watermark %}<dt>Watermark</dt><dd class="small">{{ doc.parse.watermark[:80] }}</dd>{% endif %}
       </dl>
     </section>

@@ -19,7 +19,7 @@
     <dt>Obligation</dt><dd>{{ 'Mandatory' if req.mandatory else 'Not mandatory' }} · decided by the phrase <span class="mono">"{{ req.modality }}"</span></dd>
     <dt>Subject</dt><dd>{{ req.subject or '—' }}</dd>
     <dt>Stage</dt><dd class="mono">{{ req.due_stage }} <span class="muted small">({{ 'stated in the text' if req.stage_source == 'text' else 'default for this type' }})</span></dd>
-    <dt>Condition</dt><dd>{% if req.condition %}Only when <span class="mono">{{ req.condition.field }} {{ req.condition.op }} {{ req.condition.value }}</span> <span class="muted small">(from "{{ req.condition.text }}")</span>{% else %}None{% endif %}</dd>
+    <dt>Condition</dt><dd>{% if req.condition %}Only when <span class="mono">{{ req.condition.field }} {{ req.condition.op }} {{ req.condition.value }}</span> <span class="muted small">(from "{{ req.condition.text }}")</span>{% else %}Applies in every case{% endif %}</dd>
     <dt>Facts</dt><dd>{% for f in req.facts %}<span class="chip">{{ f.span }}</span> {% else %}—{% endfor %}</dd>
     <dt>References</dt><dd>{% for r in req.cross_refs %}<span class="chip {{ 'chip--guess' if r.resolved is sameas false }}">{{ r.text }}{% if r.resolved is sameas false %} · not found{% endif %}</span> {% else %}—{% endfor %}</dd>
     <dt>Prerequisites</dt><dd>{% for p, source in prereqs %}<a class="mono" href="{{ url_for('ground_truth.requirement_detail', pk=p.id) }}">{{ p.req_id }}</a> <span class="muted small">({{ source|replace('_', ' ') }})</span> {% else %}—{% endfor %}</dd>

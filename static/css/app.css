@@ -230,7 +230,7 @@ input[type="file"]::file-selector-button { font: inherit; font-weight: 700; marg
 [data-filter-item].is-hidden { display: none !important; }
 
 /* ---------- Tables & lists ---------- */
-.tablewrap { overflow-x: auto; }
+.tablewrap { overflow-x: auto; position: relative; }   /* keeps absolutely positioned labels inside the scroller */
 .table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
 .table th {
   text-align: left; font-size: var(--text-2xs); letter-spacing: 0.06em; text-transform: uppercase;
