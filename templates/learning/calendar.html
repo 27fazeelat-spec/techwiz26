@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, item_state %}
+{% block title %}Calendar{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Calendar</p><h1>What is due, and when</h1>
+  <p class="pagehead__meta">Due dates count from your joining date: Day 1, Week 1, Week 2, and the first 30, 60 and 90 days.</p></div></div>
+<div class="stack">
+  {% for day, rows in days.items() %}{% set done = rows | selectattr('0.status', 'in', ['completed', 'waived']) | list %}
+  <section class="rcard rise">
+    <div class="rhead"><h2>{{ icon('calendar', 18) }} {{ day.strftime('%A, %d %B') if day else 'No date' }}
+      {% if day and day < today and done|length < rows|length %}<span class="badge badge--bad">overdue</span>{% elif day == today %}<span class="badge badge--info">today</span>{% endif %}</h2>
+      <span class="small muted">{{ done|length }} of {{ rows|length }} done</span></div>
+    <ul class="agenda">{% for r, i in rows[:12] %}{% set c = i.content %}
+      <li><a href="{{ url_for('learning.module', module_key=i.module.module_key) }}#{{ i.item_key }}">
+        <span class="agenda__icon">{{ icon({'checklist': 'check', 'task': 'wrench', 'scenario': 'map', 'quiz_question': 'spark', 'assessment': 'trophy'}.get(i.item_type, 'list'), 16) }}</span>
+        <span class="agenda__text"><strong>{{ (c.activity or c.description or c.situation or c.question or c.topic)[:90] }}</strong><span>{{ i.item_type|replace('_', ' ') }} · {{ i.module.title }}</span></span>
+        <span style="margin-left: auto">{{ item_state(r) }}</span></a></li>{% endfor %}
+      {% if rows|length > 12 %}<li class="small muted" style="padding-top: 8px">+ {{ rows|length - 12 }} more on this day</li>{% endif %}</ul>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

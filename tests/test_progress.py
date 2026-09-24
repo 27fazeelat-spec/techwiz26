@@ -133,7 +133,7 @@ def test_employee_and_manager_pages(corpus):
     assert client.get(f"/learn/{module}/quiz").status_code == 200
     questions = progress.quiz_questions(plan, module)
     data = {q.item_key: str(q.content["correct_options"][0]) for q in questions}
-    assert b"Passed" in client.post(f"/learn/{module}/quiz", data=data).data
+    assert b"You passed!" in client.post(f"/learn/{module}/quiz", data=data).data
     assert client.get("/team/E001").status_code == 403                       # employees cannot open team pages
     client.post("/logout")
     login(client, "omar.siddiqui@aurelle.example")

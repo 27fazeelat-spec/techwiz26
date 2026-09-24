@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Certificate{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Certificate</p><h1>Your onboarding certificate</h1>
+  <p class="pagehead__meta">Issued when every step of your plan is complete. Anyone can check it with its verification code.</p></div></div>
+
+<section class="certcard rise" data-tilt>
+  <div class="certcard__frame">
+    <img src="{{ url_for('static', filename=brand.logo) }}" alt="" class="certcard__logo">
+    <p class="certcard__brand">{{ brand.name|upper }} · {{ brand.tagline|upper }}</p>
+    <h2>Certificate of Onboarding</h2>
+    <p class="certcard__small">This certifies that</p>
+    <p class="certcard__name">{{ current_user.name }}</p>
+    <p class="certcard__small">has completed the verified onboarding programme for {{ plan.job_role.name }}</p>
+    {% if cert %}<p class="certcard__code">{{ cert.code }} · {{ cert.issued_at.strftime('%d %B %Y') }}</p>{% else %}<p class="certcard__code">{{ summary.pct }}% complete</p>{% endif %}
+  </div>
+</section>
+
+<section class="rcard rise" style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap">
+  <div class="pring" style="--v: {{ summary.pct }}; width: 90px; height: 90px"><b style="font-size: 22px">{{ summary.pct }}%</b></div>
+  <div style="flex: 1 1 280px">
+    {% if cert %}<strong>Your certificate is ready.</strong><p class="small muted">Verification link: <a href="{{ url_for('learning.verify', code=cert.code) }}">{{ url_for('learning.verify', code=cert.code, _external=True) }}</a></p>
+    {% elif summary.status == 'Completed' %}<strong>Every step is done. Well done!</strong><p class="small muted">Claim your certificate now.</p>
+    {% else %}<strong>{{ summary.total - summary.done }} step{{ 's' if summary.total - summary.done != 1 }} to go</strong><p class="small muted">Finish every checklist, task, quiz and assessment in your plan to unlock it.</p>{% endif %}
+  </div>
+  {% if cert %}<a class="btn btn--gold" href="{{ url_for('learning.certificate_pdf') }}" data-cursor="PDF">{{ icon('upload', 15) }}Download PDF</a>
+  {% elif summary.status == 'Completed' %}<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn--gold" type="submit">{{ icon('trophy', 15) }}Claim certificate</button></form>
+  {% else %}<a class="btn btn--primary" href="{{ url_for('learning.modules') }}">Continue learning {{ icon('arrow', 14) }}</a>{% endif %}
+</section>
+{% endblock %}

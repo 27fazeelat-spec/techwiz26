@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, progress_badge, empty %}
+{% block title %}My Progress{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">My Progress</p><h1>How you are doing</h1>
+  <p class="pagehead__meta">{{ progress_badge(summary.status) }} <span class="sep">·</span> {{ summary.done }} of {{ summary.total }} steps done{% if summary.overdue %} <span class="sep">·</span> <span style="color: var(--bad); font-weight: 700">{{ summary.overdue }} overdue</span>{% endif %}</p></div></div>
+
+<div class="learner">
+  <div class="learner__main">
+    <section class="rcard rise">
+      <div class="rhead"><h2>Your journey</h2></div>
+      {% set ns = namespace(cur=-1) %}{% for s in stages %}{% if s.state != 'done' and ns.cur < 0 %}{% set ns.cur = loop.index0 %}{% endif %}{% endfor %}
+      <div class="lpath">
+        {% for s in stages %}<div class="lstep {{ 'is-done' if s.state == 'done' else ('is-current' if loop.index0 == ns.cur else '') }}" data-tip="{{ s.label }} · {{ s.done }} of {{ s.total }} done">
+          <i>{% if s.state == 'done' %}{{ icon('check', 14) }}{% else %}{{ loop.index }}{% endif %}</i><span>{{ s.label|replace('First ', '') }}<br><b>{{ s.done }}/{{ s.total }}</b></span></div>{% endfor %}
+      </div>
+    </section>
+    <section class="rcard rise">
+      <div class="rhead"><h2>By kind of step</h2></div>
+      <div class="hbars">
+        {% for t, label in [('checklist', 'Checklist'), ('quiz_question', 'Quiz questions'), ('task', 'Tasks'), ('scenario', 'Scenarios'), ('assessment', 'Assessments')] %}{% set x = summary.by_type.get(t) %}
+        {% if x %}<div class="hbar"><span>{{ label }}</span><span class="hbar__track"><i data-w="{{ (100 * x.done / x.total)|round|int }}%"></i></span><b>{{ x.done }}/{{ x.total }}</b></div>{% endif %}{% endfor %}
+      </div>
+    </section>
+    <section class="rcard rise">
+      <div class="rhead"><h2>Modules</h2></div>
+      <div class="hbars">{% for x in summary.modules %}<div class="hbar"><span>{{ x.module.title }}</span><span class="hbar__track"><i data-w="{{ x.pct }}%"></i></span><b>{{ x.pct }}%</b></div>{% endfor %}</div>
+    </section>
+  </div>
+  <aside class="learner__side">
+    <section class="rcard rise" style="text-align: center">
+      <div class="pring" style="--v: {{ summary.pct }}; margin: 0 auto 12px"><b><span data-count="{{ summary.pct }}">{{ summary.pct }}</span>%</b></div>
+      <p class="small muted">overall</p>
+    </section>
+    <section class="rcard rise">
+      <div class="rhead"><h2>Quiz history</h2></div>
+      {% if attempts %}<ul class="agenda">{% for a in attempts[:8] %}<li><a href="{{ url_for('learning.module', module_key=a.module_key) }}">
+        <span class="agenda__icon">{{ icon('spark', 16) }}</span><span class="agenda__text"><strong>{{ a.module_key }} · attempt {{ a.attempt_no }}</strong><span>{{ a.submitted_at.strftime('%d %b %H:%M') }}</span></span>
+        <span class="badge badge--{{ 'ok' if a.passed else 'bad' }}" style="margin-left: auto">{{ a.score }}%</span></a></li>{% endfor %}</ul>
+      {% else %}<p class="small muted">No quiz attempts yet.</p>{% endif %}
+    </section>
+    <section class="rcard rise">
+      <div class="rhead"><h2>To strengthen</h2></div>
+      {% if weak %}<ul class="rows">{% for w in weak[:5] %}<li class="rows__item"><span class="small">{{ w.text[:90] }}</span><span class="badge badge--warn">{{ w.wrong }}×</span></li>{% endfor %}</ul>
+      {% else %}<p class="small muted">Nothing stands out. Keep going!</p>{% endif %}
+      {% if recs %}<p class="label" style="margin-top: 12px">Suggested</p>{% for r in recs %}<p class="small">• {{ r.text }}</p>{% endfor %}{% endif %}
+    </section>
+  </aside>
+</div>
+{% endblock %}

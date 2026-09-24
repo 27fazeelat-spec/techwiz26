@@ -392,3 +392,79 @@ def up_next(plan, employee, limit=5):
                               .where(Progress.plan_id == plan.id, Progress.employee_id == employee.id,
                                      Progress.status.notin_(DONE))
                               .order_by(Progress.due_date, PlanModule.position, PlanItem.position).limit(limit)).all()
+
+
+# --------------------------------------------------------------------------- completion certificate
+
+def certificate_for(employee, plan):
+    from database.models import Certificate
+    return db.session.scalar(select(Certificate).where(Certificate.employee_id == employee.id, Certificate.plan_id == plan.id))
+
+
+def issue_certificate(employee, plan, today, actor):
+    """Issue once, only when every tracked item is complete. Returns the Certificate."""
+    import secrets
+    from database.models import Certificate
+    existing = certificate_for(employee, plan)
+    if existing:
+        return existing
+    s = summary(plan, employee, today)
+    if s["status"] != "Completed":
+        raise ProgressError(f"The certificate is issued when every step is done ({s['done']} of {s['total']} so far).")
+    scores = [a.score for a in db.session.scalars(select(QuizAttempt).where(
+        QuizAttempt.employee_id == employee.id, QuizAttempt.plan_id == plan.id, QuizAttempt.passed.is_(True)))]
+    cert = Certificate(code="AUR-" + secrets.token_hex(4).upper(), employee_id=employee.id, plan_id=plan.id,
+                       details={"modules": len(s["modules"]), "items": s["total"],
+                                "quiz_average": round(sum(scores) / len(scores), 1) if scores else None,
+                                "role": plan.job_role.name, "plan": f"{plan.plan_code} v{plan.version}"})
+    db.session.add(cert)
+    audit.record("certificate.issued", "certificate", cert.code, actor=actor, after=cert.details, commit=False)
+    db.session.commit()
+    return cert
+
+
+def certificate_pdf(cert, brand, logo_path, verify_url):
+    """A4 landscape certificate: navy frame, gold rules, the workspace logo and a verification code."""
+    import io
+    from reportlab.lib.colors import HexColor
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.pdfgen import canvas
+    navy, gold, ink = HexColor("#0E1A33"), HexColor("#C9A45C"), HexColor("#16213B")
+    w, h = landscape(A4)
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=(w, h))
+    c.setTitle(f"Certificate {cert.code}")
+    c.setFillColor(HexColor("#FBF8F2")); c.rect(0, 0, w, h, stroke=0, fill=1)
+    c.setFillColor(navy); c.rect(0, 0, w, h, stroke=0, fill=0)
+    c.setStrokeColor(navy); c.setLineWidth(18); c.rect(9, 9, w - 18, h - 18, stroke=1, fill=0)
+    c.setStrokeColor(gold); c.setLineWidth(1.5); c.rect(34, 34, w - 68, h - 68, stroke=1, fill=0)
+    c.setLineWidth(0.6); c.rect(40, 40, w - 80, h - 80, stroke=1, fill=0)
+    try:
+        c.drawImage(logo_path, w / 2 - 34, h - 150, 68, 68, mask="auto")
+    except Exception:
+        pass
+    c.setFillColor(gold); c.setFont("Times-Roman", 13)
+    c.drawCentredString(w / 2, h - 172, f"{brand.get('name', '').upper()}  ·  {brand.get('tagline', '').upper()}")
+    c.setFillColor(ink); c.setFont("Times-Bold", 38)
+    c.drawCentredString(w / 2, h - 228, "Certificate of Onboarding")
+    c.setFont("Helvetica", 12); c.setFillColor(HexColor("#6E7385"))
+    c.drawCentredString(w / 2, h - 258, "This certifies that")
+    c.setFont("Times-BoldItalic", 34); c.setFillColor(navy)
+    c.drawCentredString(w / 2, h - 305, cert.employee.name)
+    c.setStrokeColor(gold); c.setLineWidth(1); c.line(w / 2 - 170, h - 318, w / 2 + 170, h - 318)
+    c.setFont("Helvetica", 12.5); c.setFillColor(ink)
+    d = cert.details or {}
+    c.drawCentredString(w / 2, h - 344, f"has completed the verified onboarding programme for {d.get('role', '')}")
+    c.drawCentredString(w / 2, h - 362, f"at {cert.employee.property.name}: {d.get('modules', 0)} modules and {d.get('items', 0)} checked steps"
+                        + (f", quiz average {d['quiz_average']}%." if d.get("quiz_average") is not None else "."))
+    c.setFont("Helvetica", 10); c.setFillColor(HexColor("#6E7385"))
+    c.drawCentredString(w / 2, h - 384, "Every lesson was checked against the approved policies before it was assigned.")
+    y = 92
+    c.setFont("Helvetica-Bold", 10.5); c.setFillColor(ink)
+    c.drawString(90, y + 16, cert.issued_at.strftime("%d %B %Y")); c.drawRightString(w - 90, y + 16, cert.code)
+    c.setStrokeColor(HexColor("#DDD2BF")); c.line(90, y + 10, 270, y + 10); c.line(w - 270, y + 10, w - 90, y + 10)
+    c.setFont("Helvetica", 9); c.setFillColor(HexColor("#6E7385"))
+    c.drawString(90, y - 2, "Date issued"); c.drawRightString(w - 90, y - 2, "Verification code")
+    c.drawCentredString(w / 2, 62, f"Verify at {verify_url}  ·  Powered by SkillSprint")
+    c.showPage(); c.save()
+    return buf.getvalue()

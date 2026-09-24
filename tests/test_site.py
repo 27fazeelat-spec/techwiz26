@@ -33,7 +33,7 @@ def test_each_role_lands_on_its_own_home_with_workspace_branding(client):
         page = client.get(home)
         assert page.status_code == 200, email
         html = page.data.decode()
-        assert "Aurelle" in html and "Powered by SkillSprint" in html
+        assert "Aurelle" in html and "Powered by <b>SkillSprint</b>" in html
         client.post("/logout")
 
 

@@ -156,3 +156,116 @@ def sign_off(pk):
     except (progress.ProgressError, ValueError) as exc:
         flash(str(exc), "error")
     return redirect(url_for("learning.team_member", code=employee.employee_code))
+
+
+# --------------------------------------------------------------------------- learner pages
+
+def _learner_context():
+    employee, plan = _me()
+    day = today(current_app.config)
+    return employee, plan, day, progress.summary(plan, employee, day)
+
+
+@bp.route("/learn")
+@require_permission("learning.view")
+def modules():
+    employee, plan, day, summary = _learner_context()
+    return render_template("learning/modules.html", plan=plan, summary=summary, today=day)
+
+
+@bp.route("/learn/progress")
+@require_permission("learning.view")
+def progress_page():
+    employee, plan, day, summary = _learner_context()
+    attempts = db.session.scalars(select(QuizAttempt).where(QuizAttempt.employee_id == employee.id, QuizAttempt.plan_id == plan.id)
+                                  .order_by(QuizAttempt.submitted_at.desc())).all()
+    return render_template("learning/progress.html", plan=plan, summary=summary, today=day, attempts=attempts,
+                           stages=progress.stages_for(plan, employee, day), weak=progress.weak_areas(employee, plan),
+                           recs=progress.refresh_recommendations(employee, plan, day))
+
+
+@bp.route("/learn/assessments")
+@require_permission("learning.view")
+def assessments():
+    employee, plan, day, summary = _learner_context()
+    tries = {}
+    for a in db.session.scalars(select(QuizAttempt).where(QuizAttempt.employee_id == employee.id, QuizAttempt.plan_id == plan.id)):
+        tries.setdefault(a.module_key, []).append(a)
+    rows = {p.plan_item_id: p for p in db.session.scalars(select(Progress).where(Progress.plan_id == plan.id,
+                                                                                  Progress.employee_id == employee.id))}
+    quizzes, graded = [], []
+    for m in plan.modules:
+        qs = progress.quiz_questions(plan, m.module_key)
+        if qs:
+            t = sorted(tries.get(m.module_key, []), key=lambda a: a.attempt_no)
+            quizzes.append({"module": m, "questions": len(qs), "attempts": t, "best": max((a.score for a in t), default=None),
+                            "passed": any(a.passed for a in t)})
+        for i in m.items:
+            if i.item_type == "assessment" and i.id in rows:
+                graded.append({"module": m, "item": i, "row": rows[i.id]})
+    return render_template("learning/assessments.html", plan=plan, summary=summary, quizzes=quizzes, graded=graded,
+                           cfg=progress.cfg(), today=day)
+
+
+@bp.route("/learn/resources")
+@require_permission("learning.view")
+def resources():
+    employee, plan, day, summary = _learner_context()
+    items = [i for _, i in progress.visible_items(plan)]
+    cited = _sources(items)
+    by_doc = {}
+    for (doc_id, section), chunks in sorted(cited.items()):
+        by_doc.setdefault(doc_id, []).append((section, chunks))
+    titles = dict(db.session.execute(select(Document.doc_id, Document.title).where(Document.doc_id.in_(list(by_doc)),
+                                                                                  Document.status.in_(["active", "expired"])))
+                  .all()) if by_doc else {}
+    return render_template("learning/resources.html", plan=plan, by_doc=by_doc, titles=titles, today=day)
+
+
+@bp.route("/learn/calendar")
+@require_permission("learning.view")
+def calendar():
+    employee, plan, day, summary = _learner_context()
+    rows = db.session.execute(select(Progress, PlanItem).join(PlanItem, Progress.plan_item_id == PlanItem.id)
+                              .where(Progress.plan_id == plan.id, Progress.employee_id == employee.id)
+                              .order_by(Progress.due_date, PlanItem.position)).all()
+    days = {}
+    for r, i in rows:
+        days.setdefault(r.due_date, []).append((r, i))
+    return render_template("learning/calendar.html", plan=plan, days=days, today=day)
+
+
+@bp.route("/learn/certificate", methods=["GET", "POST"])
+@require_permission("learning.view")
+def certificate():
+    employee, plan, day, summary = _learner_context()
+    cert = progress.certificate_for(employee, plan)
+    if request.method == "POST":
+        try:
+            cert = progress.issue_certificate(employee, plan, day, audit.actor_from_user(current_user))
+            flash("Congratulations! Your certificate is ready.", "success")
+        except progress.ProgressError as exc:
+            flash(str(exc), "error")
+        return redirect(url_for("learning.certificate"))
+    return render_template("learning/certificate.html", plan=plan, summary=summary, cert=cert, today=day)
+
+
+@bp.route("/learn/certificate.pdf")
+@require_permission("learning.view")
+def certificate_pdf():
+    import os
+    from flask import Response
+    employee, plan = _me()
+    cert = progress.certificate_for(employee, plan) or abort(404)
+    brand = current_app.extensions.get("brand") or {}
+    logo = os.path.join(current_app.static_folder, (brand.get("logo") or "img/aurelle/logo-aurelle.png"))
+    body = progress.certificate_pdf(cert, brand, logo, url_for("learning.verify", code=cert.code, _external=True))
+    return Response(body, mimetype="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="certificate-{cert.code}.pdf"'})
+
+
+@bp.route("/verify/<code>")
+def verify(code):
+    from database.models import Certificate
+    cert = db.session.scalar(select(Certificate).where(Certificate.code == code.upper()))
+    return render_template("learning/verify.html", cert=cert, code=code.upper()), (200 if cert else 404)

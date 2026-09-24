@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}Resources{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Resources</p><h1>The policies behind your plan</h1>
+  <p class="pagehead__meta">Every lesson you are given comes from one of these sections. Nothing is taught that is not written here.</p></div>
+  <label class="toolbar__search" style="min-width: 280px">{{ icon('search', 16) }}<input type="search" placeholder="Search the policies" aria-label="Search the policies" data-search="#policies"></label></div>
+<div class="stack" id="policies">
+  {% for doc_id, sections in by_doc.items() %}
+  <section class="rcard rise" data-filter-item>
+    <div class="rhead"><h2>{{ icon('file', 18) }} {{ titles.get(doc_id, doc_id) }}</h2><span class="tag mono">{{ doc_id }}</span></div>
+    {% for section, chunks in sections %}{% for c in chunks[:1] %}
+      <blockquote class="quote" style="margin-top: 10px">{{ c.source_text }}<span class="quote__src">Section {{ section }} · version {{ c.version }}{% if c.location.page_start %} · page {{ c.location.page_start }}{% endif %}</span></blockquote>
+    {% endfor %}{% endfor %}
+  </section>
+  {% else %}<section class="panel">{{ empty('No policies yet', 'Your plan has not been assigned.', 'file') }}</section>{% endfor %}
+</div>
+{% endblock %}

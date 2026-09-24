@@ -3,7 +3,7 @@
 {% block title %}{{ m.title }}{% endblock %}
 {% block content %}
 <section class="heroband rise" style="min-height: 190px">
-  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/hero-facade.svg') }}" alt="">
+  <img class="heroband__art" src="{{ url_for('static', filename=category_photo(m.category)) }}" alt="">
   <div class="heroband__row">
     <div>
       <p class="heroband__kicker"><a href="{{ url_for('main.employee_dashboard') }}" style="color: inherit">My onboarding</a> · {{ m.module_key }}</p>

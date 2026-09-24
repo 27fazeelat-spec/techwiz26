@@ -42,7 +42,13 @@ NAV = {
                   ("Team reports", "reports.index", "file", "reports.")]),
     ],
     "employee": [
-        ("Home", [("My onboarding", "main.employee_dashboard", "home", "main.employee_dashboard")]),
+        ("", [("Home", "main.employee_dashboard", "home", "main.employee_dashboard"),
+              ("My Learning", "learning.modules", "book", "learning.module"),
+              ("My Progress", "learning.progress_page", "chart", "learning.progress_page"),
+              ("Assessments", "learning.assessments", "check", "learning.assessments"),
+              ("Resources", "learning.resources", "file", "learning.resources"),
+              ("Calendar", "learning.calendar", "calendar", "learning.calendar"),
+              ("Certificate", "learning.certificate", "trophy", "learning.certificate")]),
     ],
 }
 

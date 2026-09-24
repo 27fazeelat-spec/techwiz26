@@ -1,0 +1,19 @@
+{% extends "site/base_site.html" %}
+{% block title %}Verify certificate{% endblock %}
+{% block body_class %}page-dark-top{% endblock %}
+{% block content %}
+<section class="phero phero--dark dark" data-spotlight style="min-height: 100svh; display: flex; align-items: center">
+  <div class="wrap" style="max-width: 720px">
+    <p class="kicker">Certificate check</p>
+    {% if cert %}
+    <h1 style="max-width: none">Valid certificate</h1>
+    <p class="lead"><strong style="color: #fff">{{ cert.employee.name }}</strong> completed the verified onboarding programme for
+      {{ cert.details.role }} at {{ cert.employee.property.name }} on {{ cert.issued_at.strftime('%d %B %Y') }}.</p>
+    <p class="lead" style="font-family: var(--font-mono); font-size: 15px">{{ cert.code }} · {{ cert.details.modules }} modules · {{ cert.details.items }} checked steps</p>
+    {% else %}
+    <h1 style="max-width: none">No certificate found</h1>
+    <p class="lead">There is no certificate with the code <strong style="color: #fff">{{ code }}</strong>. Check the code and try again.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -63,6 +63,20 @@ def category_icon(category):
     return next((icon for word, icon in CATEGORY_ICONS if word in text), "map")
 
 
+CATEGORY_PHOTOS = [("fire", "pool"), ("life safety", "pool"), ("health", "pool"), ("safety", "pool"),
+                   ("privacy", "corridor"), ("data", "corridor"), ("security", "corridor"), ("it ", "corridor"),
+                   ("guest", "reception"), ("front office", "reception"), ("service", "reception"),
+                   ("housekeeping", "room"), ("room", "room"), ("food", "kitchen"), ("f&b", "kitchen"), ("kitchen", "kitchen"),
+                   ("maintenance", "interior"), ("engineering", "interior"), ("hr", "team"), ("people", "team"),
+                   ("conduct", "training"), ("compliance", "training"), ("orientation", "lobby"), ("company", "lobby"),
+                   ("finance", "villa-dusk"), ("revenue", "villa-dusk"), ("sales", "resort")]
+
+
+def category_photo(category):
+    text = f" {(category or '').lower()} "
+    return "img/aurelle/photos/" + next((photo for word, photo in CATEGORY_PHOTOS if word in text), "resort") + ".jpg"
+
+
 def label(kind, value):
     table = {"item": ITEM_STATUS, "plan": PLAN_STATUS, "doc": DOC_STATUS}[kind]
     return table.get(value, (value, ""))
@@ -71,4 +85,4 @@ def label(kind, value):
 def register(app):
     from src.navigation import is_active, items_for
     app.jinja_env.globals.update(status_label=label, glossary=GLOSSARY, nav_items=items_for, nav_active=is_active,
-                                 category_icon=category_icon)
+                                 category_icon=category_icon, category_photo=category_photo)

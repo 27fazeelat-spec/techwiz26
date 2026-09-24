@@ -1,28 +1,37 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon %}
 {% block title %}Quiz result · {{ m.title }}{% endblock %}
 {% block content %}
-<div class="pagehead">
-  <div>
-    <p class="eyebrow"><a href="{{ url_for('learning.module', module_key=m.module_key) }}">{{ m.title }}</a><span>Result</span></p>
-    <h1>{{ attempt.score }}% · {{ 'Passed' if attempt.passed else 'Not passed yet' }}</h1>
-    <p class="pagehead__meta">Attempt {{ attempt.attempt_no }} of {{ cfg.max_quiz_attempts }} <span class="sep">·</span> pass mark {{ cfg.pass_mark_percent }}%</p>
-  </div>
-  <div class="pagehead__actions">
-    {% if not attempt.passed and used < cfg.max_quiz_attempts %}<a class="btn btn--primary" href="{{ url_for('learning.quiz', module_key=m.module_key) }}">Try again</a>{% endif %}
-    <a class="btn" href="{{ url_for('learning.module', module_key=m.module_key) }}">Back to the module</a>
-  </div>
-</div>
+{% set right = attempt.answers | selectattr('correct') | list | length %}
+<section class="quizshell">
+  <section class="resulthero {{ 'is-pass' if attempt.passed else 'is-fail' }} rise">
+    <div class="resulthero__ring" style="--v: {{ attempt.score }}"><div><b><span data-count="{{ attempt.score }}">{{ attempt.score }}</span>%</b><span>{{ right }} of {{ questions|length }} correct</span></div></div>
+    <div class="resulthero__text">
+      <p class="heroband__kicker">{{ m.title }}</p>
+      <h1>{{ 'You passed!' if attempt.passed else 'Not quite yet' }}</h1>
+      <p>{% if attempt.passed %}Great work. This module's quiz is complete and your progress has been updated.{% else %}You need {{ cfg.pass_mark_percent }}% to pass. Read the explanations below and try again: {{ cfg.max_quiz_attempts - used }} attempt{{ 's' if cfg.max_quiz_attempts - used != 1 }} left.{% endif %}</p>
+      <div class="heroband__actions">
+        {% if not attempt.passed and used < cfg.max_quiz_attempts %}<a class="btn btn--gold" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Retry">{{ icon('spark', 15) }}Try again</a>{% endif %}
+        <a class="btn" href="{{ url_for('learning.module', module_key=m.module_key) }}">Back to the module</a>
+        <a class="btn" href="{{ url_for('main.employee_dashboard') }}">Home</a>
+      </div>
+    </div>
+  </section>
 
-{% for q in questions %}{% set c = q.content %}{% set a = by_key[q.item_key] %}
-<section class="panel">
-  <p class="side__ref"><span class="tag mono">{{ loop.index }}</span> <span class="badge badge--{{ 'ok' if a.correct else 'bad' }}">{{ 'Correct' if a.correct else 'Incorrect' }}</span></p>
-  <p style="margin: 8px 0"><strong>{{ c.question }}</strong></p>
-  <ol class="options">{% for o in c.options %}
-    <li class="{{ 'is-correct' if loop.index0 in c.correct_options }}">{{ o }}{% if loop.index0 in a.selected %} <span class="muted">(your answer)</span>{% endif %}</li>{% endfor %}</ol>
-  <p class="small" style="margin-top: 8px"><strong>Why:</strong> {{ c.explanation }}</p>
-  {% for chunk in sources.get((q.source_doc_id, q.source_section_id), [])[:1] %}
-    <blockquote class="quote" style="margin-top: 8px">{{ chunk.source_text }}<span class="quote__src">{{ chunk.doc_id }} v{{ chunk.version }} · §{{ chunk.section_id }}</span></blockquote>
+  <h2 class="section-title" style="margin: 8px 0 4px">Question by question</h2>
+  {% for q in questions %}{% set c = q.content %}{% set a = by_key[q.item_key] %}
+  <article class="quizcard quizcard--review rise {{ 'is-right' if a.correct else 'is-wrong' }}">
+    <p class="quizq__step">{{ 'Correct' if a.correct else 'Incorrect' }} · question {{ loop.index }}</p>
+    <h3 class="quizq__text" style="font-size: 18px">{{ c.question }}</h3>
+    <div class="qopts">{% for o in c.options %}{% set key = loop.index0 in c.correct_options %}{% set picked = loop.index0 in a.selected %}
+      <div class="qopt qopt--static {{ 'is-key' if key }} {{ 'is-picked' if picked }}">
+        <span class="qopt__key">{{ 'ABCDEFGH'[loop.index0] }}</span><span class="qopt__text">{{ o }}</span>
+        <span class="qopt__flag">{% if key %}Correct answer{% elif picked %}Your answer{% endif %}</span></div>{% endfor %}</div>
+    <p class="small" style="margin-top: 10px"><strong>Why:</strong> {{ c.explanation }}</p>
+    {% for chunk in sources.get((q.source_doc_id, q.source_section_id), [])[:1] %}
+      <blockquote class="quote" style="margin-top: 10px">{{ chunk.source_text }}<span class="quote__src">{{ chunk.doc_id }} v{{ chunk.version }} · section {{ chunk.section_id }}</span></blockquote>
+    {% endfor %}
+  </article>
   {% endfor %}
 </section>
-{% endfor %}
 {% endblock %}

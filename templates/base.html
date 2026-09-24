@@ -1,6 +1,6 @@
 {% from "_macros.html" import icon, initials %}
 <!doctype html>
-<html lang="en">
+<html lang="en" {% if current_user.is_authenticated and current_user.app_role == 'employee' %}data-nav-default="expanded"{% endif %}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,13 +14,15 @@
   <script>
     try {
       var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t;
-      if (localStorage.getItem("skillsprint-nav") === "expanded") document.documentElement.dataset.nav = "expanded";
+      var nav = localStorage.getItem("skillsprint-nav") || document.documentElement.dataset.navDefault;
+      if (nav === "expanded") document.documentElement.dataset.nav = "expanded";
     } catch (e) {}
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
   {% if current_user.is_authenticated %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/aurelle.css') }}">
   <style>
     /* Workspace brand colours (config/branding.yaml or the organisation's settings). Status colours never change. */
     :root { --primary: {{ brand.primary }}; --primary-hover: {{ brand.primary_hover or brand.primary }}; --accent: {{ brand.accent }};
@@ -44,17 +46,20 @@
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
   <a class="brand" href="{{ url_for('main.home') }}" aria-label="{{ brand.name }} home">
     <img class="brand__mark" src="{{ url_for('static', filename=brand.logo) }}" alt="">
-    <span class="brand__name">{{ brand.name }}<small>{{ brand.tagline }}</small></span>
+    <span class="brand__word"><b>{{ brand.name|upper }}</b><small>{{ brand.tagline|upper }}</small></span>
   </a>
 
   {% for group, links in nav_items(current_user.app_role) %}
   <nav class="navgroup">
-    <p class="navgroup__label">{{ group }}</p>
+    {% if group %}<p class="navgroup__label">{{ group }}</p>{% endif %}
     {% for label, endpoint, icon_name, match in links %}{{ navlink(url_for(endpoint), label, icon_name, nav_active(match, ep, request.blueprint)) }}{% endfor %}
   </nav>
   {% endfor %}
 
-  <p class="sidebar__foot"><img src="{{ url_for('static', filename='image/logo.png') }}" alt="" width="14" height="14"><span>Powered by SkillSprint</span></p>
+  <div class="sidebar__art" style="--side-photo: url('{{ url_for('static', filename='img/aurelle/photos/villa-dusk.jpg') }}')">
+    <p class="sidebar__quote">Exceptional people create exceptional experiences.</p>
+    <p class="sidebar__foot">Powered by <b>SkillSprint</b></p>
+  </div>
 </aside>
 <div class="scrim" data-nav-close hidden></div>
 

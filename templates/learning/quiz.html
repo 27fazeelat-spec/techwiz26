@@ -1,31 +1,49 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon %}
 {% block title %}Quiz · {{ m.title }}{% endblock %}
 {% block content %}
-<div class="pagehead">
-  <div>
-    <p class="eyebrow"><a href="{{ url_for('learning.module', module_key=m.module_key) }}">{{ m.title }}</a><span>Quiz</span></p>
-    <h1>{{ m.title }}: quiz</h1>
-    <p class="pagehead__meta">{{ questions|length }} questions <span class="sep">·</span> pass mark {{ cfg.pass_mark_percent }}% <span class="sep">·</span> attempt {{ used + 1 }} of {{ cfg.max_quiz_attempts }}</p>
-  </div>
-</div>
+<section class="quizshell">
+  <header class="quizhead">
+    <a class="quizhead__back" href="{{ url_for('learning.module', module_key=m.module_key) }}" data-cursor="Back">{{ icon('arrow', 16) }}</a>
+    <div class="quizhead__title"><span>{{ m.title }}</span><strong>Knowledge check</strong></div>
+    <div class="quizhead__meta"><span>{{ questions|length }} questions</span><span>Pass mark {{ cfg.pass_mark_percent }}%</span><span>Attempt {{ used + 1 }} of {{ cfg.max_quiz_attempts }}</span></div>
+  </header>
 
-{% if used >= cfg.max_quiz_attempts %}
-<div class="notice notice--warn">You have used all attempts for this quiz. Your manager will go through it with you.</div>
-{% else %}
-<form method="post" class="stack">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  {% for q in questions %}{% set c = q.content %}{% set multi = c.type == 'multiple_response' %}
-  <fieldset class="panel quizq">
-    <legend class="quizq__legend"><span class="tag mono">{{ loop.index }}</span> {{ c.question }}</legend>
-    {% if multi %}<p class="small muted">Choose every correct answer.</p>{% endif %}
-    <div class="quizq__options">
-      {% for o in c.options %}
-      <label class="quizq__option"><input type="{{ 'checkbox' if multi else 'radio' }}" name="{{ q.item_key }}" value="{{ loop.index0 }}" {{ 'required' if not multi }}> <span>{{ o }}</span></label>
-      {% endfor %}
-    </div>
-  </fieldset>
-  {% endfor %}
-  <div><button class="btn btn--primary" type="submit">Submit answers</button></div>
-</form>
-{% endif %}
+  {% if used >= cfg.max_quiz_attempts %}
+  <div class="quizcard"><h2 class="quizq__text">You have used all your attempts</h2><p class="muted">Your manager has been asked to go through this module with you.</p>
+    <a class="btn btn--primary" href="{{ url_for('learning.module', module_key=m.module_key) }}">Back to the module</a></div>
+  {% else %}
+  <div class="quizprogress" aria-hidden="true"><i data-quiz-bar></i></div>
+  <form method="post" class="quizform" data-quiz>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% for q in questions %}{% set c = q.content %}{% set multi = c.type == 'multiple_response' %}
+    <fieldset class="quizcard" data-slide>
+      <p class="quizq__step">Question {{ loop.index }} of {{ questions|length }}{% if multi %} · choose every correct answer{% endif %}</p>
+      <legend class="quizq__text">{{ c.question }}</legend>
+      <div class="qopts">
+        {% for o in c.options %}
+        <label class="qopt" data-cursor="{{ 'Pick' }}">
+          <input type="{{ 'checkbox' if multi else 'radio' }}" name="{{ q.item_key }}" value="{{ loop.index0 }}">
+          <span class="qopt__key">{{ 'ABCDEFGH'[loop.index0] }}</span><span class="qopt__text">{{ o }}</span>
+          <span class="qopt__tick">{{ icon('check', 14) }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    {% endfor %}
+    <section class="quizcard" data-slide data-review>
+      <p class="quizq__step">Almost done</p>
+      <h2 class="quizq__text">Review your answers</h2>
+      <ol class="qreview" data-review-list></ol>
+      <p class="small muted">Answers are scored by Python against the answer key that was checked against the policy. You will see the correct answer and the policy line for every question.</p>
+    </section>
+    <nav class="quiznav">
+      <button type="button" class="btn" data-quiz-prev>Back</button>
+      <span class="quiznav__hint small muted" data-quiz-hint>Press 1–4 to pick, Enter to continue</span>
+      <button type="button" class="btn btn--primary" data-quiz-next>Next {{ icon('arrow', 14) }}</button>
+      <button type="submit" class="btn btn--gold" data-quiz-submit>Submit answers {{ icon('check', 15) }}</button>
+    </nav>
+  </form>
+  {% endif %}
+</section>
 {% endblock %}

@@ -637,6 +637,22 @@ class Recommendation(db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
+class Certificate(db.Model):
+    """Proof of completed onboarding, issued only when every tracked item of the assigned plan is done.
+    Anyone can check it at /verify/<code>."""
+    __tablename__ = "certificates"
+    __table_args__ = (UniqueConstraint("employee_id", "plan_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    code: Mapped[str] = mapped_column(String(20), unique=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id", ondelete="CASCADE"))
+    plan_id: Mapped[int] = mapped_column(ForeignKey("plans.id", ondelete="CASCADE"))
+    issued_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    details: Mapped[dict] = mapped_column(JSONType, default=dict)   # modules, items, quiz average at issue time
+
+    employee: Mapped[Employee] = relationship()
+    plan: Mapped[Plan] = relationship()
+
+
 # --------------------------------------------------------------------------- audit trail
 
 class AuditLog(db.Model):

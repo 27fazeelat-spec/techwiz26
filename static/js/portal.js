@@ -108,3 +108,82 @@
     requestAnimationFrame(frame);
   })();
 })();
+
+// Quiz: one question at a time, keyboard friendly, with a review step. Without JS every question shows at once.
+(function () {
+  var form = document.querySelector("[data-quiz]");
+  if (!form) return;
+  document.documentElement.classList.add("js-quiz");
+  var slides = Array.prototype.slice.call(form.querySelectorAll("[data-slide]"));
+  var questions = slides.filter(function (s) { return !s.hasAttribute("data-review"); });
+  var bar = document.querySelector("[data-quiz-bar]");
+  var prev = form.querySelector("[data-quiz-prev]");
+  var next = form.querySelector("[data-quiz-next]");
+  var submit = form.querySelector("[data-quiz-submit]");
+  var reviewList = form.querySelector("[data-review-list]");
+  var i = 0, timer = null;
+
+  function answered(slide) { return !!slide.querySelector("input:checked"); }
+  function isReview(slide) { return slide.hasAttribute("data-review"); }
+
+  function buildReview() {
+    reviewList.innerHTML = "";
+    questions.forEach(function (s, k) {
+      var li = document.createElement("li");
+      var picked = Array.prototype.map.call(s.querySelectorAll("input:checked"), function (inp) {
+        return inp.closest(".qopt").querySelector(".qopt__key").textContent;
+      });
+      var text = s.querySelector(".quizq__text").textContent.trim();
+      li.textContent = (text.length > 90 ? text.slice(0, 88) + "…" : text) + " — " + (picked.length ? picked.join(", ") : "not answered");
+      if (!picked.length) li.className = "is-missing";
+      var edit = document.createElement("button");
+      edit.type = "button";
+      edit.textContent = "change";
+      edit.addEventListener("click", function () { show(k); });
+      li.appendChild(edit);
+      reviewList.appendChild(li);
+    });
+    submit.disabled = questions.some(function (s) { return !answered(s); });
+  }
+
+  function show(n) {
+    clearTimeout(timer);
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle("is-current", k === i); });
+    var onReview = isReview(slides[i]);
+    if (bar) bar.style.width = (100 * (onReview ? questions.length : i) / questions.length) + "%";
+    prev.style.visibility = i === 0 ? "hidden" : "visible";
+    next.hidden = onReview;
+    submit.hidden = !onReview;
+    next.disabled = !onReview && !answered(slides[i]);
+    if (onReview) buildReview();
+    else {
+      var first = slides[i].querySelector("input:checked") || slides[i].querySelector("input");
+      if (first) first.focus({ preventScroll: true });
+    }
+  }
+
+  form.addEventListener("change", function () {
+    var slide = slides[i];
+    if (isReview(slide)) return;
+    next.disabled = !answered(slide);
+    // A single-answer question moves on by itself after a short pause.
+    if (slide.querySelector("input[type=radio]:checked")) {
+      clearTimeout(timer);
+      timer = setTimeout(function () { if (slides[i] === slide) show(i + 1); }, 450);
+    }
+  });
+  prev.addEventListener("click", function () { show(i - 1); });
+  next.addEventListener("click", function () { if (answered(slides[i])) show(i + 1); });
+  form.addEventListener("keydown", function (e) {
+    var slide = slides[i];
+    if (isReview(slide) || e.ctrlKey || e.metaKey || e.altKey) return;
+    var inputs = slide.querySelectorAll("input");
+    var key = (e.key || "").toLowerCase();
+    var k = "123456789".indexOf(key);
+    if (k < 0) k = "abcdefgh".indexOf(key);
+    if (key.length === 1 && k >= 0 && inputs[k]) { e.preventDefault(); inputs[k].click(); }
+    else if (e.key === "Enter") { e.preventDefault(); if (answered(slide)) show(i + 1); }
+  });
+  show(0);
+})();
