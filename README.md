@@ -128,10 +128,3 @@ documentation/        requirements analysis, architecture, database design, data
 - [Company dataset blueprint](documentation/dataset/README.md)
 - [AI usage declaration](AI_USAGE.md)
 
-
-
-Administrator -- admin@aurelle.example --	CUgvUeq6N7TRsg	Sab kuch
-Training Manager -- training@aurelle.example -- CcMCLMGmk3fMSg	Documents, matrix, plans generate/assign, reports
-Reviewer (Evaluator) --	evaluator@aurelle.example -- vd98Ly2O1R90uA	Review queue ke faisle, conflicts, reports
-Manager -- omar.siddiqui@aurelle.example -- wCsX3gH6QHFCyA	My team, Leila ki progress aur sign-off
-Employee -- leila.haddad@aurelle.example -- QvDUsi3xsf5oPg	My onboarding (plan assign hone ke baad)
