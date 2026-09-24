@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon %}
+{% from "learning/_ui.html" import pagehero, mtile %}
 {% block title %}Certificate{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">Certificate</p><h1>Your onboarding certificate</h1>
-  <p class="pagehead__meta">Issued when every step of your plan is complete. Anyone can check it with its verification code.</p></div></div>
+{% call pagehero('img/aurelle/photos/villa-dusk.jpg', 'Certificate', 'Your onboarding certificate', 'Issued when every step of your plan is complete. Anyone can check it online with its verification code.') %}{% endcall %}
 
 <section class="certcard rise" data-tilt>
   <div class="certcard__frame">

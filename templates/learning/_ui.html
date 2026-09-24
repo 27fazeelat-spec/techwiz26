@@ -1,0 +1,56 @@
+{% from "_macros.html" import icon %}
+
+{# Photo banner at the top of every learner page. Extra content (stats, search, buttons) goes in the call block. #}
+{% macro pagehero(photo, kicker, title, lead='') -%}
+<section class="lphero" data-parallax>
+  <div class="lphero__bg"><img src="{{ url_for('static', filename=photo) }}" alt=""></div>
+  <div class="lphero__inner">
+    <p class="lphero__kicker">{{ kicker }}</p>
+    <h1>{{ title }}</h1>
+    {% if lead %}<p class="lphero__lead">{{ lead }}</p>{% endif %}
+    {% if caller %}<div class="lphero__extra">{{ caller() }}</div>{% endif %}
+  </div>
+</section>
+{%- endmacro %}
+
+{# A module as a typographic tile: number, topic icon, progress ring. No photo. #}
+{% macro mtile(x, n, feature=false) -%}
+{% set m = x.module %}{% set state = 'done' if x.pct == 100 else ('progress' if x.done else 'new') %}
+{% set verb = {'done': 'Review', 'progress': 'Continue', 'new': 'Start'}[state] %}
+<a class="mtile {{ 'mtile--feature' if feature }} is-{{ state }} rise" href="{{ url_for('learning.module', module_key=m.module_key) }}"
+   data-filter-item data-filter-value="{{ state }}" data-tilt data-cursor="{{ verb }}">
+  <span class="mtile__num" aria-hidden="true">{{ '%02d' % n }}</span>
+  <div class="mtile__top">
+    <span class="mtile__icon">{{ icon(category_icon(m.category), 22) }}</span>
+    <span class="mtile__state">{{ {'done': 'Completed', 'progress': 'In progress', 'new': 'Not started'}[state] }}</span>
+  </div>
+  {% if feature %}<p class="mtile__eyebrow">Up next for you</p>{% endif %}
+  <h3>{{ m.title }}</h3>
+  <p class="mtile__text">{{ m.purpose or ('The ' ~ m.category|lower ~ ' rules for your role.') }}</p>
+  <div class="mtile__foot">
+    <span class="mring" style="--v: {{ x.pct }}"><b>{{ x.pct }}<small>%</small></b></span>
+    <span class="mtile__meta"><b>{{ x.done }} of {{ x.total }} steps</b>{{ m.estimated_minutes }} min{% if x.due %} · due {{ x.due.strftime('%d %b') }}{% endif %}</span>
+    <span class="mtile__go">{% if feature %}{{ verb }} {% endif %}{{ icon('arrow', 16) }}</span>
+  </div>
+</a>
+{%- endmacro %}
+
+{% macro kind_icon(kind) -%}{{ {'checklist': 'check', 'task': 'wrench', 'scenario': 'map', 'quiz_question': 'spark', 'assessment': 'trophy'}.get(kind, 'list') }}{%- endmacro %}
+
+{# The onboarding stages (Day 1 ... 90 days) as a road with a filled line up to the current stage. #}
+{% macro journey(stages, today) -%}
+  {% set ns = namespace(cur=stages|length) %}{% for s in stages %}{% if s.state != 'done' and ns.cur == stages|length %}{% set ns.cur = loop.index0 %}{% endif %}{% endfor %}
+  <ol class="journey rise" style="--n: {{ stages|length or 1 }}; --fill: {{ (100 * ns.cur / ((stages|length - 1) or 1))|round|int if ns.cur < stages|length else 100 }}">
+    {% for s in stages %}
+    <li class="jstep {{ 'is-done' if s.state == 'done' else ('is-current' if loop.index0 == ns.cur else '') }}">
+      <span class="jstep__dot">{% if s.state == 'done' %}{{ icon('check', 16) }}{% else %}{{ loop.index }}{% endif %}</span>
+      <div class="jstep__card">
+        <strong>{{ s.label }}</strong>
+        <span>{{ s.done }} of {{ s.total }} steps</span>
+        <span class="jstep__bar"><i data-w="{{ (100 * s.done / s.total)|round|int if s.total else 0 }}%"></i></span>
+        {% if s.due %}<small class="{{ 'is-late' if s.state != 'done' and s.due < today }}">{{ 'Was due' if s.state != 'done' and s.due < today else 'Due' }} {{ s.due.strftime('%d %b') }}</small>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+{%- endmacro %}

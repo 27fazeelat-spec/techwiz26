@@ -258,7 +258,7 @@ def certificate_pdf():
     employee, plan = _me()
     cert = progress.certificate_for(employee, plan) or abort(404)
     brand = current_app.extensions.get("brand") or {}
-    logo = os.path.join(current_app.static_folder, (brand.get("logo") or "img/aurelle/logo-aurelle.png"))
+    logo = os.path.join(current_app.static_folder, (brand.get("logo") or "img/aurelle/logo-mark.png"))
     body = progress.certificate_pdf(cert, brand, logo, url_for("learning.verify", code=cert.code, _external=True))
     return Response(body, mimetype="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="certificate-{cert.code}.pdf"'})

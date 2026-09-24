@@ -1,28 +1,20 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon %}
+{% from "learning/_ui.html" import pagehero, mtile %}
 {% block title %}My Learning{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">My Learning</p><h1>Your modules</h1>
-  <p class="pagehead__meta">{{ summary.modules|length }} modules built for your role, each checked against {{ brand.name }}'s approved policies.</p></div></div>
+{% call pagehero('img/aurelle/photos/lobby.jpg', 'My learning', 'Your modules', summary.modules|length ~ ' modules built for your role, each one checked against ' ~ brand.name ~ "'s approved policies.") %}
+  <span class="lchip"><b>{{ summary.modules | selectattr('pct', 'equalto', 100) | list | length }}</b> completed</span>
+  <span class="lchip"><b>{{ summary.pct }}%</b> of your plan</span>
+  <span class="lchip"><b>{{ summary.modules | sum(attribute='module.estimated_minutes') }}</b> minutes in total</span>
+{% endcall %}
 <div class="segmented" data-filter-group="#mods" role="group" aria-label="Show">
   <button type="button" class="is-on" data-filter="all">All <span class="count">{{ summary.modules|length }}</span></button>
   <button type="button" data-filter="progress">In progress</button>
   <button type="button" data-filter="new">Not started</button>
   <button type="button" data-filter="done">Completed</button>
 </div>
-<div class="courses" id="mods">
-  {% for x in summary.modules %}{% set m = x.module %}{% set state = 'done' if x.pct == 100 else ('progress' if x.done else 'new') %}
-  <a class="course rise" data-filter-item data-filter-value="{{ state }}" href="{{ url_for('learning.module', module_key=m.module_key) }}" data-cursor="Open">
-    <div class="course__img"><img src="{{ url_for('static', filename=category_photo(m.category)) }}" alt="" loading="lazy">
-      <span class="course__state {{ 'course__state--done' if state == 'done' }}">{{ {'done': 'Completed', 'progress': 'In Progress', 'new': 'Not Started'}[state] }}</span></div>
-    <div class="course__body">
-      <h3>{{ m.title }}</h3>
-      <p>{{ m.purpose or ('Learn the ' ~ m.category|lower ~ ' rules for your role.') }}</p>
-      <div class="course__bar"><div class="bar" data-reveal><i data-w="{{ x.pct }}%"></i></div><span>{{ x.pct }}%</span></div>
-      <div class="course__foot"><span>{{ m.estimated_minutes }} min · {% if x.due %}due {{ x.due.strftime('%d %b') }}{% else %}complete{% endif %}</span>
-        <span class="btn btn--primary">{{ 'Review' if state == 'done' else ('Continue' if x.done else 'Start') }} {{ icon('arrow', 13) }}</span></div>
-    </div>
-  </a>
-  {% endfor %}
+<div class="mtiles" id="mods">
+  {% for x in summary.modules %}{{ mtile(x, loop.index) }}{% endfor %}
 </div>
 {% endblock %}

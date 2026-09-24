@@ -172,7 +172,7 @@ def employee_dashboard():
     stages = progress.stages_for(plan, employee, day) if plan else []
     upcoming = progress.up_next(plan, employee, limit=7) if plan else []
     return render_template("dashboard/employee.html", employee=employee, plan=plan, summary=summary, recs=recs,
-                           stages=stages, upcoming=upcoming, today=day)
+                           stages=stages, upcoming=upcoming, today=day, cfg=progress.cfg())
 
 
 @bp.route("/healthz")

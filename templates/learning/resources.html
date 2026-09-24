@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, empty %}
+{% from "learning/_ui.html" import pagehero, mtile %}
 {% block title %}Resources{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">Resources</p><h1>The policies behind your plan</h1>
-  <p class="pagehead__meta">Every lesson you are given comes from one of these sections. Nothing is taught that is not written here.</p></div>
-  <label class="toolbar__search" style="min-width: 280px">{{ icon('search', 16) }}<input type="search" placeholder="Search the policies" aria-label="Search the policies" data-search="#policies"></label></div>
+{% call pagehero('img/aurelle/photos/interior.jpg', 'Resources', 'The policies behind your plan', 'Every lesson you are given comes from one of these sections. Nothing is taught that is not written here.') %}
+  <label class="lsearch">{{ icon('search', 16) }}<input type="search" placeholder="Search the policies" aria-label="Search the policies" data-search="#policies"></label>
+{% endcall %}
 <div class="stack" id="policies">
   {% for doc_id, sections in by_doc.items() %}
   <section class="rcard rise" data-filter-item>

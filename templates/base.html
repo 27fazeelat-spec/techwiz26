@@ -1,6 +1,6 @@
 {% from "_macros.html" import icon, initials %}
 <!doctype html>
-<html lang="en" {% if current_user.is_authenticated and current_user.app_role == 'employee' %}data-nav-default="expanded"{% endif %}>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,6 +23,7 @@
   {% if current_user.is_authenticated %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/aurelle.css') }}">
+  {% if current_user.app_role == 'employee' %}<link rel="stylesheet" href="{{ url_for('static', filename='css/learner.css') }}">{% endif %}
   <style>
     /* Workspace brand colours (config/branding.yaml or the organisation's settings). Status colours never change. */
     :root { --primary: {{ brand.primary }}; --primary-hover: {{ brand.primary_hover or brand.primary }}; --accent: {{ brand.accent }};
@@ -35,7 +36,7 @@
   </style>
   {% endif %}
 </head>
-<body class="{{ 'has-shell' if current_user.is_authenticated }}" data-ref-docs='{{ ref_documents()|tojson }}'>
+<body class="{{ 'has-shell' if current_user.is_authenticated }}{{ ' is-learner' if current_user.is_authenticated and current_user.app_role == 'employee' }} {% block body_class %}{% endblock %}" data-ref-docs='{{ ref_documents()|tojson }}'>
 <a class="skip" href="#main">Skip to content</a>
 {% if current_user.is_authenticated %}<div class="cursor is-hidden" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>{% endif %}
 {% if current_user.is_authenticated %}
@@ -56,7 +57,7 @@
   </nav>
   {% endfor %}
 
-  <div class="sidebar__art" style="--side-photo: url('{{ url_for('static', filename='img/aurelle/photos/villa-dusk.jpg') }}')">
+  <div class="sidebar__end">
     <p class="sidebar__quote">Exceptional people create exceptional experiences.</p>
     <p class="sidebar__foot">Powered by <b>SkillSprint</b></p>
   </div>
@@ -148,5 +149,6 @@
 {% endif %}
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 {% if current_user.is_authenticated %}<script src="{{ url_for('static', filename='js/portal.js') }}"></script>{% endif %}
+{% if current_user.is_authenticated and current_user.app_role == 'employee' %}<script src="{{ url_for('static', filename='js/learner.js') }}"></script>{% endif %}
 </body>
 </html>

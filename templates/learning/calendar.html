@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, item_state %}
+{% from "learning/_ui.html" import pagehero, mtile %}
 {% block title %}Calendar{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">Calendar</p><h1>What is due, and when</h1>
-  <p class="pagehead__meta">Due dates count from your joining date: Day 1, Week 1, Week 2, and the first 30, 60 and 90 days.</p></div></div>
+{% call pagehero('img/aurelle/photos/corridor.jpg', 'Calendar', 'What is due, and when', 'Due dates count from your joining date: Day 1, Week 1, Week 2, and the first 30, 60 and 90 days. A late step can still be done, and your manager can see it.') %}
+  <span class="lchip"><b>{{ today.strftime('%d %b') }}</b> today</span>
+{% endcall %}
 <div class="stack">
   {% for day, rows in days.items() %}{% set done = rows | selectattr('0.status', 'in', ['completed', 'waived']) | list %}
   <section class="rcard rise">

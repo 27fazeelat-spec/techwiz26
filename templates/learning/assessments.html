@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, item_state, empty %}
+{% from "learning/_ui.html" import pagehero, mtile %}
 {% block title %}Assessments{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">Assessments</p><h1>Quizzes and assessments</h1>
-  <p class="pagehead__meta">Quizzes are scored instantly against the verified answer key; pass mark {{ cfg.pass_mark_percent }}%, {{ cfg.max_quiz_attempts }} attempts. Assessments are marked by your manager.</p></div></div>
+{% call pagehero('img/aurelle/photos/reception.jpg', 'Assessments', 'Quizzes and assessments', 'Quizzes are scored instantly against the verified answer key. Assessments are marked by your manager against a rubric.') %}
+  <span class="lchip"><b>{{ quizzes | selectattr('passed') | list | length }}</b> of {{ quizzes|length }} quizzes passed</span>
+  <span class="lchip"><b>{{ cfg.pass_mark_percent }}%</b> pass mark</span><span class="lchip"><b>{{ cfg.max_quiz_attempts }}</b> attempts each</span>
+{% endcall %}
 
 <section class="shelf">
   <div class="shelf__head"><div><h2>Module quizzes</h2></div></div>

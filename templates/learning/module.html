@@ -1,20 +1,15 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, item_state %}
+{% from "learning/_ui.html" import pagehero, mtile %}
 {% block title %}{{ m.title }}{% endblock %}
 {% block content %}
-<section class="heroband rise" style="min-height: 190px">
-  <img class="heroband__art" src="{{ url_for('static', filename=category_photo(m.category)) }}" alt="">
-  <div class="heroband__row">
-    <div>
-      <p class="heroband__kicker"><a href="{{ url_for('main.employee_dashboard') }}" style="color: inherit">My onboarding</a> · {{ m.module_key }}</p>
-      <h1>{{ m.title }}</h1>
-      <p>{{ m.estimated_minutes }} min · from {{ m.stage }}{% if m.purpose %} · {{ m.purpose }}{% endif %}</p>
-      {% set quiz = items | selectattr('item_type', 'equalto', 'quiz_question') | list %}
-      {% if quiz %}<div class="heroband__actions"><a class="btn btn--gold" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">{{ icon('spark', 15) }}{{ 'Retake the quiz' if attempts else 'Take the quiz' }}</a></div>{% endif %}
-    </div>
-    <div class="modcard__art" style="width: 120px; height: 120px; border-radius: 28px">{{ icon(category_icon(m.category), 46) }}</div>
-  </div>
-</section>
+{% set quiz = items | selectattr('item_type', 'equalto', 'quiz_question') | list %}
+{% set ns = namespace(t=0, d=0) %}{% for i in items %}{% set r = rows.get(i.id) %}{% if r %}{% set ns.t = ns.t + 1 %}{% if r.status in ['completed', 'waived'] %}{% set ns.d = ns.d + 1 %}{% endif %}{% endif %}{% endfor %}
+{% call pagehero(category_photo(m.category), m.module_key ~ ' · ' ~ m.estimated_minutes ~ ' min', m.title, m.purpose or '') %}
+  <span class="lchip"><b>{{ ns.d }}</b> of {{ ns.t }} steps done</span>
+  {% if quiz %}<a class="btn btn--gold" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">{{ icon('spark', 15) }}{{ 'Retake the quiz' if attempts else 'Take the quiz' }}</a>{% endif %}
+  <a class="btn btn--glass" href="{{ url_for('learning.modules') }}">All modules</a>
+{% endcall %}
 
 {% set objectives = items | selectattr('item_type', 'equalto', 'objective') | list %}
 {% if objectives %}

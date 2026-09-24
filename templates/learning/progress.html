@@ -1,19 +1,18 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, progress_badge, empty %}
+{% from "learning/_ui.html" import pagehero, mtile, journey %}
 {% block title %}My Progress{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">My Progress</p><h1>How you are doing</h1>
-  <p class="pagehead__meta">{{ progress_badge(summary.status) }} <span class="sep">·</span> {{ summary.done }} of {{ summary.total }} steps done{% if summary.overdue %} <span class="sep">·</span> <span style="color: var(--bad); font-weight: 700">{{ summary.overdue }} overdue</span>{% endif %}</p></div></div>
+{% call pagehero('img/aurelle/photos/pool.jpg', 'My progress', 'How you are doing', 'Every number here is counted from your own completed steps, quiz scores and sign-offs.') %}
+  {{ progress_badge(summary.status) }}<span class="lchip"><b>{{ summary.done }}</b> of {{ summary.total }} steps</span><span class="lchip"><b>{{ summary.pct }}%</b> complete</span>
+  {% if summary.overdue %}<span class="lchip lchip--bad"><b>{{ summary.overdue }}</b> overdue</span>{% endif %}
+{% endcall %}
 
 <div class="learner">
   <div class="learner__main">
     <section class="rcard rise">
       <div class="rhead"><h2>Your journey</h2></div>
-      {% set ns = namespace(cur=-1) %}{% for s in stages %}{% if s.state != 'done' and ns.cur < 0 %}{% set ns.cur = loop.index0 %}{% endif %}{% endfor %}
-      <div class="lpath">
-        {% for s in stages %}<div class="lstep {{ 'is-done' if s.state == 'done' else ('is-current' if loop.index0 == ns.cur else '') }}" data-tip="{{ s.label }} · {{ s.done }} of {{ s.total }} done">
-          <i>{% if s.state == 'done' %}{{ icon('check', 14) }}{% else %}{{ loop.index }}{% endif %}</i><span>{{ s.label|replace('First ', '') }}<br><b>{{ s.done }}/{{ s.total }}</b></span></div>{% endfor %}
-      </div>
+      {{ journey(stages, today) }}
     </section>
     <section class="rcard rise">
       <div class="rhead"><h2>By kind of step</h2></div>
