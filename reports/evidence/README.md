@@ -22,4 +22,4 @@ purpose because it holds sign-in records.
 | `genai_request_response.json` | A full request and response for one outline and one module call, and the last five calls that failed or needed a retry | |
 
 Plans show *Incomplete* until a person has decided every review item and assigned them; that is the review
-gate, not a generation failure. One FOA version is *Failed*: a Gemini error kept as evidence of the failure path.
+gate, not a generation failure. The one *Failed* version shows the failure path; the Gemini errors behind it (403 access denied, 504 deadline) are in `genai_runs.csv`, and 38 calls recovered after a retry.
