@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Employee home{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Settings</p><h1>Employee home</h1>
+  <p class="pagehead__meta">Choose what new hires see first when they sign in, in what order, and in your own words. The logo, colours and the learning rules stay as they are.</p></div></div>
+
+<div class="composer" data-composer>
+  <form method="post" class="composer__form" id="composer-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="order" value="{{ home.sections|map(attribute='key')|join(',') }}" data-order>
+
+    <section class="acard">
+      <div class="acard__head"><h3>Sections</h3><span>top to bottom, as employees see them</span></div>
+      <ol class="csections" data-sections>
+        {% for s in home.sections %}{% set label, text, optional = sections[s.key] %}
+        <li class="csection" data-key="{{ s.key }}">
+          <span class="csection__moves">
+            <button type="button" class="iconbtn" data-move="-1" aria-label="Move {{ label }} up">{{ icon('arrow', 14) }}</button>
+            <button type="button" class="iconbtn" data-move="1" aria-label="Move {{ label }} down">{{ icon('arrow', 14) }}</button>
+          </span>
+          <span class="csection__text"><strong>{{ label }}</strong><span>{{ text }}</span></span>
+          {% if optional %}
+          <label class="switch"><input type="checkbox" name="section_{{ s.key }}" {{ 'checked' if s.on }} data-toggle="{{ s.key }}"><span></span><em class="sr-only">Show {{ label }}</em></label>
+          {% else %}<span class="csection__lock" data-tip="Always shown, so every employee has a way into their learning">{{ icon('lock', 14) }} Always on</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    <section class="acard">
+      <div class="acard__head"><h3>Carousel slides</h3><span>shown one at a time at the top</span></div>
+      <div class="cslides">
+        {% for key, label in slides.items() %}{% set sl = home.slides[key] %}
+        <div class="cslide">
+          <label class="switch"><input type="checkbox" name="slide_{{ key }}" {{ 'checked' if sl.on }} data-slide-toggle="{{ key }}"><span></span></label>
+          <img src="{{ url_for('static', filename='img/aurelle/photos/' ~ sl.photo ~ '.jpg') }}" alt="" data-thumb="{{ key }}">
+          <div class="cslide__text"><strong>{{ label }}</strong>
+            <select name="slide_{{ key }}_photo" aria-label="Photo for the {{ label }} slide" data-photo="{{ key }}">
+              {% for p in photos %}<option value="{{ p }}" {{ 'selected' if p == sl.photo }}>{{ caption(p)[1] }}</option>{% endfor %}
+            </select></div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="acard">
+      <div class="acard__head"><h3>Your words</h3><span>short, in the company's own voice</span></div>
+      <div class="acard__body cwords">
+        <div class="field"><label for="welcome_line">Welcome line <span class="muted">(after "You are on day 5 of your time with {{ brand.name }}.")</span></label>
+          <textarea id="welcome_line" name="welcome_line" rows="2" maxlength="200" data-count>{{ home.welcome_line }}</textarea></div>
+        <div class="field"><label for="quote">Closing quote</label>
+          <input id="quote" name="quote" type="text" maxlength="140" value="{{ home.quote }}" data-count data-live="quote"></div>
+        <div class="formgrid">
+          <div class="field"><label for="quote_by">Quote signed by <span class="muted">(empty: {{ brand.name }} {{ brand.tagline }})</span></label>
+            <input id="quote_by" name="quote_by" type="text" maxlength="60" value="{{ home.quote_by }}" placeholder="{{ brand.name }} {{ brand.tagline }}"></div>
+          <div class="field"><label for="quote_photo">Photo behind the quote</label>
+            <select id="quote_photo" name="quote_photo" data-photo="quote">{% for p in photos %}<option value="{{ p }}" {{ 'selected' if p == home.quote_photo }}>{{ caption(p)[1] }}</option>{% endfor %}</select></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="composer__actions">
+      <button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Save the employee home</button>
+      <button class="btn btn--ghost" type="submit" form="composer-reset">Back to the original layout</button>
+    </div>
+  </form>
+
+  <aside class="composer__preview" aria-label="Preview">
+    <p class="eyebrow">Preview</p>
+    <div class="cpreview" data-preview>
+      {% for s in home.sections %}{% set label = sections[s.key][0] %}
+      <div class="cpreview__block cpreview__block--{{ s.key }} {{ '' if s.on else 'is-off' }}" data-block="{{ s.key }}">
+        {% if s.key == 'hero' %}<div class="cpreview__hero"><span><b>Welcome, Leila.</b><i></i><i></i></span><img src="{{ url_for('static', filename='img/aurelle/photos/' ~ home.slides.welcome.photo ~ '.jpg') }}" alt="" data-thumb="hero"></div>
+        {% elif s.key == 'quote' %}<div class="cpreview__quote" style="background-image: url('{{ url_for('static', filename='img/aurelle/photos/' ~ home.quote_photo ~ '.jpg') }}')" data-quote-bg><span data-quote-text>“{{ home.quote }}”</span></div>
+        {% else %}<span class="cpreview__label">{{ label }}</span>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <p class="small muted">A sketch of the page; open an employee account to see it with real data.</p>
+  </aside>
+</div>
+<form method="post" id="composer-reset" onsubmit="return confirm('Put the employee home back to the original layout and words?')">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="reset" value="1">
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+// Composer: move sections up or down, show switches and photos in the sketch as they change.
+(function () {
+  var root = document.querySelector("[data-composer]");
+  if (!root) return;
+  var list = root.querySelector("[data-sections]"), order = root.querySelector("[data-order]"), preview = root.querySelector("[data-preview]");
+  var photoUrl = function (name) { return "{{ url_for('static', filename='img/aurelle/photos/') }}" + name + ".jpg"; };
+  function sync() {
+    var keys = Array.prototype.map.call(list.children, function (li) { return li.dataset.key; });
+    order.value = keys.join(",");
+    keys.forEach(function (k) { var b = preview.querySelector('[data-block="' + k + '"]'); if (b) preview.appendChild(b); });
+  }
+  list.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-move]");
+    if (!b) return;
+    var li = b.closest("li"), step = parseInt(b.dataset.move, 10);
+    if (step < 0 && li.previousElementSibling) list.insertBefore(li, li.previousElementSibling);
+    if (step > 0 && li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+    li.classList.add("is-moved"); setTimeout(function () { li.classList.remove("is-moved"); }, 400);
+    b.focus(); sync();
+  });
+  root.querySelectorAll("[data-toggle]").forEach(function (c) {
+    c.addEventListener("change", function () { var b = preview.querySelector('[data-block="' + c.dataset.toggle + '"]'); if (b) b.classList.toggle("is-off", !c.checked); });
+  });
+  root.querySelectorAll("[data-photo]").forEach(function (s) {
+    s.addEventListener("change", function () {
+      var k = s.dataset.photo;
+      if (k === "quote") { preview.querySelector("[data-quote-bg]").style.backgroundImage = "url('" + photoUrl(s.value) + "')"; return; }
+      root.querySelectorAll('[data-thumb="' + k + '"]').forEach(function (img) { img.src = photoUrl(s.value); });
+      if (k === "welcome") preview.querySelector('[data-thumb="hero"]').src = photoUrl(s.value);
+    });
+  });
+  var q = root.querySelector('[data-live="quote"]');
+  if (q) q.addEventListener("input", function () { preview.querySelector("[data-quote-text]").textContent = "“" + q.value + "”"; });
+})();
+</script>
+{% endblock %}

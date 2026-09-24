@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Roles & access{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Settings</p><h1>Who sees which pages</h1>
+  <p class="pagehead__meta">Tick the pages each role has in its sidebar. Removing a page also stops that role opening it by its address.
+    A role can only be given pages its permissions allow; those are fixed in <span class="mono">config/permissions.yaml</span>.</p></div></div>
+
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="acard">
+    <div class="tablewrap">
+      <table class="table accessgrid">
+        <thead><tr><th>Page</th>{% for role, label in roles %}<th class="accessgrid__role">{{ label }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% set ns = namespace(group='') %}
+        {% for row in grid %}
+          {% if row.group != ns.group %}{% set ns.group = row.group %}<tr class="accessgrid__group"><td colspan="{{ roles|length + 1 }}">{{ row.group }}</td></tr>{% endif %}
+          <tr>
+            <td><span class="accessgrid__page">{{ icon(row.icon, 15) }}{{ row.label }}</span></td>
+            {% for role, label in roles %}{% set c = row.cells[role] %}
+            <td class="accessgrid__cell">
+              {% if c.locked %}<span class="accessgrid__lock" data-tip="Always shown to {{ label }}, so the role never loses its starting point">{{ icon('lock', 13) }} Always on</span>
+              {% elif c.allowed %}<label class="check"><input type="checkbox" name="{{ role }}:{{ row.endpoint }}" {{ 'checked' if c.on }}><span class="sr-only">{{ row.label }} for {{ label }}</span></label>{% if c.default and not c.on %}<small class="accessgrid__note">hidden</small>{% elif c.on and not c.default %}<small class="accessgrid__note">added</small>{% endif %}
+              {% else %}<span class="accessgrid__no" data-tip="Not allowed for this role (needs {{ c.needs or 'a permission it does not have' }})">–</span>{% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="composer__actions">
+    <button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Save</button>
+    <button class="btn btn--ghost" type="submit" form="pages-reset">Back to the original pages</button>
+  </div>
+</form>
+<form method="post" id="pages-reset" onsubmit="return confirm('Give every role its original pages again?')">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="reset" value="1">
+</form>
+<p class="small muted">The administrator always sees every page. Changes apply at each person's next page load.</p>
+{% endblock %}

@@ -70,6 +70,7 @@ def create_app(overrides=None):
     from src.reports_web.routes import bp as reports_bp
     from src.site.routes import bp as site_bp
     from src.api.routes import bp as api_bp
+    from src.settings_web.routes import bp as settings_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(documents_bp)
@@ -82,6 +83,21 @@ def create_app(overrides=None):
     app.register_blueprint(reports_bp)
     app.register_blueprint(site_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(settings_bp)
+
+    @app.before_request
+    def pages_hidden_by_the_administrator():
+        """A page the administrator hid from a role (Settings > Roles & access) cannot be opened by URL either."""
+        from flask import abort, request
+        from flask_login import current_user
+        from src.services import workspace
+        if not request.endpoint or request.endpoint == "static" or not current_user.is_authenticated:
+            return None
+        blueprint = request.blueprint or ""
+        for match in workspace.hidden_matches(current_user.app_role):
+            if (match.endswith(".") and blueprint + "." == match) or (not match.endswith(".") and request.endpoint.startswith(match)):
+                abort(403)
+        return None
 
     from src import ui_text
     ui_text.register(app)
@@ -111,7 +127,15 @@ def create_app(overrides=None):
         def ref_documents():
             from src.api.routes import known_documents
             return known_documents() if current_user.is_authenticated else []
+        def page_on(endpoint):
+            """False when the administrator removed this page from the viewer's role (Settings > Roles & access)."""
+            from src.services import workspace
+            if not current_user.is_authenticated:
+                return True
+            shown = workspace.pages_for(current_user.app_role)
+            return shown is None or endpoint in shown or endpoint not in workspace.default_pages(current_user.app_role)
         return {
+            "page_on": page_on,
             "ref_documents": ref_documents,
             "can": lambda perm: has_permission(current_user, perm),
             "org_name": app.extensions["org_name"],

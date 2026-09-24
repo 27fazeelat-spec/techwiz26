@@ -18,6 +18,8 @@ NAV = {
                           ("Role matrix", "ground_truth.matrix_index", "grid", "ground_truth.matrix")]),
         ("Organisation", [("Job roles", "people.roles", "users", "people."),
                           ("Reports", "reports.index", "file", "reports.")]),
+        ("Settings", [("Employee home", "settings.employee_home", "home", "settings.employee_home"),
+                      ("Roles & access", "settings.pages", "lock", "settings.pages")]),
     ],
     "training_manager": [
         ("Home", [("Plans board", "main.trainer_dashboard", "home", "main.trainer_dashboard")]),
@@ -54,7 +56,23 @@ NAV = {
 
 
 def items_for(role):
-    return NAV.get(role, [])
+    """The sidebar for a role: its default pages, minus what the administrator hid, plus what they added
+    (Settings > Roles & access). Added pages appear under the group they have in the administrator's sidebar."""
+    from src.services import workspace
+    shown = workspace.pages_for(role)
+    if shown is None:
+        return NAV.get(role, [])
+    groups = [(g, [l for l in links if l[1] in shown]) for g, links in NAV.get(role, [])]
+    present = {l[1] for _, links in groups for l in links}
+    extra = {}
+    for endpoint, label, icon, match, group in workspace.catalog():
+        if endpoint in shown and endpoint not in present:
+            extra.setdefault(group, []).append((label, endpoint, icon, match))
+    for g, links in groups:
+        if g in extra:
+            links.extend(extra.pop(g))
+    groups += list(extra.items())
+    return [(g, links) for g, links in groups if links]
 
 
 def is_active(match, endpoint, blueprint):

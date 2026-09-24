@@ -12,6 +12,10 @@ def permissions_for(app_role):
     return load_config("permissions")["roles"].get(app_role, {}).get("permissions", [])
 
 
+def role_has_permission(app_role, permission):
+    return any(fnmatch(permission, granted) for granted in permissions_for(app_role))
+
+
 def has_permission(user, permission):
     if user is None or not getattr(user, "is_authenticated", False):
         return False

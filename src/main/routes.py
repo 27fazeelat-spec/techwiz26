@@ -180,7 +180,7 @@ def team_dashboard():
 def employee_dashboard():
     from config.settings import today
     from flask import current_app
-    from src.services import progress
+    from src.services import progress, workspace
     employee = db.session.scalar(select(Employee).where(Employee.employee_code == current_user.employee_code))
     plan = progress.assigned_plan(employee) if employee else None
     summary = progress.summary(plan, employee, today(current_app.config)) if plan else None
@@ -189,7 +189,8 @@ def employee_dashboard():
     stages = progress.stages_for(plan, employee, day) if plan else []
     upcoming = progress.up_next(plan, employee, limit=7) if plan else []
     return render_template("dashboard/employee.html", employee=employee, plan=plan, summary=summary, recs=recs,
-                           stages=stages, upcoming=upcoming, today=day, cfg=progress.cfg())
+                           stages=stages, upcoming=upcoming, today=day, cfg=progress.cfg(),
+                           home=workspace.employee_home(), caption=workspace.caption)
 
 
 @bp.route("/healthz")

@@ -15,76 +15,72 @@
 {% set nxt = open_mods[0] if open_mods else none %}
 {% set task = upcoming[0] if upcoming else none %}
 {% set day_no = (today - employee.joining_date).days + 1 %}
+{# The administrator composes this page in Settings > Employee home: which sections, in what order, and the slides. #}
+{% set ns_slides = namespace(keys=[]) %}{% for k in ['welcome', 'next', 'quiz', 'certificate'] if home.slides[k].on and (k != 'certificate' or page_on('learning.certificate')) %}{% set ns_slides.keys = ns_slides.keys + [k] %}{% endfor %}{% set slide_keys = ns_slides.keys %}
+{% set slide_labels = {'welcome': 'Welcome', 'next': 'Up next', 'quiz': 'Quiz', 'certificate': 'Certificate'} %}
 
+{% for section in home.sections if section.on %}
+
+{% if section.key == 'hero' and slide_keys %}
 <!-- ============ hero: one story at a time, words on paper and a photograph beside them ============ -->
 <section class="lhero" data-carousel aria-roledescription="carousel" aria-label="Your highlights">
   <div class="lhero__slides">
-    <article class="lslide is-active" data-lslide aria-roledescription="slide" aria-label="1 of 4">
+    {% for key in slide_keys %}{% set photo = home.slides[key].photo %}{% set alt, cap = caption(photo) %}
+    <article class="lslide {{ 'is-active' if loop.first }}" data-lslide aria-roledescription="slide" aria-label="{{ loop.index }} of {{ slide_keys|length }}" {{ 'hidden' if not loop.first }}>
       <div class="lslide__text">
+      {% if key == 'welcome' %}
         <p class="eyebrow">{{ today.strftime('%A, %d %B') }}{% if employee.joining_date <= today %} · day {{ day_no }}{% endif %}</p>
         <h1 class="lslide__title"><span data-greeting>Welcome</span>, {{ first }}.</h1>
-        <p class="lslide__lead">{% if employee.joining_date > today %}Your first day at {{ brand.name }} is in {{ (employee.joining_date - today).days }} days. Everything you need to learn is already waiting here.{% else %}You are on day {{ day_no }} of your time with {{ brand.name }}. Every lesson here comes straight from our approved policies, so what you learn is what we do.{% endif %}</p>
+        <p class="lslide__lead">{% if employee.joining_date > today %}Your first day at {{ brand.name }} is in {{ (employee.joining_date - today).days }} days.{% else %}You are on day {{ day_no }} of your time with {{ brand.name }}.{% endif %} {{ home.welcome_line }}</p>
         <div class="lslide__ctas">
           {% if nxt %}<a class="btn btn--primary" href="{{ url_for('learning.module', module_key=nxt.module.module_key) }}" data-cursor="Go">Continue with {{ nxt.module.title }} {{ icon('arrow', 15) }}</a>{% endif %}
           <a class="btn btn--ghost" href="{{ url_for('learning.modules') }}">All modules</a>
         </div>
-      </div>
-      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/hero.jpg') }}" alt="A resort pool at night, lit from the rooms above"><figcaption>Evening by the pool</figcaption></figure>
-    </article>
-
-    <article class="lslide" data-lslide aria-roledescription="slide" aria-label="2 of 4" hidden>
-      <div class="lslide__text">
+      {% elif key == 'next' %}
         {% if task %}{% set r, item, module = task %}{% set c = item.content %}
         <p class="eyebrow {{ 'is-late' if r.due_date and r.due_date < today }}">{% if r.due_date and r.due_date < today %}Overdue since {{ r.due_date.strftime('%d %B') }}{% elif r.due_date == today %}Due today{% else %}Up next · due {{ r.due_date.strftime('%d %B') if r.due_date }}{% endif %}</p>
         <h1 class="lslide__title lslide__title--sm">{{ (c.activity or c.description or c.situation or c.question or c.topic)[:110] }}</h1>
         <p class="lslide__lead">A {{ item.item_type|replace('_', ' ') }} in <strong>{{ module.title }}</strong>. It can still be done late; your manager simply sees that it was.</p>
         <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">Open this step {{ icon('arrow', 15) }}</a>
-          <a class="btn btn--ghost" href="{{ url_for('learning.calendar') }}">My calendar</a></div>
+          {% if page_on('learning.calendar') %}<a class="btn btn--ghost" href="{{ url_for('learning.calendar') }}">My calendar</a>{% endif %}</div>
         {% else %}
         <p class="eyebrow">All caught up</p>
         <h1 class="lslide__title">Nothing is due right now.</h1>
         <p class="lslide__lead">Take a breath, or get ahead with your next module.</p>
         <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.modules') }}">My modules {{ icon('arrow', 15) }}</a></div>
         {% endif %}
-      </div>
-      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/lobby.jpg') }}" alt="A hotel lobby with tall windows" loading="lazy"><figcaption>The lobby at nine in the morning</figcaption></figure>
-    </article>
-
-    <article class="lslide" data-lslide aria-roledescription="slide" aria-label="3 of 4" hidden>
-      <div class="lslide__text">
+      {% elif key == 'quiz' %}
         {% if quiz_open %}{% set q = quiz_open[0] %}
         <p class="eyebrow">A quick knowledge check</p>
         <h1 class="lslide__title">{{ q.module.title }}, <em>in a few questions</em>.</h1>
         <p class="lslide__lead">One question at a time, marked straight away. You need {{ cfg.pass_mark_percent }}% to pass, and afterwards you see the policy line behind every answer.</p>
         <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.quiz', module_key=q.module.module_key) }}" data-cursor="Quiz">Start the quiz {{ icon('arrow', 15) }}</a>
-          <a class="btn btn--ghost" href="{{ url_for('learning.assessments') }}">All assessments</a></div>
+          {% if page_on('learning.assessments') %}<a class="btn btn--ghost" href="{{ url_for('learning.assessments') }}">All assessments</a>{% endif %}</div>
         {% else %}
         <p class="eyebrow">Knowledge checks</p>
         <h1 class="lslide__title">Every quiz <em>passed</em>.</h1>
         <p class="lslide__lead">{{ quizzes|length }} of {{ quizzes|length }} module quizzes done. Nicely done.</p>
-        <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.assessments') }}">See my results {{ icon('arrow', 15) }}</a></div>
+        <div class="lslide__ctas">{% if page_on('learning.assessments') %}<a class="btn btn--primary" href="{{ url_for('learning.assessments') }}">See my results {{ icon('arrow', 15) }}</a>{% endif %}</div>
         {% endif %}
-      </div>
-      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/pool.jpg') }}" alt="Poolside loungers under orange umbrellas" loading="lazy"><figcaption>Poolside, before the guests arrive</figcaption></figure>
-    </article>
-
-    <article class="lslide" data-lslide aria-roledescription="slide" aria-label="4 of 4" hidden>
-      <div class="lslide__text">
+      {% else %}
         <p class="eyebrow">Your certificate</p>
         <h1 class="lslide__title">{% if summary.status == 'Completed' %}Your certificate is <em>ready</em>.{% else %}{{ summary.pct }}% of the way to your <em>certificate</em>.{% endif %}</h1>
         <p class="lslide__lead">Finish every step of your plan and {{ brand.name }} issues a certificate of onboarding, with a code anyone can check online.</p>
         <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.certificate') }}" data-cursor="View">View certificate {{ icon('arrow', 15) }}</a>
-          <a class="btn btn--ghost" href="{{ url_for('learning.progress_page') }}">My progress</a></div>
+          {% if page_on('learning.progress_page') %}<a class="btn btn--ghost" href="{{ url_for('learning.progress_page') }}">My progress</a>{% endif %}</div>
+      {% endif %}
       </div>
-      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/room.jpg') }}" alt="A guest room made up with fresh linen" loading="lazy"><figcaption>A room, made ready for its guest</figcaption></figure>
+      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/' ~ photo ~ '.jpg') }}" alt="{{ alt }}" {{ 'loading=lazy' if not loop.first }}><figcaption>{{ cap }}</figcaption></figure>
     </article>
+    {% endfor %}
   </div>
 
+  {% if slide_keys|length > 1 %}
   <div class="lhero__ui">
-    <div class="lhero__tabs" role="tablist" aria-label="Choose a slide">
-      {% for label in ['Welcome', 'Up next', 'Quiz', 'Certificate'] %}
+    <div class="lhero__tabs" role="tablist" aria-label="Choose a slide" style="grid-template-columns: repeat({{ slide_keys|length }}, minmax(0, 1fr))">
+      {% for key in slide_keys %}
       <button type="button" role="tab" class="lhero__tab {{ 'is-active' if loop.first }}" data-go="{{ loop.index0 }}" aria-selected="{{ 'true' if loop.first else 'false' }}">
-        <i aria-hidden="true"></i><span>{{ '%02d' % loop.index }}</span>{{ label }}</button>
+        <i aria-hidden="true"></i><span>{{ '%02d' % loop.index }}</span>{{ slide_labels[key] }}</button>
       {% endfor %}
     </div>
     <div class="lhero__arrows">
@@ -92,26 +88,27 @@
       <button type="button" class="iconbtn" data-next aria-label="Next slide">{{ icon('arrow', 16) }}</button>
     </div>
   </div>
+  {% endif %}
 </section>
 
-<!-- ============ at a glance ============ -->
+{% elif section.key == 'glance' %}
 <section class="asec">
   <dl class="tstats">
     <div><dt>Plan complete</dt><dd>{{ summary.pct }}<small>%</small></dd></div>
     <div><dt>Modules finished</dt><dd>{{ completed|length }}<small>/{{ mods|length }}</small></dd></div>
     <div><dt>Quizzes passed</dt><dd>{{ quizzes|length - quiz_open|length }}<small>/{{ quizzes|length }}</small></dd></div>
     <div class="{{ 'is-bad' if summary.overdue }}"><dt>Overdue</dt><dd>{{ summary.overdue }}</dd></div>
-    <div><dt>Status</dt><dd class="tstats__badge">{{ progress_badge(summary.status) }} <a href="{{ url_for('learning.progress_page') }}">what it means</a></dd></div>
+    <div><dt>Status</dt><dd class="tstats__badge">{{ progress_badge(summary.status) }} {% if page_on('learning.progress_page') %}<a href="{{ url_for('learning.progress_page') }}">what it means</a>{% endif %}</dd></div>
   </dl>
 </section>
 
-<!-- ============ journey ============ -->
+{% elif section.key == 'journey' %}
 <section class="asec">
   <div class="asec__head"><h2>Your first ninety days</h2><p>{{ employee.job_role.name }} · joined {{ employee.joining_date.strftime('%d %B %Y') }}</p></div>
   {{ journey(stages, today) }}
 </section>
 
-<!-- ============ modules ============ -->
+{% elif section.key == 'modules' %}
 <section class="asec">
   <div class="asec__head"><h2>Your modules</h2><a class="lsec__link" href="{{ url_for('learning.modules') }}">All {{ mods|length }} modules →</a></div>
   {% set shown = (open_mods + completed)[:5] %}
@@ -120,10 +117,10 @@
   </div>
 </section>
 
-<!-- ============ coming up + quizzes ============ -->
+{% elif section.key == 'upcoming' %}
 <section class="asec acols">
   <div class="acard">
-    <div class="acard__head"><h3>Coming up</h3><span><a href="{{ url_for('learning.calendar') }}" style="color: var(--primary); font-weight: 600">Calendar →</a></span></div>
+    <div class="acard__head"><h3>Coming up</h3><span>{% if page_on('learning.calendar') %}<a href="{{ url_for('learning.calendar') }}" style="color: var(--primary); font-weight: 600">Calendar →</a>{% endif %}</span></div>
     {% if upcoming %}<ul class="ltasks">
       {% for r, item, module in upcoming[:6] %}{% set c = item.content %}{% set late = r.due_date and r.due_date < today %}
       <li><a href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">
@@ -134,7 +131,6 @@
       {% endfor %}
     </ul>{% else %}<p class="todo__empty">Nothing due. Enjoy your day.</p>{% endif %}
   </div>
-
   <div class="lstack">
     {% for x in quiz_open[:2] %}{% set m = x.module %}
     <a class="course course--wide" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">
@@ -144,22 +140,25 @@
         <span class="course__go">Start →</span></div>
     </a>
     {% endfor %}
-    <a class="certteaser" href="{{ url_for('learning.certificate') }}" data-cursor="View">
+    {% if page_on('learning.certificate') %}<a class="certteaser" href="{{ url_for('learning.certificate') }}" data-cursor="View">
       <span class="certteaser__pct">{{ summary.pct }}<small>%</small></span>
       <span><strong>Certificate of onboarding</strong><small>{{ 'Ready to claim' if summary.status == 'Completed' else (summary.total - summary.done) ~ ' steps to go' }}</small></span>
       <span class="certteaser__go">→</span>
-    </a>
+    </a>{% endif %}
   </div>
 </section>
 
-<!-- ============ a line to end on ============ -->
+{% elif section.key == 'quote' %}
 <section class="asec">
   <figure class="lquote">
-    <img src="{{ url_for('static', filename='img/aurelle/photos/resort.jpg') }}" alt="" loading="lazy">
-    <blockquote>“Excellence is not a skill, it’s an attitude.”</blockquote>
-    <figcaption>{{ brand.name }} {{ brand.tagline }}</figcaption>
+    <img src="{{ url_for('static', filename='img/aurelle/photos/' ~ home.quote_photo ~ '.jpg') }}" alt="" loading="lazy">
+    <blockquote>“{{ home.quote }}”</blockquote>
+    <figcaption>{{ home.quote_by or (brand.name ~ ' ' ~ brand.tagline) }}</figcaption>
   </figure>
 </section>
+{% endif %}
+
+{% endfor %}
 
 {% else %}
 <section class="lhero">
@@ -170,7 +169,8 @@
         <h1 class="lslide__title"><span data-greeting>Welcome</span>, {{ first }}.</h1>
         <p class="lslide__lead">Your plan is being prepared. Your trainer assigns it once it has been checked against {{ brand.name }}'s approved policies, and it will appear here straight away.</p>
       </div>
-      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/hero.jpg') }}" alt="A resort pool at night"><figcaption>Evening by the pool</figcaption></figure>
+      {% set photo = home.slides.welcome.photo %}{% set alt, cap = caption(photo) %}
+      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/' ~ photo ~ '.jpg') }}" alt="{{ alt }}"><figcaption>{{ cap }}</figcaption></figure>
     </article>
   </div>
 </section>
