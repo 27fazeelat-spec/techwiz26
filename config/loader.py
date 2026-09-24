@@ -21,6 +21,7 @@ REQUIRED_KEYS = {
                    "assessment", "lineage"],
     "security_patterns": ["families", "encoded", "obfuscation"],
     "progress": ["pass_mark_percent", "max_quiz_attempts", "completion", "status_order"],
+    "branding": ["name", "primary", "accent"],
 }
 
 

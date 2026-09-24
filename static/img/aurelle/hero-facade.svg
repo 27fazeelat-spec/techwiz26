@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Illustration of an Aurelle hotel at dusk">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1529"/><stop offset="0.55" stop-color="#1E2F57"/><stop offset="1" stop-color="#3A3F6B"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.72" cy="0.78" r="0.45">
+      <stop offset="0" stop-color="#F6D98A" stop-opacity="0.95"/><stop offset="0.35" stop-color="#E0A95A" stop-opacity="0.45"/><stop offset="1" stop-color="#E0A95A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bld" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3ECDD"/><stop offset="1" stop-color="#D9CDB4"/></linearGradient>
+    <linearGradient id="bldShade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1B2440" stop-opacity="0.35"/></linearGradient>
+    <linearGradient id="win" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7A3"/><stop offset="1" stop-color="#E7B24C"/></linearGradient>
+    <linearGradient id="winOff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#34466F"/><stop offset="1" stop-color="#1E2A48"/></linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2D5B7A"/><stop offset="1" stop-color="#14304A"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#B8911F"/><stop offset="0.5" stop-color="#F1D57A"/><stop offset="1" stop-color="#B8911F"/></linearGradient>
+    <pattern id="stars" width="140" height="90" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="14" r="1.1" fill="#fff" opacity="0.7"/><circle cx="70" cy="40" r="0.8" fill="#fff" opacity="0.5"/>
+      <circle cx="118" cy="10" r="1" fill="#fff" opacity="0.6"/><circle cx="96" cy="70" r="0.7" fill="#fff" opacity="0.4"/><circle cx="36" cy="62" r="0.6" fill="#fff" opacity="0.5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="420" fill="url(#sky)"/>
+  <rect width="1200" height="230" fill="url(#stars)"/>
+  <rect width="1200" height="420" fill="url(#sun)"/>
+  <circle cx="864" cy="300" r="46" fill="#F6D98A" opacity="0.9"/>
+  <g fill="#fff" opacity="0.08"><ellipse cx="240" cy="120" rx="160" ry="16"/><ellipse cx="980" cy="90" rx="200" ry="14"/><ellipse cx="620" cy="160" rx="120" ry="10"/></g>
+
+  <!-- distant hills -->
+  <path d="M0 330 C150 290 260 300 380 318 S640 280 780 305 1040 290 1200 312 V420 H0Z" fill="#2A3560" opacity="0.8"/>
+
+  <!-- side wing left -->
+  <g>
+    <rect x="250" y="236" width="170" height="110" fill="url(#bld)"/>
+    <rect x="250" y="236" width="170" height="110" fill="url(#bldShade)"/>
+    <rect x="244" y="228" width="182" height="10" rx="2" fill="#C9B894"/>
+    <g>
+      <rect x="266" y="256" width="22" height="30" rx="11" fill="url(#win)"/><rect x="300" y="256" width="22" height="30" rx="11" fill="url(#winOff)"/>
+      <rect x="334" y="256" width="22" height="30" rx="11" fill="url(#win)"/><rect x="368" y="256" width="22" height="30" rx="11" fill="url(#win)"/>
+      <rect x="266" y="300" width="22" height="30" rx="11" fill="url(#winOff)"/><rect x="300" y="300" width="22" height="30" rx="11" fill="url(#win)"/>
+      <rect x="334" y="300" width="22" height="30" rx="11" fill="url(#win)"/><rect x="368" y="300" width="22" height="30" rx="11" fill="url(#winOff)"/>
+    </g>
+  </g>
+  <!-- side wing right -->
+  <g>
+    <rect x="780" y="236" width="170" height="110" fill="url(#bld)"/>
+    <rect x="780" y="236" width="170" height="110" fill="url(#bldShade)"/>
+    <rect x="774" y="228" width="182" height="10" rx="2" fill="#C9B894"/>
+    <rect x="796" y="256" width="22" height="30" rx="11" fill="url(#winOff)"/><rect x="830" y="256" width="22" height="30" rx="11" fill="url(#win)"/>
+    <rect x="864" y="256" width="22" height="30" rx="11" fill="url(#win)"/><rect x="898" y="256" width="22" height="30" rx="11" fill="url(#winOff)"/>
+    <rect x="796" y="300" width="22" height="30" rx="11" fill="url(#win)"/><rect x="830" y="300" width="22" height="30" rx="11" fill="url(#win)"/>
+    <rect x="864" y="300" width="22" height="30" rx="11" fill="url(#winOff)"/><rect x="898" y="300" width="22" height="30" rx="11" fill="url(#win)"/>
+  </g>
+  <!-- main tower -->
+  <g>
+    <rect x="420" y="130" width="360" height="216" fill="url(#bld)"/>
+    <rect x="420" y="130" width="360" height="216" fill="url(#bldShade)" opacity="0.6"/>
+    <path d="M410 132 L600 88 L790 132 Z" fill="#E6DAC0"/>
+    <rect x="410" y="126" width="380" height="10" rx="2" fill="#C9B894"/>
+    <circle cx="600" cy="112" r="10" fill="none" stroke="url(#gold)" stroke-width="3"/>
+    <g>
+      <rect x="446" y="152" width="26" height="36" rx="13" fill="url(#win)"/><rect x="486" y="152" width="26" height="36" rx="13" fill="url(#win)"/>
+      <rect x="526" y="152" width="26" height="36" rx="13" fill="url(#winOff)"/><rect x="566" y="152" width="26" height="36" rx="13" fill="url(#win)"/>
+      <rect x="608" y="152" width="26" height="36" rx="13" fill="url(#win)"/><rect x="648" y="152" width="26" height="36" rx="13" fill="url(#winOff)"/>
+      <rect x="688" y="152" width="26" height="36" rx="13" fill="url(#win)"/><rect x="728" y="152" width="26" height="36" rx="13" fill="url(#win)"/>
+      <rect x="446" y="204" width="26" height="36" rx="13" fill="url(#winOff)"/><rect x="486" y="204" width="26" height="36" rx="13" fill="url(#win)"/>
+      <rect x="526" y="204" width="26" height="36" rx="13" fill="url(#win)"/><rect x="566" y="204" width="26" height="36" rx="13" fill="url(#win)"/>
+      <rect x="608" y="204" width="26" height="36" rx="13" fill="url(#winOff)"/><rect x="648" y="204" width="26" height="36" rx="13" fill="url(#win)"/>
+      <rect x="688" y="204" width="26" height="36" rx="13" fill="url(#win)"/><rect x="728" y="204" width="26" height="36" rx="13" fill="url(#winOff)"/>
+      <rect x="446" y="256" width="26" height="36" rx="13" fill="url(#win)"/><rect x="486" y="256" width="26" height="36" rx="13" fill="url(#winOff)"/>
+      <rect x="688" y="256" width="26" height="36" rx="13" fill="url(#winOff)"/><rect x="728" y="256" width="26" height="36" rx="13" fill="url(#win)"/>
+    </g>
+    <!-- grand arched entrance -->
+    <path d="M550 346 V292 a50 50 0 0 1 100 0 V346 Z" fill="#1B2440"/>
+    <path d="M562 346 V294 a38 38 0 0 1 76 0 V346 Z" fill="url(#win)" opacity="0.92"/>
+    <path d="M550 346 V292 a50 50 0 0 1 100 0 V346" fill="none" stroke="url(#gold)" stroke-width="3"/>
+    <rect x="530" y="244" width="140" height="14" rx="7" fill="#1B2440"/>
+    <text x="600" y="255" text-anchor="middle" font-family="Georgia, serif" font-size="11" letter-spacing="4" fill="#F1D57A">AURELLE</text>
+  </g>
+
+  <!-- palms -->
+  <g fill="#0E1A33">
+    <path d="M180 346 C186 300 190 262 186 228" stroke="#0E1A33" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M186 228 C150 214 118 222 96 240 C130 232 156 234 182 238Z"/><path d="M186 228 C176 196 150 182 128 180 C152 196 168 212 180 232Z"/>
+    <path d="M186 228 C214 200 244 196 266 204 C238 208 214 218 192 236Z"/><path d="M186 228 C222 222 248 234 262 254 C236 240 212 236 190 236Z"/>
+    <path d="M1030 346 C1024 304 1022 270 1028 238" stroke="#0E1A33" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M1028 238 C994 222 962 228 940 246 C974 240 1000 242 1024 248Z"/><path d="M1028 238 C1020 206 996 190 972 188 C996 204 1012 220 1022 242Z"/>
+    <path d="M1028 238 C1056 212 1086 208 1108 216 C1080 220 1056 230 1034 248Z"/><path d="M1028 238 C1064 232 1090 244 1104 264 C1078 250 1054 246 1032 246Z"/>
+  </g>
+
+  <!-- terrace and pool -->
+  <rect x="0" y="346" width="1200" height="12" fill="#C9B894"/>
+  <rect x="0" y="358" width="1200" height="62" fill="url(#water)"/>
+  <g opacity="0.55">
+    <rect x="566" y="366" width="68" height="4" rx="2" fill="#F6D98A"/><rect x="580" y="378" width="40" height="3" rx="1.5" fill="#F6D98A"/>
+    <rect x="828" y="370" width="72" height="3" rx="1.5" fill="#F6D98A"/><rect x="470" y="372" width="30" height="3" rx="1.5" fill="#F6D98A"/>
+    <rect x="700" y="386" width="48" height="3" rx="1.5" fill="#F6D98A"/><rect x="300" y="382" width="36" height="3" rx="1.5" fill="#F6D98A"/>
+  </g>
+  <rect x="0" y="346" width="1200" height="2" fill="url(#gold)" opacity="0.8"/>
+</svg>

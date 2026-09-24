@@ -342,3 +342,53 @@ def decide_recommendation(rec, accept, actor):
     audit.record(f"recommendation.{rec.status}", "recommendation", f"{rec.rule_id}:{rec.module_key}", actor=actor,
                  after={"type": rec.type}, commit=False)
     db.session.commit()
+
+
+def overview(plan_ids, today):
+    """{plan_id: {"done", "total", "overdue", "pct"}} for many plans in one query (dashboards)."""
+    out = {pid: {"done": 0, "total": 0, "overdue": 0, "pct": 0} for pid in plan_ids}
+    if not plan_ids:
+        return out
+    for plan_id, status, due in db.session.execute(select(Progress.plan_id, Progress.status, Progress.due_date)
+                                                   .where(Progress.plan_id.in_(list(plan_ids)))):
+        o = out[plan_id]
+        o["total"] += 1
+        if status in DONE:
+            o["done"] += 1
+        elif due and due < today:
+            o["overdue"] += 1
+    for o in out.values():
+        o["pct"] = round(100 * o["done"] / o["total"]) if o["total"] else 0
+    return out
+
+
+def stages_for(plan, employee, today):
+    """Per onboarding stage: items done and total, and whether the stage is past, current or ahead."""
+    offsets = _stage_offsets()
+    labels = {s["code"]: s["label"] for s in load_config("stages")["stages"]}
+    rows = db.session.execute(select(Progress.status, PlanItem.stage, PlanModule.stage)
+                              .join(PlanItem, Progress.plan_item_id == PlanItem.id)
+                              .join(PlanModule, PlanItem.module_id == PlanModule.id)
+                              .where(Progress.plan_id == plan.id, Progress.employee_id == employee.id)).all()
+    counts = {}
+    for status, item_stage, module_stage in rows:
+        c = counts.setdefault(item_stage or module_stage, [0, 0])
+        c[1] += 1
+        c[0] += status in DONE
+    joined = employee.joining_date
+    out = []
+    for code, offset in offsets.items():
+        done, total = counts.get(code, (0, 0))
+        due = joined + timedelta(days=offset) if joined else None
+        state = "done" if total and done == total else ("due" if due and due <= today else "ahead")
+        out.append({"code": code, "label": labels[code], "done": done, "total": total, "due": due, "state": state})
+    return out
+
+
+def up_next(plan, employee, limit=5):
+    """The next unfinished items by due date, for the employee's home."""
+    return db.session.execute(select(Progress, PlanItem, PlanModule).join(PlanItem, Progress.plan_item_id == PlanItem.id)
+                              .join(PlanModule, PlanItem.module_id == PlanModule.id)
+                              .where(Progress.plan_id == plan.id, Progress.employee_id == employee.id,
+                                     Progress.status.notin_(DONE))
+                              .order_by(Progress.due_date, PlanModule.position, PlanItem.position).limit(limit)).all()

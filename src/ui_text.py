@@ -51,10 +51,24 @@ GLOSSARY = {
 }
 
 
+CATEGORY_ICONS = [("fire", "flame"), ("life safety", "flame"), ("privacy", "lock"), ("data", "lock"), ("security", "lock"),
+                  ("guest", "bell"), ("service", "bell"), ("finance", "coin"), ("revenue", "chart"), ("sales", "hand"),
+                  ("housekeeping", "bed"), ("food", "cup"), ("f&b", "cup"), ("beverage", "cup"), ("maintenance", "wrench"),
+                  ("engineering", "wrench"), ("health", "heart"), ("safety", "heart"), ("hr", "users"), ("people", "users"),
+                  ("orientation", "building"), ("company", "building"), ("conduct", "shield"), ("compliance", "shield")]
+
+
+def category_icon(category):
+    text = (category or "").lower()
+    return next((icon for word, icon in CATEGORY_ICONS if word in text), "map")
+
+
 def label(kind, value):
     table = {"item": ITEM_STATUS, "plan": PLAN_STATUS, "doc": DOC_STATUS}[kind]
     return table.get(value, (value, ""))
 
 
 def register(app):
-    app.jinja_env.globals.update(status_label=label, glossary=GLOSSARY)
+    from src.navigation import is_active, items_for
+    app.jinja_env.globals.update(status_label=label, glossary=GLOSSARY, nav_items=items_for, nav_active=is_active,
+                                 category_icon=category_icon)

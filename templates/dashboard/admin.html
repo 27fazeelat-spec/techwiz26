@@ -1,18 +1,27 @@
 {% extends "base.html" %}
-{% from "_macros.html" import status_badge, icon, empty %}
+{% from "_macros.html" import status_badge, icon, empty, help %}
 {% block title %}Overview{% endblock %}
 {% block content %}
-<div class="pagehead">
-  <div>
-    <p class="eyebrow">{{ org_name }}</p>
-    <h1>Overview</h1>
-    <p class="pagehead__meta">From uploaded policy to verified onboarding plan. Each stage below feeds the next.</p>
+<section class="heroband rise">
+  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/skyline.svg') }}" alt="">
+  <div class="heroband__row">
+    <div>
+      <p class="heroband__kicker">{{ org_name }}</p>
+      <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}</h1>
+      <p>From uploaded policy to verified onboarding. Every stage below feeds the next, and every number links to the rows behind it.</p>
+      <div class="heroband__actions">
+        {% if can('documents.upload') %}<a class="btn btn--gold" href="{{ url_for('documents.upload') }}" data-cursor="Upload">{{ icon('upload', 15) }}Upload a policy</a>{% endif %}
+        <a class="btn" href="{{ url_for('main.trainer_dashboard') }}">{{ icon('grid', 15) }}Plans board</a>
+        <a class="btn" href="{{ url_for('reports.index') }}">{{ icon('file', 15) }}Reports</a>
+      </div>
+    </div>
+    <div class="heroband__stats">
+      <div class="glass"><b data-count="{{ stats.lineages }}">{{ stats.lineages }}</b><span>documents</span></div>
+      <div class="glass"><b data-count="{{ stats.requirements }}">{{ stats.requirements }}</b><span>rules</span></div>
+      <div class="glass"><b data-count="{{ stats.plans }}">{{ stats.plans }}</b><span>plans</span></div>
+    </div>
   </div>
-  <div class="pagehead__actions">
-    {% if can('plans.view') %}<a class="btn" href="{{ url_for('plans.employees') }}">{{ icon('users', 16) }}Employees</a>{% endif %}
-    {% if can('documents.upload') %}<a class="btn btn--primary" href="{{ url_for('documents.upload') }}">{{ icon('upload', 16) }}Upload document</a>{% endif %}
-  </div>
-</div>
+</section>
 
 {% set m = stats.matrix %}
 <nav class="flow" aria-label="Verification pipeline">
@@ -40,6 +49,32 @@
 <div class="notice notice--info">Matrix draft <span class="mono">v{{ stats.matrix_draft.version_no }}</span> is waiting for review.
   Plans are only verified against an approved matrix. <a href="{{ url_for('ground_truth.matrix_view', number=stats.matrix_draft.version_no) }}">Review the draft</a></div>
 {% endif %}
+
+{% set mix_total = plan_mix.values()|sum %}
+{% set palette = {'Verified': 'var(--ok)', 'Verified with Warning': '#7CC7A5', 'Incomplete': 'var(--bad)', 'Unsupported': '#E8826F',
+                  'Contradictory': '#B42318', 'Manual Review Required': 'var(--info)', 'Failed': 'var(--faint)', 'generating': 'var(--line-strong)'} %}
+{% set ns = namespace(acc=0, stops=[]) %}
+{% for st, n in plan_mix.items() %}{% set a0 = ns.acc %}{% set ns.acc = ns.acc + (100 * n / mix_total if mix_total else 0) %}
+  {% set ns.stops = ns.stops + [palette.get(st, 'var(--faint)') ~ ' ' ~ a0 ~ '% ' ~ ns.acc ~ '%'] %}{% endfor %}
+<div class="grid-2">
+  <section class="panel rise">
+    <h2 class="panel__title">Plans by result</h2>
+    {% if mix_total %}
+    <div class="chartrow">
+      <div class="donut" style="background: conic-gradient({{ ns.stops|join(', ') }})"><div class="donut__center"><div><b data-count="{{ mix_total }}">{{ mix_total }}</b><span>plans</span></div></div></div>
+      <ul class="legend" style="flex-direction: column; margin: 0">
+        {% for st, n in plan_mix.items() %}<li><span class="legend__dot" style="background: {{ palette.get(st, 'var(--faint)') }}"></span>{{ status_label('plan', st)[0] }}<strong>{{ n }}</strong></li>{% endfor %}
+      </ul>
+    </div>
+    {% else %}{{ empty('No plans yet', 'Generate a plan from the plans board.', 'grid') }}{% endif %}
+  </section>
+  <section class="panel rise">
+    <h2 class="panel__title">Average coverage by role {{ help('coverage') }}</h2>
+    {% if role_cov %}<div class="hbars">
+      {% for code, name, cov, n in role_cov %}<div class="hbar"><span>{{ name }}</span><span class="hbar__track"><i data-w="{{ (cov or 0)|round(1) }}%"></i></span><b>{{ (cov or 0)|round(1) }}%</b></div>{% endfor %}
+    </div>{% else %}<p class="muted small">Coverage appears once plans are generated.</p>{% endif %}
+  </section>
+</div>
 
 <div class="grid-2">
   <section class="panel">

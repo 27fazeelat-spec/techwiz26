@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aurelle">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1E2F57"/><stop offset="1" stop-color="#0B1529"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1D57A"/><stop offset="1" stop-color="#B8911F"/></linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#g)"/>
+  <path d="M16 50V30a16 16 0 0 1 32 0v20" fill="none" stroke="url(#gold)" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M24 48 32 24l8 24M27.2 39h9.6" fill="none" stroke="#F4E6B8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="32" cy="17" r="2" fill="url(#gold)"/>
+</svg>

@@ -1,0 +1,11 @@
+# Workspace branding shown after sign-in. SkillSprint appears only as "Powered by SkillSprint".
+# Organization.settings["branding"] overrides these keys (set from the admin settings page).
+name: Aurelle
+tagline: Hotels & Residences
+product_name: Aurelle Learning          # browser tab and portal title
+logo: img/aurelle/logo-mark.svg          # square mark, relative to /static
+primary: "#14213D"                       # Midnight Navy: buttons, links, active navigation
+primary_hover: "#0B1529"
+primary_dark_mode: "#9DB2FF"             # the same colour, readable on dark backgrounds
+accent: "#C9A227"                        # Champagne Gold: highlights, progress, the logo
+accent_dark_mode: "#E2C15A"

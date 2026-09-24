@@ -4,8 +4,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if current_user.is_authenticated %}
+  <link rel="icon" href="{{ url_for('static', filename=brand.logo) }}">
+  <title>{% block title %}Home{% endblock %} · {{ brand.product_name or brand.name }}</title>
+  {% else %}
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='image/logo.png') }}">
-  <title>{% block title %}SkillSprint{% endblock %} · SkillSprint AI</title>
+  <title>{{ self.title() }} · SkillSprint</title>
+  {% endif %}
   <script>
     try {
       var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t;
@@ -14,60 +19,42 @@
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% if current_user.is_authenticated %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+  <style>
+    /* Workspace brand colours (config/branding.yaml or the organisation's settings). Status colours never change. */
+    :root { --primary: {{ brand.primary }}; --primary-hover: {{ brand.primary_hover or brand.primary }}; --accent: {{ brand.accent }};
+            --primary-soft: color-mix(in srgb, {{ brand.primary }} 9%, white); --on-primary: #fff; }
+    :root[data-theme="dark"] { --primary: {{ brand.primary_dark_mode or brand.primary }}; --primary-hover: {{ brand.primary_dark_mode or brand.primary }};
+            --accent: {{ brand.accent_dark_mode or brand.accent }}; --primary-soft: color-mix(in srgb, {{ brand.primary_dark_mode or brand.primary }} 14%, transparent); --on-primary: #0B1529; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --primary: {{ brand.primary_dark_mode or brand.primary }};
+            --primary-hover: {{ brand.primary_dark_mode or brand.primary }}; --accent: {{ brand.accent_dark_mode or brand.accent }};
+            --primary-soft: color-mix(in srgb, {{ brand.primary_dark_mode or brand.primary }} 14%, transparent); --on-primary: #0B1529; } }
+  </style>
+  {% endif %}
 </head>
 <body class="{{ 'has-shell' if current_user.is_authenticated }}" data-ref-docs='{{ ref_documents()|tojson }}'>
 <a class="skip" href="#main">Skip to content</a>
+{% if current_user.is_authenticated %}<div class="cursor is-hidden" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>{% endif %}
 {% if current_user.is_authenticated %}
 {% macro navlink(endpoint_url, label, icon_name, active) -%}
   <a href="{{ endpoint_url }}" class="navlink {{ 'is-active' if active }}" {{ 'aria-current=page' if active }} data-tip="{{ label }}">{{ icon(icon_name) }}<span>{{ label }}</span></a>
 {%- endmacro %}
 {% set ep = request.endpoint or '' %}
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-  <a class="brand" href="{{ url_for('main.home') }}" aria-label="SkillSprint home">
-    <img class="brand__mark" src="{{ url_for('static', filename='image/logo.png') }}" alt="">
-    <span class="brand__name">SkillSprint</span>
+  <a class="brand" href="{{ url_for('main.home') }}" aria-label="{{ brand.name }} home">
+    <img class="brand__mark" src="{{ url_for('static', filename=brand.logo) }}" alt="">
+    <span class="brand__name">{{ brand.name }}<small>{{ brand.tagline }}</small></span>
   </a>
-  <div class="workspace" title="Active organisation"><small>Workspace</small><span>{{ org_name }}</span></div>
 
+  {% for group, links in nav_items(current_user.app_role) %}
   <nav class="navgroup">
-    <p class="navgroup__label">Home</p>
-    {% if can('dashboard.admin') %}{{ navlink(url_for('main.admin_dashboard'), 'Overview', 'home', ep == 'main.admin_dashboard') }}{% endif %}
-    {% if can('dashboard.team') %}{{ navlink(url_for('main.team_dashboard'), 'My team', 'users', ep == 'main.team_dashboard') }}{% endif %}
-    {% if can('dashboard.employee') %}{{ navlink(url_for('main.employee_dashboard'), 'My onboarding', 'user', ep == 'main.employee_dashboard') }}{% endif %}
+    <p class="navgroup__label">{{ group }}</p>
+    {% for label, endpoint, icon_name, match in links %}{{ navlink(url_for(endpoint), label, icon_name, nav_active(match, ep, request.blueprint)) }}{% endfor %}
   </nav>
-  {% if can('documents.view') or can('security.view') %}
-  <nav class="navgroup">
-    <p class="navgroup__label">Knowledge base</p>
-    {% if can('documents.view') %}{{ navlink(url_for('documents.index'), 'Documents', 'file', request.blueprint == 'documents') }}{% endif %}
-    {% if can('security.view') %}{{ navlink(url_for('ground_truth.security'), 'Security scan', 'shield', ep == 'ground_truth.security') }}{% endif %}
-    {% if can('documents.view') %}{{ navlink(url_for('changes.index'), 'Policy changes', 'split', request.blueprint == 'changes') }}{% endif %}
-  </nav>
-  {% endif %}
-  {% if can('requirements.view') or can('conflicts.view') or can('matrix.view') %}
-  <nav class="navgroup">
-    <p class="navgroup__label">Ground truth</p>
-    {% if can('requirements.view') %}{{ navlink(url_for('ground_truth.requirements'), 'Requirements', 'list', ep.startswith('ground_truth.requirement')) }}{% endif %}
-    {% if can('conflicts.view') %}{{ navlink(url_for('ground_truth.conflicts'), 'Conflicts', 'split', ep.startswith('ground_truth.conflict')) }}{% endif %}
-    {% if can('matrix.view') %}{{ navlink(url_for('ground_truth.matrix_index'), 'Role matrix', 'grid', ep.startswith('ground_truth.matrix')) }}{% endif %}
-  </nav>
-  {% endif %}
-  {% if can('plans.view') %}
-  <nav class="navgroup">
-    <p class="navgroup__label">Onboarding</p>
-    {{ navlink(url_for('plans.employees'), 'Employees & plans', 'users', request.blueprint == 'plans') }}
-    {% if can('review.view') %}{{ navlink(url_for('review.queue'), 'Review queue', 'inbox', request.blueprint == 'review') }}{% endif %}
-    {% if can('roles.view') %}{{ navlink(url_for('people.roles'), 'Job roles', 'grid', ep.startswith('people.role')) }}{% endif %}
-  </nav>
-  {% endif %}
+  {% endfor %}
 
-  {% if can('reports.view') or can('reports.team') %}
-  <nav class="navgroup">
-    <p class="navgroup__label">Evidence</p>
-    {{ navlink(url_for('reports.index'), 'Reports', 'file', request.blueprint == 'reports') }}
-  </nav>
-  {% endif %}
-
-  <p class="sidebar__foot">Gemini writes. Python verifies.<br>People approve.</p>
+  <p class="sidebar__foot"><img src="{{ url_for('static', filename='image/logo.png') }}" alt="" width="14" height="14"><span>Powered by SkillSprint</span></p>
 </aside>
 <div class="scrim" data-nav-close hidden></div>
 
@@ -155,5 +142,6 @@
 {% if t %}<script type="application/json" id="tour-steps" data-role="{{ role }}" data-auto="1">{{ t|tojson }}</script>{% endif %}
 {% endif %}
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% if current_user.is_authenticated %}<script src="{{ url_for('static', filename='js/portal.js') }}"></script>{% endif %}
 </body>
 </html>

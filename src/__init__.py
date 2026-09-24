@@ -99,12 +99,14 @@ def create_app(overrides=None):
     def template_helpers():
         from flask_login import current_user
         from database.models import Organization
-        if "org_name" not in app.extensions:            # it never changes at runtime: read it once
-            org = db.session.query(Organization.name).first()
+        if "org_name" not in app.extensions:            # it rarely changes: read it once (settings page clears it)
+            org = db.session.query(Organization.name, Organization.settings).first()
             if org is None:
                 return {"can": lambda perm: has_permission(current_user, perm), "org_name": "No organisation set up",
+                        "brand": dict(load_config("branding")),
                         "role_label": lambda code: load_config("permissions")["roles"].get(code, {}).get("label", code)}
             app.extensions["org_name"] = org.name
+            app.extensions["brand"] = {**load_config("branding"), **((org.settings or {}).get("branding") or {})}
         roles = load_config("permissions")["roles"]
         def ref_documents():
             from src.api.routes import known_documents
@@ -113,6 +115,7 @@ def create_app(overrides=None):
             "ref_documents": ref_documents,
             "can": lambda perm: has_permission(current_user, perm),
             "org_name": app.extensions["org_name"],
+            "brand": app.extensions["brand"],
             "role_label": lambda code: roles.get(code, {}).get("label", code),
         }
 

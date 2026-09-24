@@ -1,60 +1,106 @@
 {% extends "base.html" %}
-{% from "_macros.html" import initials, empty, meter, progress_badge %}
+{% from "_macros.html" import icon, initials, empty, progress_badge %}
 {% block title %}My onboarding{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">{{ org_name }}</p><h1>Welcome{% if employee %}, {{ employee.name.split(' ')[0] }}{% endif %}</h1>
-  <p class="pagehead__meta">Everything in your plan comes from Aurelle's approved policies and was checked before it reached you.</p></div></div>
+{% set first = employee.name.split(' ')[0] if employee else '' %}
+<section class="heroband rise" data-cursor="Welcome">
+  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/hero-facade.svg') }}" alt="">
+  <div class="heroband__row">
+    <div>
+      <p class="heroband__kicker">{{ brand.name }} {{ brand.tagline }}</p>
+      <h1><span data-greeting>Welcome</span>{% if first %}, {{ first }}{% endif %}</h1>
+      {% if employee %}<p>{{ employee.job_role.name }} at {{ employee.property.name }}.
+        {% if employee.joining_date > today %}You start on {{ employee.joining_date.strftime('%A %d %B') }}: {{ (employee.joining_date - today).days }} days to go.
+        {% else %}Day {{ (today - employee.joining_date).days + 1 }} of your onboarding.{% endif %}</p>{% endif %}
+      {% if plan and summary %}
+      <div class="heroband__actions">
+        {% if upcoming %}{% set r, item, module = upcoming[0] %}
+        <a class="btn btn--gold" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Go">{{ icon('arrow', 15) }}Continue: {{ module.title[:40] }}</a>{% endif %}
+        <span class="glass" style="padding: 8px 14px; min-width: 0">{{ progress_badge(summary.status) }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% if plan and summary %}
+    <div class="gring" style="--v: {{ summary.pct }}" role="img" aria-label="{{ summary.pct }} percent complete">
+      <div><b data-count="{{ summary.pct }}">{{ summary.pct }}</b><b>%</b><span>complete</span></div>
+    </div>
+    {% endif %}
+  </div>
+</section>
 
 {% if plan and summary %}
-<section class="kpis" aria-label="Your progress">
-  <div class="kpi"><span class="kpi__label">Overall</span><span class="kpi__value">{{ summary.pct }}<small>%</small></span>{{ meter(summary.pct) }}
-    <span class="kpi__note">{{ summary.done }} of {{ summary.total }} items done</span></div>
-  <div class="kpi"><span class="kpi__label">Status</span><span class="kpi__value" style="font-size: var(--text-lg)">{{ progress_badge(summary.status) }}</span>
-    <span class="kpi__note">{% if summary.overdue %}{{ summary.overdue }} item(s) overdue{% else %}nothing overdue{% endif %}</span></div>
-  {% for t, label in [('checklist', 'Checklist'), ('quiz_question', 'Quiz questions'), ('task', 'Tasks'), ('assessment', 'Assessments')] %}{% set x = summary.by_type.get(t) %}
-  {% if x %}<div class="kpi"><span class="kpi__label">{{ label }}</span><span class="kpi__value">{{ x.done }}<small>/{{ x.total }}</small></span>{{ meter(100 * x.done / x.total) }}</div>{% endif %}
-  {% endfor %}
+<section class="panel rise">
+  <h2 class="panel__title">Your journey <span class="panel__aside">{{ summary.done }} of {{ summary.total }} steps done</span></h2>
+  {% set ns = namespace(current=stages|length - 1) %}
+  {% for s in stages %}{% if s.state != 'done' and ns.current == stages|length - 1 and loop.index0 < ns.current %}{% set ns.current = loop.index0 %}{% endif %}{% endfor %}
+  <div class="journey" data-reveal>
+    <span class="journey__fill" data-w="{{ (84 * ns.current / (stages|length - 1))|round(1) }}%"></span>
+    {% for s in stages %}
+    <div class="jstop jstop--{{ s.state }}" data-tip="{{ s.label }}{% if s.due %}: due {{ s.due.strftime('%d %b') }}{% endif %} · {{ s.done }} of {{ s.total }} done">
+      <span class="jstop__dot">{% if s.state == 'done' %}{{ icon('check', 18) }}{% else %}{{ s.code }}{% endif %}</span>
+      <span class="jstop__label">{{ s.label }}</span>
+      <span class="jstop__meta">{% if s.total %}{{ s.done }}/{{ s.total }}{% else %}nothing due{% endif %}</span>
+    </div>
+    {% endfor %}
+  </div>
 </section>
 
-{% if recs %}
-<section class="panel">
-  <h2 class="panel__title">Suggested next steps <span class="muted small">based on your quiz results and progress</span></h2>
-  <ul class="rows">{% for r in recs %}<li class="rows__item"><span>{{ r.text }}{% if r.module_key %} <span class="tag mono">{{ r.module_key }}</span>{% endif %}</span>
-    <span class="badge badge--{{ 'info' if r.status == 'accepted' else 'neutral' }}">{{ 'Agreed with your manager' if r.status == 'accepted' else 'Suggested' }}</span></li>{% endfor %}</ul>
-</section>
-{% endif %}
-
-<section class="panel panel--flush">
-  <div class="panel__bar"><h2 class="panel__title">Your modules</h2><span class="panel__aside mono">{{ plan.plan_code }} v{{ plan.version }}</span></div>
-  <div class="tablewrap">
-    <table class="table">
-      <thead><tr><th>Module</th><th>Due</th><th>Progress</th><th>Quiz</th><th></th></tr></thead>
-      <tbody>
-      {% for x in summary.modules %}
-        <tr>
-          <td class="middle"><span class="tag mono">{{ x.module.module_key }}</span> <strong>{{ x.module.title }}</strong><br><span class="small muted">{{ x.module.estimated_minutes }} min · from {{ x.module.stage }}</span></td>
-          <td class="middle small nowrap">{{ x.due.strftime('%d %b %Y') if x.due else 'Done' }}</td>
-          <td class="middle"><span class="coverage">{{ meter(x.pct, 'ok' if x.pct == 100 else '') }}<b>{{ x.done }}/{{ x.total }}</b></span></td>
-          <td class="middle">{% if not x.has_quiz %}<span class="muted small">—</span>{% elif x.quiz_passed %}<span class="badge badge--ok">Passed</span>{% elif x.quiz_failed %}<span class="badge badge--bad">Retake</span>{% else %}<span class="badge badge--neutral">To do</span>{% endif %}</td>
-          <td class="middle"><a class="btn btn--sm" href="{{ url_for('learning.module', module_key=x.module.module_key) }}">Open</a></td>
-        </tr>
+<div class="grid-2">
+  <section class="panel rise">
+    <h2 class="panel__title">Up next {{ icon('clock', 16) }}</h2>
+    {% if upcoming %}
+    <ul class="upnext">
+      {% for r, item, module in upcoming %}{% set c = item.content %}
+      <li><a href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">
+        <span class="upnext__icon">{{ icon({'checklist': 'check', 'task': 'wrench', 'scenario': 'map', 'quiz_question': 'spark', 'assessment': 'trophy'}.get(item.item_type, 'list'), 18) }}</span>
+        <span class="upnext__text"><strong>{{ c.activity or c.description or c.situation or c.question or c.topic }}</strong>
+          <span>{{ item.item_type|replace('_', ' ')|capitalize }} · {{ module.title }}</span></span>
+        <span class="upnext__due {{ 'is-late' if r.due_date and r.due_date < today }}">{{ r.due_date.strftime('%d %b') if r.due_date else '' }}</span>
+      </a></li>
       {% endfor %}
-      </tbody>
-    </table>
+    </ul>
+    {% else %}{{ empty('All caught up', 'Nothing is waiting for you right now.', 'check') }}{% endif %}
+  </section>
+
+  <section class="panel rise">
+    <h2 class="panel__title">Your progress</h2>
+    <div class="hbars">
+      {% for t, label, ic in [('checklist', 'Checklist', 'check'), ('quiz_question', 'Quiz questions', 'spark'), ('task', 'Tasks', 'wrench'), ('scenario', 'Scenarios', 'map'), ('assessment', 'Assessments', 'trophy')] %}{% set x = summary.by_type.get(t) %}
+      {% if x %}<div class="hbar"><span>{{ label }}</span><span class="hbar__track"><i data-w="{{ (100 * x.done / x.total)|round|int }}%"></i></span><b>{{ x.done }}/{{ x.total }}</b></div>{% endif %}
+      {% endfor %}
+    </div>
+    {% if recs %}
+    <h3 class="panel__title" style="margin-top: var(--space-5)">Suggested for you</h3>
+    <ul class="rows">{% for r in recs %}<li class="rows__item"><span>{{ r.text }}{% if r.module_key %} <span class="tag mono">{{ r.module_key }}</span>{% endif %}</span>
+      <span class="badge badge--{{ 'info' if r.status == 'accepted' else 'neutral' }}">{{ 'Agreed with your manager' if r.status == 'accepted' else 'Suggested' }}</span></li>{% endfor %}</ul>
+    {% endif %}
+  </section>
+</div>
+
+<section class="rise">
+  <h2 class="section-title" style="margin-bottom: var(--space-4)">Your modules <span class="muted small">{{ summary.modules|length }} modules · {{ plan.plan_code }} v{{ plan.version }}</span></h2>
+  <div class="modgrid">
+    {% for x in summary.modules %}{% set m = x.module %}
+    <a class="modcard" href="{{ url_for('learning.module', module_key=m.module_key) }}" data-tilt data-cursor="Open">
+      <div class="modcard__art"><span class="modcard__key">{{ m.module_key }}</span>{% if x.pct == 100 %}<span class="modcard__done">Done</span>{% endif %}{{ icon(category_icon(m.category), 40) }}</div>
+      <h3>{{ m.title }}</h3>
+      <p class="modcard__meta"><span>{{ icon('clock', 13)|replace('class="icon"', 'class="icon" style="display:inline;vertical-align:-2px"') }} {{ m.estimated_minutes }} min</span>
+        <span>{% if x.due %}due {{ x.due.strftime('%d %b') }}{% else %}complete{% endif %}</span>
+        {% if x.has_quiz %}<span>{{ 'quiz passed' if x.quiz_passed else ('retake quiz' if x.quiz_failed else 'quiz') }}</span>{% endif %}</p>
+      <div class="bar" data-reveal><i data-w="{{ x.pct }}%"></i></div>
+      <div class="modcard__foot"><span>{{ x.done }} of {{ x.total }} done</span><span class="modcard__go">{{ 'Review' if x.pct == 100 else ('Continue' if x.done else 'Start') }} {{ icon('arrow', 14) }}</span></div>
+    </a>
+    {% endfor %}
   </div>
 </section>
 {% else %}
-<section class="panel">{{ empty('Your plan is not assigned yet', "Your Training Manager assigns it once it has passed verification against Aurelle's approved policies.", 'list') }}</section>
+<section class="panel rise">{{ empty('Your plan is being prepared', "Your trainer assigns it once it has been checked against " ~ brand.name ~ "'s approved policies. You will see your modules here.", 'list') }}</section>
 {% endif %}
 
 {% if employee %}
-<section class="panel">
-  <div class="person" style="margin-bottom: var(--space-4)"><span class="avatar avatar--lg" aria-hidden="true">{{ initials(employee.name) }}</span>
-    <span><span class="person__name">{{ employee.name }}</span><span class="person__meta">{{ employee.job_role.name }} · {{ employee.property.name }}</span></span></div>
-  <dl class="deflist">
-    <dt>Joining date</dt><dd>{{ employee.joining_date.strftime('%d %B %Y') }}</dd>
-    <dt>Experience</dt><dd>{{ employee.experience_level }} · {{ employee.previous_experience }}</dd>
-  </dl>
+<section class="panel rise">
+  <div class="person"><span class="avatar avatar--lg avatar--gold" aria-hidden="true">{{ initials(employee.name) }}</span>
+    <span><span class="person__name">{{ employee.name }}</span><span class="person__meta">{{ employee.job_role.name }} · {{ employee.property.name }} · joined {{ employee.joining_date.strftime('%d %B %Y') }}</span></span></div>
 </section>
 {% endif %}
 {% endblock %}

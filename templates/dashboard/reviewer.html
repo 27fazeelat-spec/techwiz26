@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, initials, empty, help %}
+{% block title %}My reviews{% endblock %}
+{% block content %}
+<section class="heroband rise">
+  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/skyline.svg') }}" alt="">
+  <div class="heroband__row">
+    <div>
+      <p class="heroband__kicker">Reviewer</p>
+      <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}</h1>
+      <p>You decide what Python could not. Each item explains itself in plain words and suggests a decision; similar items can be decided together.</p>
+      <div class="heroband__actions">
+        {% if total %}<a class="btn btn--gold" href="{{ url_for('review.queue') }}" data-cursor="Start">{{ icon('inbox', 15) }}Start reviewing</a>{% endif %}
+        {% if conflicts %}<a class="btn" href="{{ url_for('ground_truth.conflicts') }}">{{ icon('split', 15) }}{{ conflicts|length }} conflict{{ 's' if conflicts|length != 1 }} to decide</a>{% endif %}
+      </div>
+    </div>
+    <div class="heroband__stats">
+      <div class="glass"><b data-count="{{ total }}">{{ total }}</b><span>waiting</span></div>
+      <div class="glass"><b data-count="{{ conflicts|length }}">{{ conflicts|length }}</b><span>conflicts</span></div>
+      <div class="glass"><b data-count="{{ decided_total }}">{{ decided_total }}</b><span>decided by you</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="rise">
+  <h2 class="section-title" style="margin-bottom: var(--space-4)">What is waiting {{ help('review') }}</h2>
+  {% if kinds %}
+  <div class="kinds">
+    {% for k, n, (text, tip) in kinds %}
+    <a class="kindcard" href="{{ url_for('review.queue', kind=k) }}" data-cursor="Decide">
+      <b data-count="{{ n }}">{{ n }}</b><strong>{{ text }}</strong><p>{{ tip }}</p>
+      <span class="kindcard__go">Decide these together →</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}<section class="panel">{{ empty('Nothing to review', 'When Python flags something in a new plan, it appears here.', 'check') }}</section>{% endif %}
+</section>
+
+<div class="grid-2">
+  <section class="panel rise">
+    <h2 class="panel__title">By plan</h2>
+    {% if by_plan %}<ul class="upnext">
+      {% for p, n in by_plan %}<li><a href="{{ url_for('review.queue', plan=p.id) }}" data-cursor="Open">
+        <span class="avatar">{{ initials(p.employee.name) }}</span>
+        <span class="upnext__text"><strong>{{ p.employee.name }}</strong><span>{{ p.job_role.name }} · {{ p.plan_code }} v{{ p.version }}</span></span>
+        <span class="badge badge--warn">{{ n }}</span></a></li>{% endfor %}
+    </ul>{% else %}<p class="muted small">No plan is waiting.</p>{% endif %}
+  </section>
+  <section class="panel rise">
+    <h2 class="panel__title">Your recent decisions</h2>
+    {% if mine %}<ul class="rows">{% for r in mine %}
+      <li class="rows__item"><a href="{{ url_for('review.detail', pk=r.id) }}">RV-{{ '%05d' % r.id }} · {{ status_label('item', r.original_status)[0] }}</a>
+        <span class="rows__meta"><span class="badge badge--info">{{ r.status|capitalize }}</span><span class="small muted">{{ r.decision_at.strftime('%d %b %H:%M') if r.decision_at }}</span></span></li>{% endfor %}</ul>
+    {% else %}<p class="muted small">Decisions you make will be listed here.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -2,15 +2,19 @@
 {% from "_macros.html" import icon, item_state %}
 {% block title %}{{ m.title }}{% endblock %}
 {% block content %}
-<div class="pagehead">
-  <div>
-    <p class="eyebrow"><a href="{{ url_for('main.employee_dashboard') }}">My onboarding</a><span class="mono">{{ m.module_key }}</span></p>
-    <h1>{{ m.title }}</h1>
-    <p class="pagehead__meta">{{ m.estimated_minutes }} min <span class="sep">·</span> from {{ m.stage }}{% if m.purpose %} <span class="sep">·</span> {{ m.purpose }}{% endif %}</p>
+<section class="heroband rise" style="min-height: 190px">
+  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/hero-facade.svg') }}" alt="">
+  <div class="heroband__row">
+    <div>
+      <p class="heroband__kicker"><a href="{{ url_for('main.employee_dashboard') }}" style="color: inherit">My onboarding</a> · {{ m.module_key }}</p>
+      <h1>{{ m.title }}</h1>
+      <p>{{ m.estimated_minutes }} min · from {{ m.stage }}{% if m.purpose %} · {{ m.purpose }}{% endif %}</p>
+      {% set quiz = items | selectattr('item_type', 'equalto', 'quiz_question') | list %}
+      {% if quiz %}<div class="heroband__actions"><a class="btn btn--gold" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">{{ icon('spark', 15) }}{{ 'Retake the quiz' if attempts else 'Take the quiz' }}</a></div>{% endif %}
+    </div>
+    <div class="modcard__art" style="width: 120px; height: 120px; border-radius: 28px">{{ icon(category_icon(m.category), 46) }}</div>
   </div>
-  {% set quiz = items | selectattr('item_type', 'equalto', 'quiz_question') | list %}
-  {% if quiz %}<a class="btn btn--primary" href="{{ url_for('learning.quiz', module_key=m.module_key) }}">{{ icon('check', 15) }}{{ 'Retake quiz' if attempts else 'Take the quiz' }}</a>{% endif %}
-</div>
+</section>
 
 {% set objectives = items | selectattr('item_type', 'equalto', 'objective') | list %}
 {% if objectives %}
