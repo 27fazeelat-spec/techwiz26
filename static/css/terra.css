@@ -289,3 +289,31 @@
   :root:not([data-theme="light"]) .theme-terra .brand__mark--on-light { display: none; }
   :root:not([data-theme="light"]) .theme-terra .brand__mark--on-dark { display: block; }
 }
+
+/* ======================================================================
+   Training manager: figures strip and the plans board
+   ====================================================================== */
+.tstats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.tstats div { padding: 16px 18px 14px; border-left: 1px solid var(--line); }
+.tstats div:first-child { border-left: 0; padding-left: 0; }
+.tstats dt { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.tstats dd { margin: 6px 0 0; font-family: var(--font-display); font-size: 32px; font-weight: 500; line-height: 1; font-variant-numeric: lining-nums; }
+.tstats dd small { font-size: 0.5em; color: var(--muted); margin-left: 2px; }
+
+.theme-terra .board { gap: 18px; }
+.theme-terra .col { background: transparent; border: 0; border-top: 3px solid var(--c); border-radius: 0; padding: 14px 0 0; gap: 10px; min-height: 0; }
+.theme-terra .col__head { padding: 0 2px; }
+.theme-terra .col__dot { display: none; }
+.theme-terra .col__title { font-family: var(--font-display); font-size: 17px; font-weight: 500; }
+.theme-terra .col__count { background: transparent; border: 0; font-family: var(--font-mono); font-weight: 500; color: var(--muted); padding: 0; }
+.theme-terra .col__hint { padding: 0 2px; margin-top: -4px; line-height: 1.45; }
+.col__empty { font-family: var(--font-display); font-style: italic; color: var(--faint); font-size: 14.5px; padding: 6px 2px; margin: 0; }
+.theme-terra .pcard { background: var(--surface); border: 1px solid var(--line); padding: 14px; gap: 10px; transition: border-color 160ms; }
+.theme-terra a.pcard:hover { border-color: var(--ink-soft); }
+.theme-terra .pcard .avatar { background: var(--surface-sunk); color: var(--ink-soft); }
+.pcard__when { font-size: 12.5px; color: var(--muted); }
+.pcard__when.is-soon { color: var(--primary); font-weight: 600; }
+.pcard__when.is-soon::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-right: 7px; vertical-align: 2px; }
+
+@media (max-width: 1100px) { .tstats { grid-template-columns: repeat(3, minmax(0, 1fr)); } .tstats div:nth-child(4) { border-left: 0; padding-left: 0; } .tstats div:nth-child(n + 4) { border-top: 1px solid var(--line); } }
+@media (max-width: 760px) { .tstats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tstats div { border-left: 0; padding-left: 0; } }

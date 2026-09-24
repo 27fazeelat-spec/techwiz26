@@ -32,7 +32,8 @@
     <h2 class="panel__title">Recommendations <span class="muted small">rules in config/progress.yaml</span></h2>
     {% if recs %}<ul class="rows">{% for r in recs %}<li class="rows__item"><span>{{ r.text }}{% if r.module_key %} <span class="tag mono">{{ r.module_key }}</span>{% endif %}
         <span class="small muted" style="display: block">{{ r.rule_id }} · {{ r.type|replace('_', ' ') }}</span></span>
-      {% if r.status == 'open' %}<form method="post" action="{{ url_for('learning.recommendation', pk=r.id) }}" class="actions">
+      {% if r.status == 'open' and r.type == 'manager_review' and not can_sign %}<span class="small muted">For {{ line_manager or 'the line manager' }} to decide</span>
+      {% elif r.status == 'open' %}<form method="post" action="{{ url_for('learning.recommendation', pk=r.id) }}" class="actions">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button class="btn btn--sm btn--primary" name="decision" value="accept" type="submit">Agree</button>
         <button class="btn btn--sm" name="decision" value="dismiss" type="submit">Dismiss</button></form>
@@ -52,7 +53,7 @@
   <div class="panel__bar"><h2 class="panel__title">Tasks, scenarios and assessments</h2></div>
   <div class="tablewrap">
     <table class="table">
-      <thead><tr><th>Item</th><th>Due</th><th>State</th><th>Your decision</th></tr></thead>
+      <thead><tr><th>Item</th><th>Due</th><th>State</th><th>{{ 'Your decision' if can_sign else 'Sign-off' }}</th></tr></thead>
       <tbody>
       {% for row, item in rows %}{% set c = item.content %}
         <tr>
@@ -60,7 +61,10 @@
           <td class="small nowrap">{{ row.due_date.strftime('%d %b %Y') if row.due_date }}</td>
           <td>{{ item_state(row) }}</td>
           <td>
-            {% if item.item_type == 'assessment' and row.status not in ['completed'] %}
+            {% if not can_sign %}
+              {% if row.verified_by %}<span class="small muted">{{ row.verified_by }}</span>
+              {% elif row.status == 'submitted' or (item.item_type == 'assessment' and row.status != 'completed') %}<span class="small muted">Waiting for {{ line_manager or 'the line manager' }}</span>{% endif %}
+            {% elif item.item_type == 'assessment' and row.status not in ['completed'] %}
             <form method="post" action="{{ url_for('learning.sign_off', pk=row.id) }}" class="actions">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input name="score" type="text" inputmode="numeric" placeholder="Score 0-100" aria-label="Score" style="width: 110px">

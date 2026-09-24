@@ -106,6 +106,13 @@ def _can_manage(employee):
     return has_permission(current_user, "progress.verify_team") and employee.reporting_manager_code == current_user.employee_code
 
 
+def _can_sign_off(employee):
+    """Tasks and assessments are signed off by the employee's own manager (config/progress.yaml); admins may step in."""
+    if has_permission(current_user, "progress.verify"):
+        return True
+    return has_permission(current_user, "progress.verify_team") and employee.reporting_manager_code == current_user.employee_code
+
+
 @bp.route("/team/<code>")
 @login_required
 def team_member(code):
@@ -121,8 +128,13 @@ def team_member(code):
                                          PlanItem.item_type.in_(["task", "scenario", "assessment"]))
                                   .order_by(Progress.due_date, PlanItem.item_key)).all()
     recs = progress.refresh_recommendations(employee, plan, today(current_app.config)) if plan else []
+    line_manager = None
+    if employee.reporting_manager_code:
+        from database.models import User
+        line_manager = db.session.scalar(select(User.name).where(User.employee_code == employee.reporting_manager_code))             or db.session.scalar(select(Employee.name).where(Employee.employee_code == employee.reporting_manager_code))
     return render_template("learning/team_member.html", employee=employee, plan=plan, summary=summary, rows=rows,
-                           weak=progress.weak_areas(employee, plan) if plan else [], recs=recs)
+                           weak=progress.weak_areas(employee, plan) if plan else [], recs=recs,
+                           can_sign=_can_sign_off(employee), line_manager=line_manager)
 
 
 @bp.route("/team/recommendation/<int:pk>", methods=["POST"])
@@ -131,7 +143,9 @@ def recommendation(pk):
     from database.models import Recommendation
     rec = db.session.get(Recommendation, pk) or abort(404)
     employee = db.session.get(Employee, rec.employee_id)
-    if not _can_manage(employee):
+    # "Manager review" suggestions (a new schedule, a re-assessment) are the line manager's call; training ones are the trainer's.
+    allowed = _can_sign_off(employee) if rec.type == "manager_review" else _can_manage(employee)
+    if not allowed:
         abort(403)
     try:
         progress.decide_recommendation(rec, request.form.get("decision") == "accept", audit.actor_from_user(current_user))
@@ -146,7 +160,7 @@ def recommendation(pk):
 def sign_off(pk):
     row = db.session.get(Progress, pk) or abort(404)
     employee = db.session.get(Employee, row.employee_id)
-    if not _can_manage(employee):
+    if not _can_sign_off(employee):
         abort(403)
     score = request.form.get("score")
     try:

@@ -12,7 +12,7 @@ roles:
       - roles.*
       - requirements.*
       - matrix.*
-      - conflicts.*
+      - conflicts.view        # deciding conflicts is the reviewer's job
       - security.view
       - employees.*
       - plans.*

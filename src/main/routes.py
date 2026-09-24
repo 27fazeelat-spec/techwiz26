@@ -66,12 +66,13 @@ def trainer_dashboard():
             columns["review"].append({"e": e, "p": p, "open": open_by_plan[p.id]})
         else:
             columns["assign"].append({"e": e, "p": p})
+    columns["plan"].sort(key=lambda c: c["e"].joining_date)             # whoever joins first needs a plan first
     covs = [p.score_coverage for p in latest.values() if p.score_coverage is not None]
     stats = {"people": len(people), "plans": len(latest), "waiting": sum(open_by_plan.get(p.id, 0) for p in latest.values()),
              "assigned": len(assigned_ids), "coverage": round(sum(covs) / len(covs), 1) if covs else None,
              "matrix": db.session.scalar(select(MatrixVersion).where(MatrixVersion.status == "approved")
                                          .order_by(MatrixVersion.version_no.desc()))}
-    return render_template("dashboard/trainer.html", columns=columns, stats=stats)
+    return render_template("dashboard/trainer.html", columns=columns, stats=stats, today=today(current_app.config))
 
 
 @bp.route("/dashboard/review")

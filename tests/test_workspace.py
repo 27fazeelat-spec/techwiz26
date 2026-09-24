@@ -35,3 +35,31 @@ def test_search_respects_permissions(corpus):
     login(client, "leila.haddad@aurelle.example")                              # employees cannot browse policies
     data = client.get("/api/search?q=GDP").get_json()
     assert data == {"groups": []}
+
+
+def test_training_manager_gets_the_theme_but_not_other_peoples_decisions(corpus):
+    from sqlalchemy import select
+    from database import db
+    from database.models import Conflict
+    from src.services import progress
+    from tests.test_planning_pipeline import leila
+    from tests.test_progress import assigned, rows
+    assigned()
+    plan = progress.assigned_plan(leila())                                     # the plan the team page shows
+    task = next(r for r in rows(plan) if r.plan_item.item_type == "assessment")
+    task.status, task.score, task.verified_by = "not_started", None, None      # an assessment still to be marked
+    db.session.commit()
+    client = current_app.test_client()
+    login(client, "training@aurelle.example")
+    home = client.get("/dashboard/plans").get_data(as_text=True)
+    assert "theme-terra" in home and "Plans board" in home
+    page = client.get("/team/E001").get_data(as_text=True)
+    assert "Waiting for Omar Siddiqui" in page and 'value="approve"' not in page           # sign-off is the line manager's job
+    assert client.post(f"/team/progress/{task.id}/signoff", data={"decision": "approve", "score": "90"}).status_code == 403
+    conflict = db.session.scalar(select(Conflict).limit(1))
+    if conflict:                                                               # conflicts are the reviewer's decision
+        assert client.post(f"/conflicts/{conflict.id}/resolve", data={}).status_code == 403
+    assert client.get("/conflicts").status_code == 200                        # but the trainer may read them
+    client.post("/logout")
+    login(client, "omar.siddiqui@aurelle.example")                            # Leila's manager
+    assert 'value="approve"' in client.get("/team/E001").get_data(as_text=True)

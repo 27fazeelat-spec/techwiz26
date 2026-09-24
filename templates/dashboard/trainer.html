@@ -1,67 +1,85 @@
 {% extends "base.html" %}
-{% from "_macros.html" import icon, initials, plan_badge, empty, help %}
+{% from "_macros.html" import icon, initials, plan_badge %}
 {% block title %}Plans board{% endblock %}
 {% block content %}
-<section class="heroband rise">
-  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/photos/reception.jpg') }}" alt="">
-  <div class="heroband__row">
-    <div>
-      <p class="heroband__kicker">Plans board</p>
-      <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}</h1>
-      <p>Every new hire sits in the column of the next thing their plan needs. Move them left to right: generate, review, assign, learn.</p>
-      <div class="heroband__actions">
-        <a class="btn btn--gold" href="{{ url_for('plans.employees') }}" data-cursor="Open">{{ icon('users', 15) }}All employees</a>
-        {% if can('employees.create') %}<a class="btn" href="{{ url_for('people.employee_new') }}">{{ icon('user', 15) }}Add a new hire</a>{% endif %}
-      </div>
-    </div>
-    <div class="heroband__stats">
-      <div class="glass"><b data-count="{{ stats.people }}">{{ stats.people }}</b><span>new hires</span></div>
-      <div class="glass"><b data-count="{{ stats.waiting }}">{{ stats.waiting }}</b><span>items to review</span></div>
-      <div class="glass"><b data-count="{{ stats.assigned }}">{{ stats.assigned }}</b><span>plans assigned</span></div>
-      <div class="glass"><b>{% if stats.coverage is not none %}<span data-count="{{ stats.coverage }}" data-decimals="1">{{ stats.coverage }}</span>%{% else %}—{% endif %}</b><span>average coverage</span></div>
+{% set n_plan = columns.plan|length %}{% set n_review = columns.review|length %}{% set n_assign = columns.assign|length %}
+
+<header class="ahead">
+  <div class="ahead__text">
+    <p class="eyebrow">{{ today.strftime('%A, %d %B %Y') }}</p>
+    <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}.</h1>
+    <p class="ahead__lead">
+      {% set parts = [] %}
+      {% if n_plan %}{% set parts = parts + [n_plan ~ ' new hire' ~ ('s' if n_plan != 1) ~ ' need' ~ ('s' if n_plan == 1) ~ ' a plan'] %}{% endif %}
+      {% if n_assign %}{% set parts = parts + [n_assign ~ ' plan' ~ ('s are' if n_assign != 1 else ' is') ~ ' ready to assign'] %}{% endif %}
+      {% if n_review %}{% set parts = parts + [n_review ~ ' ' ~ ('are' if n_review != 1 else 'is') ~ ' with the reviewer'] %}{% endif %}
+      {% if parts %}{{ parts | join(', ') }}.{% else %}Every new hire has a plan and every plan is assigned.{% endif %}
+      {% if not stats.matrix %}<br><a href="{{ url_for('ground_truth.matrix_index') }}">Approve a role matrix first</a>: plans can only be checked against an approved one.{% endif %}
+    </p>
+    <div class="ahead__actions">
+      {% if can('employees.create') %}<a class="btn btn--primary" href="{{ url_for('people.employee_new') }}" data-cursor="Add">{{ icon('user', 15) }}Add a new hire</a>{% endif %}
+      <a class="btn" href="{{ url_for('plans.employees') }}">{{ icon('users', 15) }}All employees</a>
+      <a class="btn btn--ghost" href="{{ url_for('reports.index') }}">{{ icon('file', 15) }}Reports</a>
     </div>
   </div>
+  <figure class="ahead__photo">
+    <img src="{{ url_for('static', filename='img/aurelle/photos/reception.jpg') }}" alt="A reception bell on a front desk">
+    <figcaption>The front desk, where every new hire starts</figcaption>
+  </figure>
+</header>
+
+<section class="asec">
+  <dl class="tstats">
+    <div><dt>New hires</dt><dd>{{ stats.people }}</dd></div>
+    <div><dt>Items with the reviewer</dt><dd>{{ stats.waiting }}</dd></div>
+    <div><dt>Plans assigned</dt><dd>{{ stats.assigned }}</dd></div>
+    <div><dt>Average coverage</dt><dd>{% if stats.coverage is not none %}{{ stats.coverage }}<small>%</small>{% else %}–{% endif %}</dd></div>
+    <div><dt>Matrix</dt><dd>{% if stats.matrix %}v{{ stats.matrix.version_no }}{% else %}–{% endif %}</dd></div>
+  </dl>
 </section>
 
-{% if not stats.matrix %}<div class="notice notice--warn">No approved role matrix yet: plans cannot be verified until one is approved. <a href="{{ url_for('ground_truth.matrix_index') }}">Open the role matrix</a></div>{% endif %}
-
-{% set cols = [
-  ('plan', 'Needs a plan', 'var(--faint)', 'Generate one with Gemini; Python checks it straight away.'),
-  ('review', 'Waiting for review', 'var(--warn)', 'A reviewer must decide on the flagged items.'),
-  ('assign', 'Ready to assign', 'var(--info)', 'Every flagged item has a decision.'),
-  ('learning', 'Learning', 'var(--accent)', 'Assigned and in progress.'),
-  ('done', 'Completed', 'var(--ok)', 'Every step finished.')] %}
-<div class="board rise">
-  {% for key, title, color, hint in cols %}
-  <section class="col" style="--c: {{ color }}" aria-label="{{ title }}">
-    <div class="col__head"><span class="col__dot"></span><span class="col__title">{{ title }}</span><span class="col__count">{{ columns[key]|length }}</span></div>
-    <p class="col__hint">{{ hint }}</p>
-    {% for c in columns[key] %}{% set e = c.e %}{% set p = c.p %}
-      {% if key == 'plan' %}
-      <div class="pcard">
-        <div class="pcard__top"><span class="avatar">{{ initials(e.name) }}</span><div class="pcard__who"><strong>{{ e.name }}</strong><span>{{ e.job_role.name }}</span></div></div>
-        {% if c.failed %}<a class="badge badge--bad" href="{{ url_for('plans.plan_detail', pk=c.failed.id) }}" data-tip="{{ c.failed.error }}">Last attempt failed</a>{% endif %}
-        {% if can('plans.generate') and stats.matrix %}
-        <form method="post" action="{{ url_for('plans.generate', code=e.employee_code) }}" style="margin: 0"
-              data-busy="Writing {{ e.name.split(' ')[0] }}'s plan" data-busy-steps="Finding the rules for {{ e.job_role.name }}|Gemini drafts the outline|Gemini writes each module|Python checks every item|Comparing with the approved matrix" data-busy-step-ms="7000">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button class="btn btn--sm btn--primary" type="submit" style="width: 100%">{{ icon('spark', 14) }}Generate plan</button>
-        </form>{% endif %}
-        <div class="pcard__foot"><span>joins {{ e.joining_date.strftime('%d %b') }}</span><span class="mono">{{ e.employee_code }}</span></div>
-      </div>
-      {% else %}
-      <a class="pcard" href="{% if key == 'review' %}{{ url_for('review.queue', plan=p.id) }}{% elif key in ['learning', 'done'] %}{{ url_for('learning.team_member', code=e.employee_code) }}{% else %}{{ url_for('plans.plan_detail', pk=p.id) }}{% endif %}"
-         data-cursor="{{ {'review': 'Review', 'assign': 'Assign', 'learning': 'Progress', 'done': 'Progress'}[key] }}">
-        <div class="pcard__top"><span class="avatar {{ 'avatar--gold' if key in ['learning', 'done'] }}">{{ initials(e.name) }}</span><div class="pcard__who"><strong>{{ e.name }}</strong><span>{{ e.job_role.name }}</span></div></div>
-        {% if key == 'review' %}<span class="badge badge--warn">{{ c.open }} item{{ 's' if c.open != 1 }} to decide</span>
-        {% elif key == 'assign' %}{{ plan_badge(p.status) }}
-        {% else %}<div class="bar" data-reveal><i data-w="{{ c.prog.pct or 0 }}%"></i></div>
-          <span class="small muted">{{ c.prog.done or 0 }} of {{ c.prog.total or 0 }} done{% if c.prog.overdue %} · <span style="color: var(--bad); font-weight: 700">{{ c.prog.overdue }} overdue</span>{% endif %}</span>{% endif %}
-        <div class="pcard__foot"><span class="mono">{{ p.plan_code }} v{{ p.version }}</span><span>{% if p.score_coverage is not none %}{{ p.score_coverage }}% coverage{% endif %}</span></div>
-      </a>
-      {% endif %}
-    {% else %}<p class="small muted" style="padding: 4px 6px">Nobody here.</p>{% endfor %}
-  </section>
-  {% endfor %}
-</div>
+<section class="asec">
+  <div class="asec__head"><h2>Plans board</h2><p>Each person sits in the column of the next thing their plan needs. Left to right: plan, review, assign, learn.</p></div>
+  {% set cols = [
+    ('plan', 'Needs a plan', 'var(--faint)', 'Write one with Gemini; Python checks every item straight away.'),
+    ('review', 'With the reviewer', 'var(--warn)', 'A reviewer decides the flagged items.' ~ ('' if can('review.decide') else ' Nothing for you to do yet.')),
+    ('assign', 'Ready to assign', 'var(--primary)', 'Every flagged item has a decision. Assign it to the new hire.'),
+    ('learning', 'Learning', 'var(--info)', 'Assigned. Follow progress; the line manager signs off tasks.'),
+    ('done', 'Completed', 'var(--ok)', 'Every step finished.')] %}
+  <div class="board">
+    {% for key, title, color, hint in cols %}
+    <section class="col" style="--c: {{ color }}" aria-label="{{ title }}">
+      <div class="col__head"><span class="col__title">{{ title }}</span><span class="col__count">{{ columns[key]|length }}</span></div>
+      <p class="col__hint">{{ hint }}</p>
+      {% for c in columns[key] %}{% set e = c.e %}{% set p = c.p %}
+        {% if key == 'plan' %}
+        {% set days = (e.joining_date - today).days %}
+        <div class="pcard">
+          <div class="pcard__top"><span class="avatar">{{ initials(e.name) }}</span><div class="pcard__who"><strong>{{ e.name }}</strong><span>{{ e.job_role.name }}</span></div></div>
+          <span class="pcard__when {{ 'is-soon' if days <= 7 }}">{% if days < 0 %}Joined {{ -days }} day{{ 's' if days != -1 }} ago{% elif days == 0 %}Joins today{% elif days <= 7 %}Joins in {{ days }} day{{ 's' if days != 1 }}{% else %}Joins {{ e.joining_date.strftime('%d %b') }}{% endif %}</span>
+          {% if c.failed %}<a class="badge badge--bad" href="{{ url_for('plans.plan_detail', pk=c.failed.id) }}" data-tip="{{ c.failed.error }}">Last attempt failed</a>{% endif %}
+          {% if can('plans.generate') and stats.matrix %}
+          <form method="post" action="{{ url_for('plans.generate', code=e.employee_code) }}" style="margin: 0"
+                data-busy="Writing {{ e.name.split(' ')[0] }}'s plan" data-busy-steps="Finding the rules for {{ e.job_role.name }}|Gemini drafts the outline|Gemini writes each module|Python checks every item|Comparing with the approved matrix" data-busy-step-ms="7000">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn--sm btn--primary" type="submit" style="width: 100%">{{ icon('spark', 14) }}Generate plan</button>
+          </form>{% endif %}
+          <div class="pcard__foot"><span>{{ e.department }}</span><span class="mono">{{ e.employee_code }}</span></div>
+        </div>
+        {% else %}
+        <a class="pcard" href="{% if key in ['learning', 'done'] %}{{ url_for('learning.team_member', code=e.employee_code) }}{% else %}{{ url_for('plans.plan_detail', pk=p.id) }}{% endif %}"
+           data-cursor="{{ {'review': 'Open', 'assign': 'Assign', 'learning': 'Progress', 'done': 'Progress'}[key] }}">
+          <div class="pcard__top"><span class="avatar">{{ initials(e.name) }}</span><div class="pcard__who"><strong>{{ e.name }}</strong><span>{{ e.job_role.name }}</span></div></div>
+          {% if key == 'review' %}<span class="small muted">{{ c.open }} item{{ 's' if c.open != 1 }} with the reviewer</span>
+          {% elif key == 'assign' %}{{ plan_badge(p.status) }}
+          {% else %}<div class="bar"><i style="width: {{ c.prog.pct or 0 }}%"></i></div>
+            <span class="small muted">{{ c.prog.done or 0 }} of {{ c.prog.total or 0 }} steps{% if c.prog.overdue %} · <span style="color: var(--bad); font-weight: 600">{{ c.prog.overdue }} overdue</span>{% endif %}</span>{% endif %}
+          <div class="pcard__foot"><span class="mono">{{ p.plan_code }} v{{ p.version }}</span><span>{% if p.score_coverage is not none %}{{ p.score_coverage }}% coverage{% endif %}</span></div>
+        </a>
+        {% endif %}
+      {% else %}<p class="col__empty">Nobody here.</p>{% endfor %}
+    </section>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}
