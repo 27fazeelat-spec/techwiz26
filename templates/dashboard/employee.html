@@ -2,8 +2,6 @@
 {% from "_macros.html" import icon, progress_badge %}
 {% from "learning/_ui.html" import mtile, kind_icon, journey %}
 {% block title %}Home{% endblock %}
-{% block body_class %}has-hero{% endblock %}
-{% block page_class %}page--flush{% endblock %}
 {% block content %}
 {% set first = employee.name.split()[0] if employee else '' %}
 {% if plan and summary %}
@@ -18,164 +16,161 @@
 {% set task = upcoming[0] if upcoming else none %}
 {% set day_no = (today - employee.joining_date).days + 1 %}
 
-<!-- ====================== HERO CAROUSEL ====================== -->
+<!-- ============ hero: one story at a time, words on paper and a photograph beside them ============ -->
 <section class="lhero" data-carousel aria-roledescription="carousel" aria-label="Your highlights">
   <div class="lhero__slides">
     <article class="lslide is-active" data-lslide aria-roledescription="slide" aria-label="1 of 4">
-      <div class="lslide__bg"><img src="{{ url_for('static', filename='img/aurelle/photos/hero.jpg') }}" alt=""></div>
-      <div class="lslide__inner">
-        <p class="lslide__kicker"><span><span data-greeting>Welcome</span>, {{ first }}</span></p>
-        <h1 class="lslide__title">{% if employee.joining_date > today %}Your journey begins in {{ (employee.joining_date - today).days }} days{% else %}Day {{ day_no }} of your <em>Aurelle</em> journey{% endif %}</h1>
-        <p class="lslide__lead">Build your skills, grow your career, and be part of something exceptional. Every lesson here comes straight from {{ brand.name }}'s approved policies.</p>
+      <div class="lslide__text">
+        <p class="eyebrow">{{ today.strftime('%A, %d %B') }}{% if employee.joining_date <= today %} · day {{ day_no }}{% endif %}</p>
+        <h1 class="lslide__title"><span data-greeting>Welcome</span>, {{ first }}.</h1>
+        <p class="lslide__lead">{% if employee.joining_date > today %}Your first day at {{ brand.name }} is in {{ (employee.joining_date - today).days }} days. Everything you need to learn is already waiting here.{% else %}You are on day {{ day_no }} of your time with {{ brand.name }}. Every lesson here comes straight from our approved policies, so what you learn is what we do.{% endif %}</p>
         <div class="lslide__ctas">
-          {% if nxt %}<a class="btn btn--gold btn--lg" href="{{ url_for('learning.module', module_key=nxt.module.module_key) }}" data-cursor="Go">Continue learning {{ icon('arrow', 16) }}</a>{% endif %}
-          <a class="btn btn--glass btn--lg" href="{{ url_for('learning.modules') }}" data-cursor="Explore">All my modules</a>
+          {% if nxt %}<a class="btn btn--primary" href="{{ url_for('learning.module', module_key=nxt.module.module_key) }}" data-cursor="Go">Continue with {{ nxt.module.title }} {{ icon('arrow', 15) }}</a>{% endif %}
+          <a class="btn btn--ghost" href="{{ url_for('learning.modules') }}">All modules</a>
         </div>
       </div>
+      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/hero.jpg') }}" alt="A resort pool at night, lit from the rooms above"><figcaption>Evening by the pool</figcaption></figure>
     </article>
 
     <article class="lslide" data-lslide aria-roledescription="slide" aria-label="2 of 4" hidden>
-      <div class="lslide__bg"><img src="{{ url_for('static', filename='img/aurelle/photos/lobby.jpg') }}" alt="" loading="lazy"></div>
-      <div class="lslide__inner">
+      <div class="lslide__text">
         {% if task %}{% set r, item, module = task %}{% set c = item.content %}
-        <p class="lslide__kicker">{% if r.due_date and r.due_date < today %}Overdue since {{ r.due_date.strftime('%d %B') }}{% elif r.due_date == today %}Due today{% else %}Up next · due {{ r.due_date.strftime('%d %B') if r.due_date }}{% endif %}</p>
+        <p class="eyebrow {{ 'is-late' if r.due_date and r.due_date < today }}">{% if r.due_date and r.due_date < today %}Overdue since {{ r.due_date.strftime('%d %B') }}{% elif r.due_date == today %}Due today{% else %}Up next · due {{ r.due_date.strftime('%d %B') if r.due_date }}{% endif %}</p>
         <h1 class="lslide__title lslide__title--sm">{{ (c.activity or c.description or c.situation or c.question or c.topic)[:110] }}</h1>
-        <p class="lslide__lead">{{ item.item_type|replace('_', ' ')|capitalize }} in <strong>{{ module.title }}</strong>. Small steps every day keep you on track.</p>
-        <div class="lslide__ctas"><a class="btn btn--gold btn--lg" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">Open this step {{ icon('arrow', 16) }}</a>
-          <a class="btn btn--glass btn--lg" href="{{ url_for('learning.calendar') }}" data-cursor="Plan">See my calendar</a></div>
+        <p class="lslide__lead">A {{ item.item_type|replace('_', ' ') }} in <strong>{{ module.title }}</strong>. It can still be done late; your manager simply sees that it was.</p>
+        <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">Open this step {{ icon('arrow', 15) }}</a>
+          <a class="btn btn--ghost" href="{{ url_for('learning.calendar') }}">My calendar</a></div>
         {% else %}
-        <p class="lslide__kicker">All caught up</p>
-        <h1 class="lslide__title">Nothing is due right now</h1>
-        <p class="lslide__lead">Enjoy the moment, or get ahead with your next module.</p>
-        <div class="lslide__ctas"><a class="btn btn--gold btn--lg" href="{{ url_for('learning.modules') }}">My modules {{ icon('arrow', 16) }}</a></div>
+        <p class="eyebrow">All caught up</p>
+        <h1 class="lslide__title">Nothing is due right now.</h1>
+        <p class="lslide__lead">Take a breath, or get ahead with your next module.</p>
+        <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.modules') }}">My modules {{ icon('arrow', 15) }}</a></div>
         {% endif %}
       </div>
+      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/lobby.jpg') }}" alt="A hotel lobby with tall windows" loading="lazy"><figcaption>The lobby at nine in the morning</figcaption></figure>
     </article>
 
     <article class="lslide" data-lslide aria-roledescription="slide" aria-label="3 of 4" hidden>
-      <div class="lslide__bg"><img src="{{ url_for('static', filename='img/aurelle/photos/pool.jpg') }}" alt="" loading="lazy"></div>
-      <div class="lslide__inner">
+      <div class="lslide__text">
         {% if quiz_open %}{% set q = quiz_open[0] %}
-        <p class="lslide__kicker">Knowledge check ready</p>
-        <h1 class="lslide__title">{{ q.module.title }} <em>quiz</em></h1>
-        <p class="lslide__lead">One question at a time, scored instantly against the verified answer key. You need {{ cfg.pass_mark_percent }}% to pass, and you will see why every answer is right.</p>
-        <div class="lslide__ctas"><a class="btn btn--gold btn--lg" href="{{ url_for('learning.quiz', module_key=q.module.module_key) }}" data-cursor="Quiz">Start the quiz {{ icon('spark', 16) }}</a>
-          <a class="btn btn--glass btn--lg" href="{{ url_for('learning.assessments') }}">All assessments</a></div>
+        <p class="eyebrow">A quick knowledge check</p>
+        <h1 class="lslide__title">{{ q.module.title }}, <em>in a few questions</em>.</h1>
+        <p class="lslide__lead">One question at a time, marked straight away. You need {{ cfg.pass_mark_percent }}% to pass, and afterwards you see the policy line behind every answer.</p>
+        <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.quiz', module_key=q.module.module_key) }}" data-cursor="Quiz">Start the quiz {{ icon('arrow', 15) }}</a>
+          <a class="btn btn--ghost" href="{{ url_for('learning.assessments') }}">All assessments</a></div>
         {% else %}
-        <p class="lslide__kicker">Knowledge checks</p>
-        <h1 class="lslide__title">Every quiz <em>passed</em></h1>
-        <p class="lslide__lead">{{ quizzes|length }} of {{ quizzes|length }} module quizzes done. Excellent work.</p>
-        <div class="lslide__ctas"><a class="btn btn--gold btn--lg" href="{{ url_for('learning.assessments') }}">See my results {{ icon('arrow', 16) }}</a></div>
+        <p class="eyebrow">Knowledge checks</p>
+        <h1 class="lslide__title">Every quiz <em>passed</em>.</h1>
+        <p class="lslide__lead">{{ quizzes|length }} of {{ quizzes|length }} module quizzes done. Nicely done.</p>
+        <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.assessments') }}">See my results {{ icon('arrow', 15) }}</a></div>
         {% endif %}
       </div>
+      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/pool.jpg') }}" alt="Poolside loungers under orange umbrellas" loading="lazy"><figcaption>Poolside, before the guests arrive</figcaption></figure>
     </article>
 
     <article class="lslide" data-lslide aria-roledescription="slide" aria-label="4 of 4" hidden>
-      <div class="lslide__bg"><img src="{{ url_for('static', filename='img/aurelle/photos/villa-dusk.jpg') }}" alt="" loading="lazy"></div>
-      <div class="lslide__inner">
-        <p class="lslide__kicker">Your certificate</p>
-        <h1 class="lslide__title">{% if summary.status == 'Completed' %}Your certificate is <em>ready</em>{% else %}{{ summary.pct }}% of the way to your <em>certificate</em>{% endif %}</h1>
-        <p class="lslide__lead">Finish every step of your plan to receive a {{ brand.name }} certificate of onboarding, with a code anyone can verify.</p>
-        <div class="lslide__ctas"><a class="btn btn--gold btn--lg" href="{{ url_for('learning.certificate') }}" data-cursor="View">{{ icon('trophy', 16) }} View certificate</a>
-          <a class="btn btn--glass btn--lg" href="{{ url_for('learning.progress_page') }}">My progress</a></div>
+      <div class="lslide__text">
+        <p class="eyebrow">Your certificate</p>
+        <h1 class="lslide__title">{% if summary.status == 'Completed' %}Your certificate is <em>ready</em>.{% else %}{{ summary.pct }}% of the way to your <em>certificate</em>.{% endif %}</h1>
+        <p class="lslide__lead">Finish every step of your plan and {{ brand.name }} issues a certificate of onboarding, with a code anyone can check online.</p>
+        <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.certificate') }}" data-cursor="View">View certificate {{ icon('arrow', 15) }}</a>
+          <a class="btn btn--ghost" href="{{ url_for('learning.progress_page') }}">My progress</a></div>
       </div>
+      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/room.jpg') }}" alt="A guest room made up with fresh linen" loading="lazy"><figcaption>A room, made ready for its guest</figcaption></figure>
     </article>
   </div>
 
   <div class="lhero__ui">
     <div class="lhero__tabs" role="tablist" aria-label="Choose a slide">
       {% for label in ['Welcome', 'Up next', 'Quiz', 'Certificate'] %}
-      <button type="button" role="tab" class="lhero__tab {{ 'is-active' if loop.first }}" data-go="{{ loop.index0 }}" aria-selected="{{ 'true' if loop.first else 'false' }}" data-cursor="{{ label }}">
+      <button type="button" role="tab" class="lhero__tab {{ 'is-active' if loop.first }}" data-go="{{ loop.index0 }}" aria-selected="{{ 'true' if loop.first else 'false' }}">
         <i aria-hidden="true"></i><span>{{ '%02d' % loop.index }}</span>{{ label }}</button>
       {% endfor %}
     </div>
     <div class="lhero__arrows">
-      <button type="button" class="lhero__arrow" data-prev aria-label="Previous slide" data-cursor="Prev">{{ icon('arrow', 18) }}</button>
-      <button type="button" class="lhero__arrow" data-next aria-label="Next slide" data-cursor="Next">{{ icon('arrow', 18) }}</button>
+      <button type="button" class="iconbtn" data-prev aria-label="Previous slide">{{ icon('arrow', 16) }}</button>
+      <button type="button" class="iconbtn" data-next aria-label="Next slide">{{ icon('arrow', 16) }}</button>
     </div>
   </div>
-  <a class="lhero__scroll" href="#glance" aria-label="Scroll down" data-cursor="Scroll"><span></span></a>
 </section>
 
-<!-- ====================== AT A GLANCE ====================== -->
-<section class="lwrap lstats" id="glance">
-  <div class="lstat rise"><b><span data-count="{{ summary.pct }}">{{ summary.pct }}</span><small>%</small></b><span>of your plan complete</span></div>
-  <div class="lstat rise"><b><span data-count="{{ completed|length }}">{{ completed|length }}</span><small>/{{ mods|length }}</small></b><span>modules finished</span></div>
-  <div class="lstat rise"><b><span data-count="{{ quizzes|length - quiz_open|length }}">{{ quizzes|length - quiz_open|length }}</span><small>/{{ quizzes|length }}</small></b><span>quizzes passed</span></div>
-  <div class="lstat rise {{ 'lstat--bad' if summary.overdue }}"><b><span data-count="{{ summary.overdue }}">{{ summary.overdue }}</span></b><span>{{ 'steps overdue' if summary.overdue else 'nothing overdue' }}</span></div>
-  <div class="lstat lstat--status rise">{{ progress_badge(summary.status) }}<a href="{{ url_for('learning.progress_page') }}">What this means {{ icon('arrow', 13) }}</a></div>
+<!-- ============ at a glance ============ -->
+<section class="asec">
+  <dl class="tstats">
+    <div><dt>Plan complete</dt><dd>{{ summary.pct }}<small>%</small></dd></div>
+    <div><dt>Modules finished</dt><dd>{{ completed|length }}<small>/{{ mods|length }}</small></dd></div>
+    <div><dt>Quizzes passed</dt><dd>{{ quizzes|length - quiz_open|length }}<small>/{{ quizzes|length }}</small></dd></div>
+    <div class="{{ 'is-bad' if summary.overdue }}"><dt>Overdue</dt><dd>{{ summary.overdue }}</dd></div>
+    <div><dt>Status</dt><dd class="tstats__badge">{{ progress_badge(summary.status) }} <a href="{{ url_for('learning.progress_page') }}">what it means</a></dd></div>
+  </dl>
 </section>
 
-<!-- ====================== JOURNEY ====================== -->
-<section class="lwrap lsection">
-  <header class="lsec__head rise"><div><p class="lkicker">Your learning path</p><h2>The road to confident service</h2></div>
-    <p class="lsec__aside">{{ employee.job_role.name }} · joined {{ employee.joining_date.strftime('%d %B %Y') }}</p></header>
+<!-- ============ journey ============ -->
+<section class="asec">
+  <div class="asec__head"><h2>Your first ninety days</h2><p>{{ employee.job_role.name }} · joined {{ employee.joining_date.strftime('%d %B %Y') }}</p></div>
   {{ journey(stages, today) }}
 </section>
 
-<!-- ====================== MODULES ====================== -->
-<section class="lwrap lsection">
-  <header class="lsec__head rise"><div><p class="lkicker">Continue learning</p><h2>Your modules</h2></div>
-    <a class="lsec__link" href="{{ url_for('learning.modules') }}" data-cursor="All">View all {{ mods|length }} {{ icon('arrow', 15) }}</a></header>
+<!-- ============ modules ============ -->
+<section class="asec">
+  <div class="asec__head"><h2>Your modules</h2><a class="lsec__link" href="{{ url_for('learning.modules') }}">All {{ mods|length }} modules →</a></div>
   {% set shown = (open_mods + completed)[:5] %}
   <div class="mtiles mtiles--home">
     {% for x in shown %}{{ mtile(x, mods.index(x) + 1, feature=loop.first and x in open_mods) }}{% else %}<p class="muted">Every module is complete. Well done!</p>{% endfor %}
   </div>
 </section>
 
-<!-- ====================== THIS WEEK + QUIZZES ====================== -->
-<section class="lwrap lsection lsplit">
-  <div class="rcard rise">
-    <div class="rhead"><h2>{{ icon('calendar', 18) }} Coming up</h2><a href="{{ url_for('learning.calendar') }}">Calendar →</a></div>
-    <p class="small muted" style="margin: -6px 0 8px">{{ today.strftime('%A, %d %B %Y') }}</p>
+<!-- ============ coming up + quizzes ============ -->
+<section class="asec acols">
+  <div class="acard">
+    <div class="acard__head"><h3>Coming up</h3><span><a href="{{ url_for('learning.calendar') }}" style="color: var(--primary); font-weight: 600">Calendar →</a></span></div>
     {% if upcoming %}<ul class="ltasks">
       {% for r, item, module in upcoming[:6] %}{% set c = item.content %}{% set late = r.due_date and r.due_date < today %}
       <li><a href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">
         <span class="ltasks__date {{ 'is-late' if late else ('is-today' if r.due_date == today) }}">{% if r.due_date %}<b>{{ r.due_date.strftime('%d') }}</b>{{ r.due_date.strftime('%b') }}{% else %}<b>–</b>{% endif %}</span>
-        <span class="ltasks__text"><strong>{{ (c.activity or c.description or c.situation or c.question or c.topic)[:80] }}</strong>
-          <span>{{ icon(kind_icon(item.item_type), 12) }} {{ item.item_type|replace('_', ' ') }} · {{ module.title }}{% if late %} · <em>overdue</em>{% endif %}</span></span>
-        <span class="ltasks__go">{{ icon('arrow', 14) }}</span></a></li>
+        <span class="ltasks__text"><strong>{{ (c.activity or c.description or c.situation or c.question or c.topic)[:90] }}</strong>
+          <span>{{ item.item_type|replace('_', ' ')|capitalize }} · {{ module.title }}{% if late %} · <em>overdue</em>{% endif %}</span></span>
+        <span class="ltasks__go">→</span></a></li>
       {% endfor %}
-    </ul>{% else %}<p class="muted small">Nothing due. Enjoy your day!</p>{% endif %}
+    </ul>{% else %}<p class="todo__empty">Nothing due. Enjoy your day.</p>{% endif %}
   </div>
 
   <div class="lstack">
     {% for x in quiz_open[:2] %}{% set m = x.module %}
-    <a class="course course--wide rise" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">
-      <div class="course__img"><img src="{{ url_for('static', filename=category_photo(m.category)) }}" alt="" loading="lazy">
-        <span class="course__state">{{ 'Try again' if x.quiz_failed else 'Quiz ready' }}</span></div>
-      <div class="course__body"><h3>{{ m.title }} quiz</h3><p>Test yourself on what you learned. Scored instantly, with the policy line behind every answer.</p>
-        <div class="course__foot"><span>{{ icon('spark', 14)|replace('class="icon"', 'class="icon" style="display:inline;vertical-align:-2px"') }} Knowledge check</span><span class="btn btn--primary">Start {{ icon('arrow', 13) }}</span></div></div>
+    <a class="course course--wide" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">
+      <div class="course__img"><img src="{{ url_for('static', filename=category_photo(m.category)) }}" alt="" loading="lazy"></div>
+      <div class="course__body"><span class="course__kicker">{{ 'Try again' if x.quiz_failed else 'Quiz' }}</span><h3>{{ m.title }}</h3>
+        <p>A few questions on what you have read, marked straight away.</p>
+        <span class="course__go">Start →</span></div>
     </a>
     {% endfor %}
-    <a class="certteaser rise" href="{{ url_for('learning.certificate') }}" data-cursor="View">
-      <span class="certteaser__ring pring" style="--v: {{ summary.pct }}"><b>{{ summary.pct }}%</b></span>
-      <span><strong>Certificate of Onboarding</strong><small>{{ 'Ready to claim' if summary.status == 'Completed' else (summary.total - summary.done) ~ ' steps to go' }}</small></span>
-      {{ icon('trophy', 22) }}
+    <a class="certteaser" href="{{ url_for('learning.certificate') }}" data-cursor="View">
+      <span class="certteaser__pct">{{ summary.pct }}<small>%</small></span>
+      <span><strong>Certificate of onboarding</strong><small>{{ 'Ready to claim' if summary.status == 'Completed' else (summary.total - summary.done) ~ ' steps to go' }}</small></span>
+      <span class="certteaser__go">→</span>
     </a>
   </div>
 </section>
 
-<!-- ====================== QUOTE ====================== -->
-<section class="lquote" data-parallax>
-  <div class="lquote__bg"><img src="{{ url_for('static', filename='img/aurelle/photos/resort.jpg') }}" alt="" loading="lazy"></div>
-  <div class="lquote__inner rise">
-    <img src="{{ url_for('static', filename=brand.logo_light or brand.logo) }}" alt="" class="lquote__logo">
-    <p>Excellence is not a skill, it’s an attitude.</p>
-    <small>{{ brand.name }} {{ brand.tagline }}</small>
-  </div>
+<!-- ============ a line to end on ============ -->
+<section class="asec">
+  <figure class="lquote">
+    <img src="{{ url_for('static', filename='img/aurelle/photos/resort.jpg') }}" alt="" loading="lazy">
+    <blockquote>“Excellence is not a skill, it’s an attitude.”</blockquote>
+    <figcaption>{{ brand.name }} {{ brand.tagline }}</figcaption>
+  </figure>
 </section>
 
 {% else %}
-<section class="lhero lhero--single">
+<section class="lhero">
   <div class="lhero__slides">
     <article class="lslide is-active">
-      <div class="lslide__bg"><img src="{{ url_for('static', filename='img/aurelle/photos/hero.jpg') }}" alt=""></div>
-      <div class="lslide__inner">
-        <p class="lslide__kicker"><span><span data-greeting>Welcome</span>, {{ first }}</span></p>
-        <h1 class="lslide__title">Your plan is being <em>prepared</em></h1>
-        <p class="lslide__lead">Your trainer assigns it once it has been checked against {{ brand.name }}'s approved policies. You will see your modules here as soon as it is ready.</p>
+      <div class="lslide__text">
+        <p class="eyebrow">{{ today.strftime('%A, %d %B') }}</p>
+        <h1 class="lslide__title"><span data-greeting>Welcome</span>, {{ first }}.</h1>
+        <p class="lslide__lead">Your plan is being prepared. Your trainer assigns it once it has been checked against {{ brand.name }}'s approved policies, and it will appear here straight away.</p>
       </div>
+      <figure class="lslide__media"><img src="{{ url_for('static', filename='img/aurelle/photos/hero.jpg') }}" alt="A resort pool at night"><figcaption>Evening by the pool</figcaption></figure>
     </article>
   </div>
 </section>

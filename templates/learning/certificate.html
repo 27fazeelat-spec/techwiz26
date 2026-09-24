@@ -3,9 +3,9 @@
 {% from "learning/_ui.html" import pagehero, mtile %}
 {% block title %}Certificate{% endblock %}
 {% block content %}
-{% call pagehero('img/aurelle/photos/villa-dusk.jpg', 'Certificate', 'Your onboarding certificate', 'Issued when every step of your plan is complete. Anyone can check it online with its verification code.') %}{% endcall %}
+{% call pagehero('img/aurelle/photos/pool-day.jpg', 'Certificate', 'Your onboarding certificate', 'Issued when every step of your plan is complete. Anyone can check it online with its verification code.') %}{% endcall %}
 
-<section class="certcard rise" data-tilt>
+<section class="certcard rise">
   <div class="certcard__frame">
     <img src="{{ url_for('static', filename=brand.logo) }}" alt="" class="certcard__logo">
     <p class="certcard__brand">{{ brand.name|upper }} · {{ brand.tagline|upper }}</p>

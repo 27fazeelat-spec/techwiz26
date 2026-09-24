@@ -13,7 +13,6 @@ hotel group; no real property or brand is implied. Photo IDs:
 | pool.jpg | 261169 |
 | pool-day.jpg | 189296 |
 | resort.jpg | 1134176 |
-| villa-dusk.jpg | 2034335 |
 | corridor.jpg | 2507010 |
 | team.jpg | 3184418 |
 | training.jpg | 1181406 |

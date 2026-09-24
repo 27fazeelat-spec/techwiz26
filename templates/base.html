@@ -1,6 +1,6 @@
 {% from "_macros.html" import icon, initials %}
 {# Roles moved to the Terracotta & Olive workspace theme so far; the rest follow one panel at a time. #}
-{% set terra = current_user.is_authenticated and current_user.app_role in ['admin', 'training_manager', 'reviewer', 'manager'] %}
+{% set terra = current_user.is_authenticated and current_user.app_role in ['admin', 'training_manager', 'reviewer', 'manager', 'employee'] %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -25,8 +25,8 @@
   {% if current_user.is_authenticated %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/aurelle.css') }}">
-  {% if current_user.app_role == 'employee' %}<link rel="stylesheet" href="{{ url_for('static', filename='css/learner.css') }}">{% endif %}
   {% if terra %}<link rel="stylesheet" href="{{ url_for('static', filename='css/terra.css') }}">{% endif %}
+  {% if current_user.app_role == 'employee' %}<link rel="stylesheet" href="{{ url_for('static', filename='css/learner.css') }}">{% endif %}
   <style>
     /* Workspace brand colours (config/branding.yaml or the organisation's settings). Status colours never change. */
     :root { --primary: {{ brand.primary }}; --primary-hover: {{ brand.primary_hover or brand.primary }}; --accent: {{ brand.accent }};

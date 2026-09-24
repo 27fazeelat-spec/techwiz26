@@ -18,7 +18,7 @@
 {% set m = x.module %}{% set state = 'done' if x.pct == 100 else ('progress' if x.done else 'new') %}
 {% set verb = {'done': 'Review', 'progress': 'Continue', 'new': 'Start'}[state] %}
 <a class="mtile {{ 'mtile--feature' if feature }} is-{{ state }} rise" href="{{ url_for('learning.module', module_key=m.module_key) }}"
-   data-filter-item data-filter-value="{{ state }}" data-tilt data-cursor="{{ verb }}">
+   data-filter-item data-filter-value="{{ state }}" data-cursor="{{ verb }}">
   <span class="mtile__num" aria-hidden="true">{{ '%02d' % n }}</span>
   <div class="mtile__top">
     <span class="mtile__icon">{{ icon(category_icon(m.category), 22) }}</span>

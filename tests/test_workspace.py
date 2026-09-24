@@ -13,11 +13,12 @@ def test_admin_home_shows_the_pipeline_and_the_theme(corpus):
     assert "data-cmdk-open" in html
 
 
-def test_other_roles_keep_their_theme_until_moved(corpus):
+def test_employee_home_uses_the_workspace_theme(corpus):
     client = current_app.test_client()
     login(client, "leila.haddad@aurelle.example")
     html = client.get("/dashboard/me").get_data(as_text=True)
-    assert "theme-terra" not in html and "css/terra.css" not in html
+    assert "theme-terra" in html and "css/learner.css" in html and "is-learner" in html
+    assert "villa-dusk" not in html                                            # photo with glassware removed (no alcohol)
 
 
 def test_search_finds_documents_and_requirements_for_staff(corpus):

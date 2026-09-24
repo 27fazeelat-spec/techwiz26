@@ -69,7 +69,7 @@ CATEGORY_PHOTOS = [("fire", "pool"), ("life safety", "pool"), ("health", "pool")
                    ("housekeeping", "room"), ("room", "room"), ("food", "kitchen"), ("f&b", "kitchen"), ("kitchen", "kitchen"),
                    ("maintenance", "interior"), ("engineering", "interior"), ("hr", "team"), ("people", "team"),
                    ("conduct", "training"), ("compliance", "training"), ("orientation", "lobby"), ("company", "lobby"),
-                   ("finance", "villa-dusk"), ("revenue", "villa-dusk"), ("sales", "resort")]
+                   ("finance", "interior"), ("revenue", "interior"), ("sales", "resort")]
 
 
 def category_photo(category):

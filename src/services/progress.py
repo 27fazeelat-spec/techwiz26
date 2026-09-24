@@ -424,17 +424,17 @@ def issue_certificate(employee, plan, today, actor):
 
 
 def certificate_pdf(cert, brand, logo_path, verify_url):
-    """A4 landscape certificate: navy frame, gold rules, the workspace logo and a verification code."""
+    """A4 landscape certificate on warm paper: charcoal frame, terracotta rules, the workspace logo and a verification code."""
     import io
     from reportlab.lib.colors import HexColor
     from reportlab.lib.pagesizes import A4, landscape
     from reportlab.pdfgen import canvas
-    navy, gold, ink = HexColor("#0E1A33"), HexColor("#C9A45C"), HexColor("#16213B")
+    navy, gold, ink = HexColor("#22211F"), HexColor("#C4622D"), HexColor("#22211F")   # frame, rules, text
     w, h = landscape(A4)
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=(w, h))
     c.setTitle(f"Certificate {cert.code}")
-    c.setFillColor(HexColor("#FBF8F2")); c.rect(0, 0, w, h, stroke=0, fill=1)
+    c.setFillColor(HexColor("#F8F3EA")); c.rect(0, 0, w, h, stroke=0, fill=1)
     c.setFillColor(navy); c.rect(0, 0, w, h, stroke=0, fill=0)
     c.setStrokeColor(navy); c.setLineWidth(18); c.rect(9, 9, w - 18, h - 18, stroke=1, fill=0)
     c.setStrokeColor(gold); c.setLineWidth(1.5); c.rect(34, 34, w - 68, h - 68, stroke=1, fill=0)
@@ -445,11 +445,11 @@ def certificate_pdf(cert, brand, logo_path, verify_url):
         pass
     c.setFillColor(gold); c.setFont("Times-Roman", 13)
     c.drawCentredString(w / 2, h - 172, f"{brand.get('name', '').upper()}  ·  {brand.get('tagline', '').upper()}")
-    c.setFillColor(ink); c.setFont("Times-Bold", 38)
+    c.setFillColor(ink); c.setFont("Times-Roman", 40)
     c.drawCentredString(w / 2, h - 228, "Certificate of Onboarding")
-    c.setFont("Helvetica", 12); c.setFillColor(HexColor("#6E7385"))
+    c.setFont("Helvetica", 12); c.setFillColor(HexColor("#6F675C"))
     c.drawCentredString(w / 2, h - 258, "This certifies that")
-    c.setFont("Times-BoldItalic", 34); c.setFillColor(navy)
+    c.setFont("Times-Italic", 36); c.setFillColor(navy)
     c.drawCentredString(w / 2, h - 305, cert.employee.name)
     c.setStrokeColor(gold); c.setLineWidth(1); c.line(w / 2 - 170, h - 318, w / 2 + 170, h - 318)
     c.setFont("Helvetica", 12.5); c.setFillColor(ink)
@@ -457,13 +457,13 @@ def certificate_pdf(cert, brand, logo_path, verify_url):
     c.drawCentredString(w / 2, h - 344, f"has completed the verified onboarding programme for {d.get('role', '')}")
     c.drawCentredString(w / 2, h - 362, f"at {cert.employee.property.name}: {d.get('modules', 0)} modules and {d.get('items', 0)} checked steps"
                         + (f", quiz average {d['quiz_average']}%." if d.get("quiz_average") is not None else "."))
-    c.setFont("Helvetica", 10); c.setFillColor(HexColor("#6E7385"))
+    c.setFont("Helvetica", 10); c.setFillColor(HexColor("#6F675C"))
     c.drawCentredString(w / 2, h - 384, "Every lesson was checked against the approved policies before it was assigned.")
     y = 92
     c.setFont("Helvetica-Bold", 10.5); c.setFillColor(ink)
     c.drawString(90, y + 16, cert.issued_at.strftime("%d %B %Y")); c.drawRightString(w - 90, y + 16, cert.code)
-    c.setStrokeColor(HexColor("#DDD2BF")); c.line(90, y + 10, 270, y + 10); c.line(w - 270, y + 10, w - 90, y + 10)
-    c.setFont("Helvetica", 9); c.setFillColor(HexColor("#6E7385"))
+    c.setStrokeColor(HexColor("#D1C4AE")); c.line(90, y + 10, 270, y + 10); c.line(w - 270, y + 10, w - 90, y + 10)
+    c.setFont("Helvetica", 9); c.setFillColor(HexColor("#6F675C"))
     c.drawString(90, y - 2, "Date issued"); c.drawRightString(w - 90, y - 2, "Verification code")
     c.drawCentredString(w / 2, 62, f"Verify at {verify_url}  ·  Powered by SkillSprint")
     c.showPage(); c.save()
