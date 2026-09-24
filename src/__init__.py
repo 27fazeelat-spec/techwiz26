@@ -69,6 +69,7 @@ def create_app(overrides=None):
     from src.people.routes import bp as people_bp
     from src.reports_web.routes import bp as reports_bp
     from src.site.routes import bp as site_bp
+    from src.api.routes import bp as api_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(documents_bp)
@@ -80,6 +81,10 @@ def create_app(overrides=None):
     app.register_blueprint(people_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(site_bp)
+    app.register_blueprint(api_bp)
+
+    from src import ui_text
+    ui_text.register(app)
 
     from src.cli import bootstrap_local, register_cli
     register_cli(app)
@@ -101,7 +106,11 @@ def create_app(overrides=None):
                         "role_label": lambda code: load_config("permissions")["roles"].get(code, {}).get("label", code)}
             app.extensions["org_name"] = org.name
         roles = load_config("permissions")["roles"]
+        def ref_documents():
+            from src.api.routes import known_documents
+            return known_documents() if current_user.is_authenticated else []
         return {
+            "ref_documents": ref_documents,
             "can": lambda perm: has_permission(current_user, perm),
             "org_name": app.extensions["org_name"],
             "role_label": lambda code: roles.get(code, {}).get("label", code),

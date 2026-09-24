@@ -48,7 +48,7 @@
       <tbody>
       {% for row, req in rows %}
         <tr>
-          <td><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=req.id) }}">{{ req.req_id }}</a>
+          <td><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=req.id) }}" data-ref="req:{{ req.req_id }}">{{ req.req_id }}</a>
               <div class="reqtext">{{ req.text }}</div>
               {% if row.condition %}<span class="chip">only if: {{ row.condition.field }} {{ row.condition.op }} {{ row.condition.value }}</span>{% endif %}</td>
           <td class="small">{{ row.requirement_kind|capitalize }}</td>

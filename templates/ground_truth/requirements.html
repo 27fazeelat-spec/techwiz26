@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% from "_macros.html" import icon, empty %}
+{% from "_macros.html" import icon, empty, help %}
 {% block title %}Requirements{% endblock %}
 {% block content %}
 <div class="pagehead">
   <div>
     <p class="eyebrow">Ground truth</p>
-    <h1>Requirements</h1>
+    <h1>Requirements {{ help('requirement') }}</h1>
     <p class="pagehead__meta">Extracted from active sources by deterministic rules. No AI decides what counts as a requirement.</p>
   </div>
 </div>

@@ -309,3 +309,86 @@ def _regenerate(r, actor, reason, app_config, provider):
 
 def item_for(r):
     return db.session.get(PlanItem, r.plan_item_id) if r.plan_item_id else None
+
+
+# --------------------------------------------------------------------------- plain-language guidance
+
+def suggestion(r):
+    """What the item means in plain words, the recommended decision and a ready-made reason.
+
+    Deterministic wording by status; the reviewer can always change the reason or choose another action.
+    """
+    from database.models import Document, Requirement
+    subject = r.target_key
+    doc_title = None
+    req = None
+    if r.target_type == "requirement":
+        req = db.session.scalar(select(Requirement).join(Document).where(
+            Requirement.req_id == r.target_key).order_by(Document.status != "active", Requirement.id.desc()))
+        if req is not None:
+            subject = f"“{req.text}”"
+            doc_title = req.document.title
+    who = r.plan.employee.name.split(" ")[0]
+    role = r.plan.job_role.name
+    s = r.original_status
+    if s == "Outdated Source":
+        return {"meaning": f"The rule {subject} comes from {doc_title or 'a document'} which has passed its review date and "
+                           f"has no replacement yet. The rule itself may still be how things are done.",
+                "action": "approve", "button": "Keep it: the rule still applies",
+                "reason": f"{doc_title or 'The document'} has expired with no replacement yet; the rule is still in force. "
+                          f"Keep it and ask the document owner to renew it."}
+    if s == "Requirement Missing":
+        return {"meaning": f"The approved matrix says {who} ({role}) must learn {subject}, but the generated plan does not "
+                           f"include it.",
+                "action": "regenerate", "button": "Add it to the plan",
+                "reason": f"Required for {role} by the approved matrix; add it to the plan.",
+                "fallback": {"action": "approve", "button": "Cover it outside the plan",
+                             "reason": f"Not in the generated plan; the trainer will cover it with {who} directly."}}
+    if s == "Unsupported Requirement" and r.target_type == "requirement":
+        return {"meaning": f"The plan teaches {subject}, but the approved matrix does not assign it to a {role} "
+                           f"(or to {who}'s situation).",
+                "action": "regenerate", "button": "Remove it from the plan",
+                "reason": f"Not required for {role}; remove it to keep the plan focused.",
+                "fallback": {"action": "approve", "button": "Keep it as extra reading",
+                             "reason": f"Not required for {role}, but harmless awareness content; keeping it."}}
+    if s in ("Source Support Missing", "Unsupported Requirement"):
+        return {"meaning": "This item says something the policy section it cites does not say, or cites no valid "
+                           "section. Teaching it could spread a rule that does not exist.",
+                "action": "regenerate", "button": "Rewrite this module",
+                "reason": "The item is not supported by its cited source; regenerate the module.",
+                "fallback": {"action": "reject", "button": "Remove this item",
+                             "reason": "Not supported by the cited policy section; removed from the plan."}}
+    if s == "Contradiction Detected":
+        return {"meaning": "This item follows a rule that a stronger policy overrides, so it teaches the wrong version.",
+                "action": "regenerate", "button": "Rewrite this module",
+                "reason": "The item follows an overridden rule; regenerate the module from the winning policy.",
+                "fallback": {"action": "reject", "button": "Remove this item",
+                             "reason": "Contradicts a higher-precedence policy; removed from the plan."}}
+    return {"meaning": "Python could not decide this item on its own. Read the source below and decide.",
+            "action": "approve", "button": "Approve after checking",
+            "reason": "Checked against the cited source; the content is accurate."}
+
+
+BULK_REASONS = {
+    "Outdated Source": "The documents have expired with no replacement yet; the rules are still in force. Keep them and ask the owners to renew the documents.",
+    "Requirement Missing": "Not in the generated plan; the trainer will cover these with the employee directly.",
+    "Unsupported Requirement": "Not required for this role, but harmless awareness content; keeping them.",
+    "Manual Review Required": "Checked against the cited sources; the content is accurate.",
+}
+
+
+def decide_many(items, action, actor, reason):
+    """Apply the same approve or reject decision, with one reason, to several open items."""
+    if action not in ("approve", "reject"):
+        raise ReviewError("Only approve or reject can be applied to several items at once.")
+    reason = _require_reason(reason)
+    done = 0
+    for r in items:
+        if r.status != "open" or r.plan.status == "superseded":
+            continue
+        if action == "reject" and r.target_type != "plan_item":
+            continue
+        _stamp(r, action, actor, reason, new_status=r.original_status if action == "approve" else "Rejected")
+        done += 1
+    db.session.commit()
+    return done

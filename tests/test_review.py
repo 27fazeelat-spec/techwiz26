@@ -153,3 +153,41 @@ def test_review_pages_and_permissions(corpus):
     assert r.status == "approved"
     assert client.get(f"/plans/{plan.id}").status_code == 200
     assert client.post(f"/plans/{plan.id}/assign").status_code == 403      # reviewers decide; managers assign
+
+
+def test_every_open_item_gets_plain_guidance_and_a_ready_reason(corpus):
+    plan = fresh_plan(drop_first_mandatory=True)
+    for r in open_items(plan):
+        s = review.suggestion(r)
+        assert s["meaning"] and s["button"] and len(s["reason"]) >= review.cfg()["min_reason_length"]
+        assert s["action"] in ("approve", "regenerate", "reject")
+
+
+def test_similar_items_can_be_decided_together_with_one_reason(corpus):
+    plan = fresh_plan()
+    items = open_items(plan)
+    with pytest.raises(review.ReviewError):
+        review.decide_many(items, "approve", ACTOR, "ok")                   # a real reason is still required
+    done = review.decide_many(items, "approve", ACTOR, review.BULK_REASONS["Outdated Source"])
+    assert done == len(items) and not open_items(plan)
+    assert db.session.scalar(select(AuditLog).where(AuditLog.action == "review.approved")) is not None
+    client = current_app.test_client()
+    login(client, "evaluator@aurelle.example")
+    assert client.get(f"/review?plan={plan.id}&show=decided").status_code == 200
+
+
+def test_reference_cards_explain_codes_in_plain_words(corpus):
+    from database.models import Conflict, Requirement
+    client = current_app.test_client()
+    login(client, "evaluator@aurelle.example")
+    req = db.session.scalar(select(Requirement).where(Requirement.req_id.like("R-GDP-01-%")))
+    data = client.get(f"/api/ref/req/{req.req_id}").get_json()
+    assert data["title"] == req.text and "Guest" in data["source"] and data["badges"]
+    assert client.get("/api/ref/doc/GDP-01").get_json()["title"]
+    conflict = db.session.scalar(select(Conflict))
+    if conflict:
+        assert client.get(f"/api/ref/conflict/{conflict.conflict_code}").get_json()["decision"]
+    assert client.get("/api/ref/req/R-NOPE-99-999").status_code == 404
+    client.post("/logout")
+    login(client, "leila.haddad@aurelle.example")
+    assert client.get(f"/api/ref/req/{req.req_id}").status_code == 403

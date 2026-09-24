@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% from "_macros.html" import icon, empty %}
+{% from "_macros.html" import icon, empty, help %}
 {% block title %}Role Requirement Matrix{% endblock %}
 {% block content %}
 <div class="pagehead">
   <div>
     <p class="eyebrow">Ground truth</p>
-    <h1>Role Requirement Matrix</h1>
+    <h1>Role Requirement Matrix {{ help('matrix') }}</h1>
     <p class="pagehead__meta">The approved matrix is what every generated plan is checked against. It is built by rules and approved by a person.</p>
   </div>
   {% if can('matrix.build') %}

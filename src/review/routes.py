@@ -22,8 +22,50 @@ def queue():
         query = query.where(ReviewItem.status == "open")
     elif show == "decided":
         query = query.where(ReviewItem.status != "open")
+    kind = request.args.get("kind", "")
+    if request.args.get("plan", type=int):
+        query = query.where(ReviewItem.plan_id == request.args.get("plan", type=int))
     rows = db.session.execute(query).all()
-    return render_template("review/queue.html", rows=rows, show=show, counts=review.queue_counts())
+    kinds = {}
+    for r, _ in rows:
+        kinds[r.original_status] = kinds.get(r.original_status, 0) + 1
+    if kind:
+        rows = [(r, p) for r, p in rows if r.original_status == kind]
+    # The rule or item in plain words, looked up in one query for the whole page.
+    from database.models import Document, Requirement
+    keys = {r.target_key for r, _ in rows if r.target_type == "requirement"}
+    texts = {}
+    if keys:
+        for req, status in db.session.execute(select(Requirement, Document.status).join(Document)
+                                              .where(Requirement.req_id.in_(keys))):
+            if req.req_id not in texts or status == "active":
+                texts[req.req_id] = req.text
+    for r, _ in rows:
+        if r.target_type == "plan_item" and r.plan_item is not None:
+            c = r.plan_item.content
+            texts[r.target_key] = c.get("text") or c.get("question") or c.get("activity") or c.get("description") or c.get("situation") or c.get("topic")
+    return render_template("review/queue.html", rows=rows, show=show, counts=review.queue_counts(), kinds=kinds,
+                           kind=kind, plan_filter=request.args.get("plan", type=int),
+                           bulk_reason=review.BULK_REASONS.get(kind, ""), texts=texts)
+
+
+@bp.route("/review/bulk", methods=["POST"])
+@require_permission("review.decide")
+def bulk():
+    ids = [int(x) for x in request.form.getlist("item") if x.isdigit()]
+    items = db.session.scalars(select(ReviewItem).where(ReviewItem.id.in_(ids))).all() if ids else []
+    if not items:
+        flash("Select at least one item.", "error")
+        return redirect(request.referrer or url_for("review.queue"))
+    try:
+        done = review.decide_many(items, request.form.get("action", "approve"), audit.actor_from_user(current_user),
+                                  request.form.get("reason"))
+    except review.ReviewError as exc:
+        db.session.rollback()
+        flash(str(exc), "error")
+        return redirect(request.referrer or url_for("review.queue"))
+    flash(f"{done} item{'s' if done != 1 else ''} decided with one reason. Each decision is in the audit trail.", "success")
+    return redirect(request.referrer or url_for("review.queue"))
 
 
 @bp.route("/review/<int:pk>")
@@ -51,7 +93,7 @@ def detail(pk):
     return render_template("review/detail.html", r=r, item=item, sources=sources, history=history,
                            fields=review.editable_fields(item) if item else [],
                            override_statuses=review.cfg()["override_statuses"], code=review.code(r),
-                           state=review.plan_review_state(r.plan))
+                           state=review.plan_review_state(r.plan), s=review.suggestion(r))
 
 
 @bp.route("/review/<int:pk>/decide", methods=["POST"])

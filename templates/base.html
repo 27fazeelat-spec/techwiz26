@@ -7,16 +7,19 @@
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='image/logo.png') }}">
   <title>{% block title %}SkillSprint{% endblock %} · SkillSprint AI</title>
   <script>
-    try { var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    try {
+      var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t;
+      if (localStorage.getItem("skillsprint-nav") === "expanded") document.documentElement.dataset.nav = "expanded";
+    } catch (e) {}
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
-<body class="{{ 'has-shell' if current_user.is_authenticated }}">
+<body class="{{ 'has-shell' if current_user.is_authenticated }}" data-ref-docs='{{ ref_documents()|tojson }}'>
 <a class="skip" href="#main">Skip to content</a>
 {% if current_user.is_authenticated %}
 {% macro navlink(endpoint_url, label, icon_name, active) -%}
-  <a href="{{ endpoint_url }}" class="navlink {{ 'is-active' if active }}" {{ 'aria-current=page' if active }}>{{ icon(icon_name) }}<span>{{ label }}</span></a>
+  <a href="{{ endpoint_url }}" class="navlink {{ 'is-active' if active }}" {{ 'aria-current=page' if active }} data-tip="{{ label }}">{{ icon(icon_name) }}<span>{{ label }}</span></a>
 {%- endmacro %}
 {% set ep = request.endpoint or '' %}
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
@@ -69,7 +72,7 @@
 <div class="scrim" data-nav-close hidden></div>
 
 <header class="topbar">
-  <button type="button" class="iconbtn topbar__menu" data-nav-open aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">{{ icon('menu') }}</button>
+  <button type="button" class="iconbtn topbar__menu" data-nav-open data-nav-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Show or hide the menu" title="Show or hide the menu">{{ icon('menu') }}</button>
   {% if can('requirements.view') %}
   <form class="topsearch" method="get" action="{{ url_for('ground_truth.requirements') }}" role="search">
     {{ icon('search', 16) }}
@@ -78,6 +81,7 @@
   </form>
   {% endif %}
   <div class="topbar__right">
+    <button type="button" class="iconbtn helpbtn" data-tour-start aria-label="Take the tour of this workspace" data-tip="Take the tour">?</button>
     <button type="button" class="iconbtn themetoggle" data-theme-toggle aria-label="Switch to dark theme" title="Switch theme">
       <span class="themetoggle__sun">{{ icon('sun') }}</span><span class="themetoggle__moon">{{ icon('moon') }}</span>
     </button>
@@ -93,7 +97,7 @@
 </header>
 {% endif %}
 
-<main id="main" class="page {% block page_class %}{% endblock %}">
+<main id="main" class="page {% block page_class %}{% endblock %}" {{ 'data-autoref' if current_user.is_authenticated }}>
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div class="flashes" role="status">
@@ -118,6 +122,38 @@
     <p class="busy-card__note">Please keep this tab open.</p>
   </div>
 </div>
+{% if current_user.is_authenticated %}
+{% set role = current_user.app_role %}
+{% set t = [] %}
+{% if role in ['admin', 'training_manager'] %}
+  {% set t = [
+    {"target": ".sidebar .brand", "title": "Welcome to your workspace", "text": "This tour shows where each part of onboarding lives. You can restart it any time from the ? button at the top."},
+    {"target": ".navlink[href='" ~ url_for('documents.index') ~ "']", "title": "1. Documents", "text": "Upload your policies here. Each one is read, checked for hidden instructions, and turned into rules."},
+    {"target": ".navlink[href='" ~ url_for('ground_truth.requirements') ~ "']", "title": "2. Requirements", "text": "Every rule found in the documents, in plain words, with the exact section it came from. Hover any code like R-GDP-01-004 to read it."},
+    {"target": ".navlink[href='" ~ url_for('ground_truth.matrix_index') ~ "']", "title": "3. Role matrix", "text": "Which rules each job role must learn, and by when. Approve it once; every plan is checked against it."},
+    {"target": ".navlink[href='" ~ url_for('plans.employees') ~ "']", "title": "4. Employees & plans", "text": "Generate a plan for a new hire. The AI writes it, Python checks it, and anything doubtful goes to review."},
+    {"target": ".navlink[href='" ~ url_for('review.queue') ~ "']", "title": "5. Review queue", "text": "Items that need a person's decision. When nothing is waiting, the plan can be assigned."},
+    {"target": ".navlink[href='" ~ url_for('reports.index') ~ "']", "title": "6. Reports", "text": "Everything as CSV, Excel or PDF, computed from the stored data."}
+  ] %}
+{% elif role == 'reviewer' %}
+  {% set t = [
+    {"target": ".sidebar .brand", "title": "Welcome, reviewer", "text": "Your job is to decide on the items Python could not verify. Restart this tour from the ? button."},
+    {"target": ".navlink[href='" ~ url_for('review.queue') ~ "']", "title": "Your queue", "text": "Each item says what is wrong in plain words and suggests an action with a ready-made reason. Similar items can be approved together."},
+    {"target": ".navlink[href='" ~ url_for('ground_truth.conflicts') ~ "']", "title": "Conflicts", "text": "When two policies disagree and have the same authority, you choose which one applies."}
+  ] %}
+{% elif role == 'manager' %}
+  {% set t = [
+    {"target": ".sidebar .brand", "title": "Welcome", "text": "Here you follow your team's onboarding and sign off their work."},
+    {"target": ".navlink[href='" ~ url_for('main.team_dashboard') ~ "']", "title": "My team", "text": "Progress for each person, and the tasks waiting for your sign-off."}
+  ] %}
+{% elif role == 'employee' %}
+  {% set t = [
+    {"target": ".sidebar .brand", "title": "Welcome to your onboarding", "text": "Your plan was checked against the company's approved policies before it reached you."},
+    {"target": ".navlink[href='" ~ url_for('main.employee_dashboard') ~ "']", "title": "My onboarding", "text": "Your modules, what is due next and your progress. Open a module to tick off checklists, submit tasks and take quizzes."}
+  ] %}
+{% endif %}
+{% if t %}<script type="application/json" id="tour-steps" data-role="{{ role }}" data-auto="1">{{ t|tojson }}</script>{% endif %}
+{% endif %}
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

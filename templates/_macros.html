@@ -39,7 +39,16 @@
 {% macro status_badge(status) -%}
   {%- set tone = {'active': 'ok', 'scheduled': 'info', 'superseded': 'neutral', 'expired': 'warn',
                   'draft': 'bad', 'pending': 'neutral'}.get(status, 'neutral') -%}
-  <span class="badge badge--{{ tone }}">{{ status | capitalize }}</span>
+  {%- set text, tip = status_label('doc', status) -%}
+  <span class="badge badge--{{ tone }}" data-tip="{{ tip }}">{{ text }}</span>
+{%- endmacro %}
+
+{% macro help(term) -%}
+  <button type="button" class="helpdot" data-tip="{{ glossary.get(term, '') }}" aria-label="What is {{ term }}?">?</button>
+{%- endmacro %}
+
+{% macro ref(kind, code, text=None) -%}
+  <span class="ref" data-ref="{{ kind }}:{{ code }}" tabindex="0">{{ text or code }}</span>
 {%- endmacro %}
 
 {% macro source_chip(source) -%}
@@ -63,7 +72,8 @@
 {%- endmacro %}
 
 {% macro plan_badge(status) -%}
-  <span class="badge badge--{{ plan_tone(status) }}">{{ status }}</span>
+  {%- set text, tip = status_label('plan', status) -%}
+  <span class="badge badge--{{ plan_tone(status) }}" data-tip="{{ tip }}">{{ text }}</span>
 {%- endmacro %}
 
 {% macro item_tone(status) -%}
@@ -74,7 +84,8 @@
 {%- endmacro %}
 
 {% macro item_badge(status) -%}
-  <span class="badge badge--{{ item_tone(status) }}">{{ status }}</span>
+  {%- set text, tip = status_label('item', status) -%}
+  <span class="badge badge--{{ item_tone(status) }}" data-tip="{{ tip }}">{{ text }}</span>
 {%- endmacro %}
 
 {% macro meter(value, tone='') -%}

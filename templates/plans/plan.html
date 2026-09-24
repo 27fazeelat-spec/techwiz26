@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import plan_badge, plan_tone, item_badge, item_tone, icon, initials, meter, score_tone, empty %}
+{% from "_macros.html" import plan_badge, plan_tone, item_badge, item_tone, icon, initials, meter, score_tone, empty, help %}
 {% block title %}{{ plan.plan_code }} v{{ plan.version }}{% endblock %}
 {% block content %}
 <div class="pagehead">
@@ -23,7 +23,42 @@
   {% endif %}
 </div>
 
-{% if plan.error %}<div class="notice notice--warn"><strong>Generation failed:</strong> {{ plan.error }}</div>{% endif %}
+
+{% set rs = review_state %}
+{% set assigned = rs.assigned %}
+{% if plan.status == 'Failed' %}
+<div class="nextstep nextstep--bad"><span class="nextstep__icon">{{ icon('alert', 20) }}</span>
+  <div class="nextstep__text"><strong>This attempt failed, so nothing was checked or assigned</strong><span>{{ plan.error }}</span></div>
+  <a class="btn" href="{{ url_for('plans.employees') }}">Back to employees</a></div>
+{% elif plan.status == 'superseded' %}
+<div class="nextstep"><span class="nextstep__icon">{{ icon('file', 20) }}</span>
+  <div class="nextstep__text"><strong>A newer version of this plan exists</strong><span>This version is kept for history; work continues on the latest one.</span></div>
+  <a class="btn" href="{{ url_for('plans.employees') }}">Open employees</a></div>
+{% elif rs.open %}
+<div class="nextstep nextstep--warn"><span class="nextstep__icon">{{ icon('inbox', 20) }}</span>
+  <div class="nextstep__text"><strong>Next: {{ rs.open }} item{{ 's' if rs.open != 1 }} need{{ 's' if rs.open == 1 }} a decision</strong><span>Python could not verify these on its own. Once nothing is waiting, the plan can be assigned to {{ plan.employee.name.split(' ')[0] }}.</span></div>
+  <a class="btn btn--primary" href="{{ url_for('review.queue', plan=plan.id) }}">Open the review queue</a></div>
+{% elif assigned %}
+<div class="nextstep"><span class="nextstep__icon">{{ icon('check', 20) }}</span>
+  <div class="nextstep__text"><strong>Assigned to {{ plan.employee.name }} on {{ plan.approved_at.strftime('%d %b %Y') }}</strong><span>Follow the progress, quizzes and sign-offs from here.</span></div>
+  <a class="btn btn--primary" href="{{ url_for('learning.team_member', code=plan.employee.employee_code) }}">View progress</a></div>
+{% elif rs.assignable %}
+<div class="nextstep"><span class="nextstep__icon">{{ icon('check', 20) }}</span>
+  <div class="nextstep__text"><strong>Ready to assign</strong><span>Every item that needed a person has a decision.</span></div>
+  {% if can('plans.assign') %}<form method="post" action="{{ url_for('plans.assign', pk=plan.id) }}" style="margin: 0"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn--primary" type="submit">Assign to {{ plan.employee.name.split(' ')[0] }}</button></form>{% endif %}</div>
+{% else %}
+<div class="nextstep nextstep--warn"><span class="nextstep__icon">{{ icon('alert', 20) }}</span>
+  <div class="nextstep__text"><strong>Not assignable yet</strong><span>{{ rs.blockers|join(' ') }}</span></div></div>
+{% endif %}
+
+<nav class="tabs" data-tabs role="tablist" aria-label="Plan sections">
+  <button type="button" data-tab="overview" class="is-on">Overview</button>
+  <button type="button" data-tab="modules">Modules <span class="count">{{ plan.modules|length }}</span></button>
+  {% if run %}<button type="button" data-tab="findings">Findings <span class="count">{{ findings|length }}</span></button>
+  <button type="button" data-tab="comparison">AI vs approved matrix <span class="count">{{ total_rows }}</span></button>{% endif %}
+</nav>
+<div class="stack" data-tabpanel="overview">
 
 {% set verdicts = {
   'Verified': 'Every mandatory requirement is covered, cited and consistent with the approved sources.',
@@ -75,7 +110,7 @@
   </section>
 </div>
 
-{% set rs = review_state %}
+
 <section class="panel {{ 'panel--alert' if rs.open }}">
   <div class="panel__bar" style="padding: 0 0 var(--space-3); border: 0">
     <h2 class="panel__title">Review &amp; assignment</h2>
@@ -85,7 +120,7 @@
     {% else %}<span class="badge badge--warn badge--lg">Not assignable yet</span>{% endif %}
   </div>
   <p class="small">{{ rs.total }} item{{ 's' if rs.total != 1 }} needed a person: <strong>{{ rs.open }}</strong> waiting, {{ rs.decided }} decided.
-    {% if rs.total %}<a href="{{ url_for('review.queue', show='all') }}">Open the review queue</a>{% endif %}</p>
+    {% if rs.total %}<a href="{{ url_for('review.queue', show='all', plan=plan.id) }}">See this plan's review items</a>{% endif %}</p>
   {% if rs.blockers %}<ul class="warnings" style="margin-top: var(--space-2)">{% for b in rs.blockers %}<li>{{ b }}</li>{% endfor %}</ul>{% endif %}
   {% set waiting = rs['items'] | selectattr('status', 'equalto', 'open') | list %}
   {% if waiting %}<div class="actions" style="margin-top: var(--space-3)">
@@ -102,13 +137,13 @@
 {% if run %}
 <section class="kpis" aria-label="Verification scores">
   {% set t = plan.score_traceability %}{% set rc = plan.score_requirement_consistency %}{% set gc = plan.score_generation_consistency %}
-  <div class="kpi"><span class="kpi__label">Mandatory coverage</span><span class="kpi__value">{{ plan.score_coverage }}<small>%</small></span>
+  <div class="kpi"><span class="kpi__label">Mandatory coverage {{ help('coverage') }}</span><span class="kpi__value">{{ plan.score_coverage }}<small>%</small></span>
     {{ meter(plan.score_coverage, score_tone(plan.score_coverage)) }}
     <span class="kpi__note mono">{{ run.scores.mandatory_covered }} / {{ run.scores.mandatory_expected }} required</span></div>
-  <div class="kpi"><span class="kpi__label">Source traceability</span><span class="kpi__value">{{ t }}<small>%</small></span>
+  <div class="kpi"><span class="kpi__label">Source traceability {{ help('traceability') }}</span><span class="kpi__value">{{ t }}<small>%</small></span>
     {{ meter(t, score_tone(t)) }}
     <span class="kpi__note">mandatory items {{ plan.score_traceability_mandatory }}%</span></div>
-  <div class="kpi"><span class="kpi__label">Requirement consistency</span><span class="kpi__value">{{ rc }}<small>%</small></span>
+  <div class="kpi"><span class="kpi__label">Requirement consistency {{ help('consistency') }}</span><span class="kpi__value">{{ rc }}<small>%</small></span>
     {{ meter(rc, score_tone(rc)) }}
     <span class="kpi__note">GenAI vs matrix, field by field</span></div>
   <div class="kpi"><span class="kpi__label">Generation consistency</span>
@@ -116,8 +151,11 @@
     {{ meter(gc, score_tone(gc)) }}
     <span class="kpi__note">{% if plan.consistency %}{{ plan.consistency.runs }} runs compared{% else %}not measured yet{% endif %}</span></div>
 </section>
+{% endif %}
+</div>
+{% if run %}
 
-<section class="panel panel--flush">
+<section class="panel panel--flush" data-tabpanel="findings">
   <div class="panel__bar">
     <h2 class="panel__title">Findings <span class="muted small">{{ findings|length }} raised by Python checks</span></h2>
     <div class="segmented" data-filter-group="#findings" role="group" aria-label="Severity">
@@ -140,7 +178,7 @@
   {% else %}{{ empty('No findings', 'Every check passed without raising anything.', 'check') }}{% endif %}
 </section>
 
-<section class="panel panel--flush">
+<section class="panel panel--flush" data-tabpanel="comparison">
   <div class="panel__bar">
     <h2 class="panel__title">GenAI vs Python <span class="muted small">{{ total_rows }} requirements compared field by field</span></h2>
     <div class="segmented" role="group" aria-label="Rows shown">
@@ -168,6 +206,7 @@
 </section>
 {% endif %}
 
+<div class="stack" data-tabpanel="modules">
 {% if plan.modules %}
 <h2 class="section-title">Modules <span class="muted small">{{ plan.modules|length }} modules · click an item to see its source trail</span></h2>
 {% endif %}
@@ -228,4 +267,5 @@
   </ul>
 </section>
 {% endfor %}
+</div>
 {% endblock %}
