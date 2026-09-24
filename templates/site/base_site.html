@@ -38,7 +38,7 @@
         <span class="themetoggle__sun">{{ icon('sun', 17) }}</span><span class="themetoggle__moon">{{ icon('moon', 17) }}</span>
       </button>
       <a class="sbtn sbtn--ghost nav__signin" href="{{ url_for('auth.login') }}">Sign in</a>
-      <a class="sbtn sbtn--primary" href="{{ url_for('site.platform') }}" data-magnetic data-cursor="Explore">See how it works</a>
+      <a class="sbtn sbtn--primary" href="{{ url_for('site.demo') }}" data-magnetic data-cursor="Demo">Request a demo</a>
       <button type="button" class="nav__icon nav__menu" data-menu-open aria-label="Open menu" aria-expanded="false">{{ icon('menu', 18) }}</button>
     </div>
   </div>
@@ -46,6 +46,7 @@
     <a href="{{ url_for('site.platform') }}">Platform</a>
     <a href="{{ url_for('site.trust') }}">Trust &amp; security</a>
     <a href="{{ url_for('site.about') }}">About</a>
+    <a href="{{ url_for('site.demo') }}">Request a demo</a>
     <a href="{{ url_for('auth.login') }}">Sign in</a>
   </div>
 </header>

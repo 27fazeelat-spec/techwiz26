@@ -677,3 +677,72 @@ class AuditLog(db.Model):
 @event.listens_for(AuditLog, "before_delete")
 def _audit_is_append_only(mapper, connection, target):
     raise PermissionError("audit_log is append-only")
+
+
+# ---------------------------------------------------------------------------- SkillSprint (the product company)
+# These tables belong to SkillSprint itself, not to a client workspace: its own staff, demo requests from the
+# public site, and the temporary read-only accounts given to approved requests.
+
+class PlatformStaff(db.Model):
+    """SkillSprint staff who use the console. They cannot open a client workspace."""
+    __tablename__ = "platform_staff"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(254), unique=True)
+    name: Mapped[str] = mapped_column(String(200))
+    password_hash: Mapped[str] = mapped_column(String(100))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    failed_logins: Mapped[int] = mapped_column(Integer, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime)
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class DemoRequest(db.Model):
+    """A 'Request a demo' form from the public site, followed up in the console."""
+    __tablename__ = "demo_requests"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(200))
+    email: Mapped[str] = mapped_column(String(254), index=True)
+    company: Mapped[str] = mapped_column(String(200))
+    job_title: Mapped[str] = mapped_column(String(120), default="")
+    company_size: Mapped[str] = mapped_column(String(20))
+    country: Mapped[str] = mapped_column(String(80), default="")
+    message: Mapped[str] = mapped_column(Text, default="")
+    consent: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[str] = mapped_column(String(20), default="new")       # new | contacted | booked | approved | won | lost
+    note: Mapped[str] = mapped_column(Text, default="")
+    ip_hash: Mapped[str] = mapped_column(String(64), default="", index=True)
+    handled_by: Mapped[str | None] = mapped_column(String(254))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class DemoAccount(db.Model):
+    """A temporary, read-only sign-in for an approved demo request. It stops working at expires_at."""
+    __tablename__ = "demo_accounts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    request_id: Mapped[int | None] = mapped_column(ForeignKey("demo_requests.id", ondelete="SET NULL"))
+    email: Mapped[str] = mapped_column(String(254), unique=True)
+    name: Mapped[str] = mapped_column(String(200))
+    company: Mapped[str] = mapped_column(String(200), default="")
+    password_hash: Mapped[str] = mapped_column(String(100))
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    failed_logins: Mapped[int] = mapped_column(Integer, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime)
+    login_count: Mapped[int] = mapped_column(Integer, default=0)
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime)
+    created_by: Mapped[str] = mapped_column(String(254), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+    request: Mapped["DemoRequest | None"] = relationship()
+
+
+class DemoVisit(db.Model):
+    """A page a demo account opened. Recorded only for demo accounts, which are told about it on the form."""
+    __tablename__ = "demo_visits"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    account_id: Mapped[int] = mapped_column(ForeignKey("demo_accounts.id", ondelete="CASCADE"), index=True)
+    ts: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    endpoint: Mapped[str] = mapped_column(String(80))
+    path: Mapped[str] = mapped_column(String(300))

@@ -1,0 +1,24 @@
+{% extends "console/base.html" %}
+{% block title %}Demo accounts{% endblock %}
+{% block content %}
+<header class="chead"><p class="eyebrow">Sales</p><h1>Demo accounts</h1>
+  <p>Temporary, read-only logins given to demo requests. Each stops working on its end date; you can extend or end it early.</p></header>
+
+<section class="ccard">
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Person</th><th>Company</th><th>Status</th><th>Ends</th><th class="num">Sign-ins</th><th class="num">Pages opened</th><th>Last seen</th></tr></thead>
+      <tbody>
+      {% for a in accounts %}{% set n, distinct = visits.get(a.id, (0, 0)) %}
+        <tr><td><a href="{{ url_for('console.demo_detail', pk=a.id) }}">{{ a.name }}</a><div class="small muted">{{ a.email }}</div></td>
+          <td>{{ a.company or '–' }}</td>
+          <td>{% if is_live(a, now) %}<span class="cstatus cstatus--live">Running</span>{% else %}<span class="cstatus cstatus--ended">Ended</span>{% endif %}</td>
+          <td class="nowrap">{{ a.expires_at.strftime('%d %b %Y') }}{% if is_live(a, now) %}<div class="small muted">{{ (a.expires_at - now).days }} day{{ 's' if (a.expires_at - now).days != 1 }} left</div>{% endif %}</td>
+          <td class="num">{{ a.login_count }}</td><td class="num">{{ n }}{% if distinct %}<div class="small muted">{{ distinct }} different</div>{% endif %}</td>
+          <td class="nowrap muted">{{ a.last_login_at.strftime('%d %b %H:%M') if a.last_login_at else 'Not yet' }}</td></tr>
+      {% else %}<tr><td colspan="7" class="muted">No demo accounts yet. Open a demo request to create one.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

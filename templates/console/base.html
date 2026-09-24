@@ -1,0 +1,53 @@
+{% from "_macros.html" import icon, initials %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='image/logo.png') }}">
+  <title>{% block title %}Console{% endblock %} · SkillSprint Console</title>
+  <script>try { var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/console.css') }}">
+</head>
+<body class="console">
+<a class="skip" href="#main">Skip to content</a>
+{% set ep = request.endpoint or '' %}
+<aside class="cside" aria-label="Console navigation">
+  <a class="cside__brand" href="{{ url_for('console.overview') }}"><img src="{{ url_for('static', filename='image/logo.png') }}" alt="" width="28" height="28"><span>SkillSprint <small>Console</small></span></a>
+  <nav class="cside__nav">
+    {% for label, endpoint, icon_name, match in [('Overview', 'console.overview', 'home', 'console.overview'),
+                                                  ('Demo requests', 'console.requests', 'inbox', 'console.request'),
+                                                  ('Demo accounts', 'console.demos', 'users', 'console.demo'),
+                                                  ('Workspaces', 'console.workspaces', 'building', 'console.workspaces')] %}
+    <a href="{{ url_for(endpoint) }}" class="{{ 'is-active' if ep.startswith(match) }}">{{ icon(icon_name, 17) }}<span>{{ label }}</span></a>
+    {% endfor %}
+  </nav>
+  <p class="cside__foot">For SkillSprint staff. Client content (policies, people, plans) is never shown here.</p>
+</aside>
+<header class="ctop">
+  <div class="ctop__right">
+    <button type="button" class="iconbtn themetoggle" data-theme-toggle aria-label="Switch theme"><span class="themetoggle__sun">{{ icon('sun') }}</span><span class="themetoggle__moon">{{ icon('moon') }}</span></button>
+    <div class="who"><span class="avatar">{{ initials(current_user.name) }}</span><span class="who__text">{{ current_user.name }}<small>SkillSprint staff</small></span></div>
+    <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="iconbtn" aria-label="Sign out" title="Sign out">{{ icon('logout') }}</button></form>
+  </div>
+</header>
+<main id="main" class="cpage">
+  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flashes" role="status">
+    {% for category, message in messages %}<div class="flash flash--{{ category }}"><span class="flash__text">{{ message }}</span></div>{% endfor %}</div>{% endif %}{% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<script>
+  document.querySelectorAll("[data-theme-toggle]").forEach(function (b) { b.addEventListener("click", function () {
+    var r = document.documentElement, dark = r.dataset.theme === "dark" || (!r.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+    r.dataset.theme = dark ? "light" : "dark"; try { localStorage.setItem("skillsprint-theme", r.dataset.theme); } catch (e) {}
+  }); });
+  document.querySelectorAll("[data-copy]").forEach(function (b) { b.addEventListener("click", function () {
+    var t = document.querySelector(b.dataset.copy); if (!t) return;
+    navigator.clipboard && navigator.clipboard.writeText(t.innerText).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); });
+  }); });
+</script>
+</body>
+</html>

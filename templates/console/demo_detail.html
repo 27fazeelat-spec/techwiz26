@@ -1,0 +1,37 @@
+{% extends "console/base.html" %}
+{% block title %}{{ a.name }}{% endblock %}
+{% block content %}
+{% set live = is_live(a, now) %}
+<header class="chead"><p class="eyebrow"><a href="{{ url_for('console.demos') }}">Demo accounts</a></p>
+  <h1>{{ a.name }}</h1>
+  <p>{{ a.company }} · {{ a.email }} ·
+    {% if live %}<span class="cstatus cstatus--live">Running</span> until {{ a.expires_at.strftime('%d %B %Y') }}{% else %}<span class="cstatus cstatus--ended">Ended</span> {{ a.expires_at.strftime('%d %B %Y') }}{% endif %}
+    {% if a.request_id %} · <a href="{{ url_for('console.request_detail', pk=a.request_id) }}">the request</a>{% endif %}</p></header>
+
+<dl class="cstats">
+  <div><dt>Sign-ins</dt><dd>{{ a.login_count }}</dd><small>last {{ a.last_login_at.strftime('%d %b %H:%M') if a.last_login_at else 'not yet' }}</small></div>
+  <div><dt>Pages opened</dt><dd>{{ visits|length }}</dd><small>{{ top|length }} different pages</small></div>
+  <div><dt>Days left</dt><dd>{{ (a.expires_at - now).days if live else 0 }}</dd><small>created by {{ a.created_by or 'SkillSprint' }}</small></div>
+  <div><dt>Actions</dt><dd style="font-size: 14px; display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px">
+    <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="extend"><button class="btn btn--sm btn--primary" type="submit">{{ days }} more days</button></form>
+    {% if live %}<form method="post" onsubmit="return confirm('End this demo now? The login stops working straight away.')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="end"><button class="btn btn--sm" type="submit">End now</button></form>{% endif %}
+  </dd></div>
+</dl>
+
+<div class="ccols">
+  <section class="ccard">
+    <div class="ccard__head"><h2>What they opened</h2><span>newest first</span></div>
+    <ul class="ctimeline">
+      {% for v in visits %}<li><time>{{ v.ts.strftime('%d %b %H:%M') }}</time><span>{{ page_name(v.endpoint) }} <code>{{ v.path }}</code></span></li>
+      {% else %}<li class="cempty" style="display: block">Nothing yet. Pages appear here as soon as they sign in and look around.</li>{% endfor %}
+    </ul>
+  </section>
+  <section class="ccard">
+    <div class="ccard__head"><h2>Most visited</h2><span>what seems to interest them</span></div>
+    <ul class="clist">
+      {% for endpoint, n in top %}<li><div><span class="cstatus">{{ n }}×</span><span><strong>{{ page_name(endpoint) }}</strong></span><span></span></div></li>
+      {% else %}<li class="cempty">No visits yet.</li>{% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}

@@ -55,6 +55,11 @@ NAV = {
 }
 
 
+# Demo visitors see what the administrator sees (read-only), without Settings, plus a sample employee's home.
+NAV["demo"] = [g for g in NAV["admin"] if g[0] != "Settings"] + [
+    ("Try it", [("See as an employee", "tryout.employee", "user", "tryout.employee")])]
+
+
 def items_for(role):
     """The sidebar for a role: its default pages, minus what the administrator hid, plus what they added
     (Settings > Roles & access). Added pages appear under the group they have in the administrator's sidebar."""

@@ -1,6 +1,7 @@
 {% from "_macros.html" import icon, initials %}
 {# Roles moved to the Terracotta & Olive workspace theme so far; the rest follow one panel at a time. #}
-{% set terra = current_user.is_authenticated and current_user.app_role in ['admin', 'training_manager', 'reviewer', 'manager', 'employee'] %}
+{% set terra = current_user.is_authenticated and current_user.app_role in ['admin', 'training_manager', 'reviewer', 'manager', 'employee', 'demo'] %}
+{% set learner = current_user.is_authenticated and (current_user.app_role == 'employee' or learner_preview) %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -26,7 +27,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/aurelle.css') }}">
   {% if terra %}<link rel="stylesheet" href="{{ url_for('static', filename='css/terra.css') }}">{% endif %}
-  {% if current_user.app_role == 'employee' %}<link rel="stylesheet" href="{{ url_for('static', filename='css/learner.css') }}">{% endif %}
+  {% if learner %}<link rel="stylesheet" href="{{ url_for('static', filename='css/learner.css') }}">{% endif %}
   <style>
     /* Workspace brand colours (config/branding.yaml or the organisation's settings). Status colours never change. */
     :root { --primary: {{ brand.primary }}; --primary-hover: {{ brand.primary_hover or brand.primary }}; --accent: {{ brand.accent }};
@@ -39,7 +40,7 @@
   </style>
   {% endif %}
 </head>
-<body class="{{ 'has-shell' if current_user.is_authenticated }}{{ ' is-learner' if current_user.is_authenticated and current_user.app_role == 'employee' }}{{ ' theme-terra' if terra }} {% block body_class %}{% endblock %}" data-ref-docs='{{ ref_documents()|tojson }}'>
+<body class="{{ 'has-shell' if current_user.is_authenticated }}{{ ' is-learner' if learner }}{{ ' theme-terra' if terra }} {% block body_class %}{% endblock %}" data-ref-docs='{{ ref_documents()|tojson }}'>
 <a class="skip" href="#main">Skip to content</a>
 {% if current_user.is_authenticated %}<div class="cursor is-hidden" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>{% endif %}
 {% if current_user.is_authenticated %}
@@ -97,6 +98,12 @@
 </header>
 {% endif %}
 
+{% if current_user.is_authenticated and current_user.app_role == 'demo' %}
+<div class="demobar" role="status">
+  <span><b>Demo access</b> · read-only · {{ current_user.days_left }} day{{ 's' if current_user.days_left != 1 }} left</span>
+  {% if learner_preview %}<a href="{{ url_for('main.admin_dashboard') }}">Back to the administrator's view</a>{% else %}<a href="{{ url_for('tryout.employee') }}">See it as an employee</a>{% endif %}
+</div>
+{% endif %}
 <main id="main" class="page {% block page_class %}{% endblock %}" {{ 'data-autoref' if current_user.is_authenticated }}>
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -156,7 +163,7 @@
 {% endif %}
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 {% if current_user.is_authenticated %}<script src="{{ url_for('static', filename='js/portal.js') }}"></script>{% endif %}
-{% if current_user.is_authenticated and current_user.app_role == 'employee' %}<script src="{{ url_for('static', filename='js/learner.js') }}"></script>{% endif %}
+{% if learner %}<script src="{{ url_for('static', filename='js/learner.js') }}"></script>{% endif %}
 {% if terra %}<script src="{{ url_for('static', filename='js/workspace.js') }}"></script>{% endif %}
 {% block scripts %}{% endblock %}
 </body>

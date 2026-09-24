@@ -1,0 +1,32 @@
+{% extends "console/base.html" %}
+{% block title %}Demo requests{% endblock %}
+{% block content %}
+<header class="chead"><p class="eyebrow">Sales</p><h1>Demo requests</h1>
+  <p>From the "Request a demo" form on the public site. Open one to follow it up, add a note or give the person a demo login.</p></header>
+
+<div class="cfilters">
+  <div class="segmented" role="group" aria-label="Status">
+    <a href="{{ url_for('console.requests', q=q or None) }}" class="{{ 'is-on' if not status }}">All <span class="count">{{ counts.values()|sum }}</span></a>
+    {% for key, label in statuses.items() %}<a href="{{ url_for('console.requests', status=key, q=q or None) }}" class="{{ 'is-on' if status == key }}">{{ label }} <span class="count">{{ counts.get(key, 0) }}</span></a>{% endfor %}
+  </div>
+  <form method="get"><input type="hidden" name="status" value="{{ status }}"><input type="search" name="q" value="{{ q }}" placeholder="Company, name or email" aria-label="Search requests">
+    <button class="btn" type="submit">Search</button><a class="btn btn--ghost" href="{{ url_for('console.requests_csv') }}">Download CSV</a></form>
+</div>
+
+<section class="ccard">
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Company</th><th>Contact</th><th>Size</th><th>Country</th><th>Status</th><th>Received</th></tr></thead>
+      <tbody>
+      {% for r in rows %}
+        <tr><td><a href="{{ url_for('console.request_detail', pk=r.id) }}">{{ r.company }}</a></td>
+          <td>{{ r.name }}<div class="small muted">{{ r.email }}</div></td>
+          <td class="nowrap">{{ r.company_size }}</td><td>{{ r.country or '–' }}</td>
+          <td><span class="cstatus cstatus--{{ r.status }}">{{ statuses.get(r.status, r.status) }}</span></td>
+          <td class="nowrap muted">{{ r.created_at.strftime('%d %b %Y') }}</td></tr>
+      {% else %}<tr><td colspan="6" class="muted">No requests{{ ' with this status' if status }} yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "console/base.html" %}
+{% block title %}{{ r.company }}{% endblock %}
+{% block content %}
+<header class="chead"><p class="eyebrow"><a href="{{ url_for('console.requests') }}">Demo requests</a></p>
+  <h1>{{ r.company }}</h1>
+  <p><span class="cstatus cstatus--{{ r.status }}">{{ statuses.get(r.status, r.status) }}</span> · received {{ r.created_at.strftime('%d %B %Y, %H:%M') }} UTC{% if r.handled_by %} · last handled by {{ r.handled_by }}{% endif %}</p></header>
+
+<div class="cdetail">
+  <div style="display: flex; flex-direction: column; gap: 20px">
+    <section class="ccard">
+      <div class="ccard__head"><h2>The request</h2></div>
+      <div class="ccard__body">
+        <dl class="cdl">
+          <dt>Name</dt><dd>{{ r.name }}</dd>
+          <dt>Work email</dt><dd><a href="mailto:{{ r.email }}">{{ r.email }}</a></dd>
+          <dt>Job title</dt><dd>{{ r.job_title or '–' }}</dd>
+          <dt>Company size</dt><dd>{{ r.company_size }} people</dd>
+          <dt>Country</dt><dd>{{ r.country or '–' }}</dd>
+          <dt>Agreed to contact</dt><dd>{{ 'Yes, and to page recording during the demo' if r.consent else 'No' }}</dd>
+        </dl>
+        {% if r.message %}<p class="label" style="margin-top: 16px">What they would like to see</p><p class="cmessage">{{ r.message }}</p>{% endif %}
+      </div>
+    </section>
+
+    <section class="ccard">
+      <div class="ccard__head"><h2>Internal note</h2><span>only SkillSprint staff see this</span></div>
+      <form method="post" class="ccard__body cform">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="note">
+        <textarea name="note" rows="4" placeholder="e.g. Called on Tuesday; interested in the policy change checks.">{{ r.note }}</textarea>
+        <div><button class="btn" type="submit">Save note</button></div>
+      </form>
+    </section>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 20px">
+    <section class="ccard">
+      <div class="ccard__head"><h2>Give demo access</h2><span>{{ days }} days, read-only</span></div>
+      {% set live = accounts | selectattr('active') | list %}
+      {% if accounts %}
+      <ul class="clist">{% for a in accounts %}
+        <li><a href="{{ url_for('console.demo_detail', pk=a.id) }}"><span class="cstatus cstatus--{{ 'live' if is_live(a, now) else 'ended' }}">{{ 'Running' if is_live(a, now) else 'Ended' }}</span>
+          <span><strong>{{ a.email }}</strong><span class="muted">until {{ a.expires_at.strftime('%d %b %Y') }} · {{ a.login_count }} sign-in{{ 's' if a.login_count != 1 }}</span></span><span>→</span></a></li>
+      {% endfor %}</ul>
+      {% endif %}
+      {% if not accounts %}
+      <form method="post" class="ccard__body cform" autocomplete="off">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="approve">
+        <div class="field"><label for="email">Demo login email</label><input id="email" name="email" type="email" value="{{ r.email }}"></div>
+        <div class="field"><label for="password">Password you choose <span class="muted">(at least {{ min_password }} characters)</span></label>
+          <input id="password" name="password" type="text" minlength="{{ min_password }}" autocomplete="new-password" spellcheck="false"></div>
+        <p class="small muted">The login opens a sample hotel workspace for {{ days }} days and can only look, never change anything. After you create it, the email with the password goes to this address.</p>
+        <div><button class="btn btn--primary" type="submit">Create the demo login and email it</button></div>
+      </form>
+      {% endif %}
+    </section>
+
+    <section class="ccard">
+      <div class="ccard__head"><h2>Where this request stands</h2></div>
+      <form method="post" class="ccard__body cform">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="status">
+        <div class="field"><label for="status">Status</label><select id="status" name="status">
+          {% for key, label in statuses.items() %}<option value="{{ key }}" {{ 'selected' if key == r.status }}>{{ label }}</option>{% endfor %}</select></div>
+        <div><button class="btn" type="submit">Update status</button></div>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

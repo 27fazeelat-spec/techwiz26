@@ -1,0 +1,56 @@
+{% extends "site/base_site.html" %}
+{% block title %}Request a demo{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+{% block content %}
+<div class="auth2">
+  <aside class="auth2__art dark" data-spotlight>
+    <div class="hero__aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+    <a class="nav__brand" href="{{ url_for('site.home') }}" style="color: var(--d-ink)" data-cursor="Home">
+      <img src="{{ url_for('static', filename='image/logo.png') }}" alt="" width="30" height="30"><span>SkillSprint</span>
+    </a>
+    <ol class="demosteps">
+      <li><b>1</b><span><strong>Tell us about your team</strong>Two minutes, no payment details.</span></li>
+      <li><b>2</b><span><strong>We reply within two working days</strong>A person reads every request.</span></li>
+      <li><b>3</b><span><strong>{{ days }} days to look around</strong>A read-only sample hotel workspace, from policy upload to a new hire's first week.</span></li>
+    </ol>
+    <div>
+      <h2>See <em>verified</em> onboarding with your own eyes.</h2>
+      <p>Open real plans, follow each item back to the clause it came from, and see what a new hire sees on day one.</p>
+    </div>
+  </aside>
+
+  <div class="auth2__form">
+    <section class="auth2__box auth2__box--wide">
+      <a class="auth2__back" href="{{ url_for('site.home') }}" data-cursor="Back">← Back to the site</a>
+      <div>
+        <h1>Request a demo</h1>
+        <p>We will set up a demo login for you and send it to your work email.</p>
+      </div>
+      <form method="post" class="demoform" novalidate data-submit-busy="Sending…">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="demoform__trap" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <div class="demoform__row">
+          <div class="fieldx"><input id="name" name="name" type="text" autocomplete="name" placeholder=" " value="{{ form.get('name', '') }}" required><label for="name">Your name</label></div>
+          <div class="fieldx"><input id="email" name="email" type="email" autocomplete="email" placeholder=" " value="{{ form.get('email', '') }}" required><label for="email">Work email</label></div>
+        </div>
+        <div class="demoform__row">
+          <div class="fieldx"><input id="company" name="company" type="text" autocomplete="organization" placeholder=" " value="{{ form.get('company', '') }}" required><label for="company">Company</label></div>
+          <div class="fieldx"><input id="job_title" name="job_title" type="text" autocomplete="organization-title" placeholder=" " value="{{ form.get('job_title', '') }}"><label for="job_title">Job title</label></div>
+        </div>
+        <div class="demoform__row">
+          <div class="fieldx fieldx--select"><select id="company_size" name="company_size" required>
+              <option value="" {{ 'selected' if not form.get('company_size') }} disabled>Choose…</option>
+              {% for s in sizes %}<option value="{{ s }}" {{ 'selected' if form.get('company_size') == s }}>{{ s }} people</option>{% endfor %}
+            </select><label for="company_size">Company size</label></div>
+          <div class="fieldx"><input id="country" name="country" type="text" autocomplete="country-name" placeholder=" " value="{{ form.get('country', '') }}"><label for="country">Country</label></div>
+        </div>
+        <div class="fieldx fieldx--area"><textarea id="message" name="message" rows="3" placeholder=" ">{{ form.get('message', '') }}</textarea><label for="message">What would you like to see? (optional)</label></div>
+        <label class="demoform__consent"><input type="checkbox" name="consent" {{ 'checked' if form.get('consent') }}>
+          <span>SkillSprint may contact me about this demo. During the demo, the pages I open are recorded so the team can follow up. Nothing else is shared.</span></label>
+        <button type="submit" class="sbtn sbtn--primary sbtn--lg auth2__submit" data-magnetic data-cursor="Send">Send my request <span class="sbtn__arrow">→</span></button>
+      </form>
+      <p class="auth2__foot">Already have a login? <a href="{{ url_for('auth.login') }}">Sign in</a>.</p>
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "site/base_site.html" %}
+{% block title %}Thank you{% endblock %}
+{% block body_class %}page-dark-top{% endblock %}
+{% block content %}
+<section class="phero phero--dark dark" data-spotlight style="min-height: 100svh; display: flex; align-items: center">
+  <div class="wrap" style="max-width: 720px">
+    <p class="kicker">Request received</p>
+    <h1 style="max-width: none">Thank you. We will be in touch.</h1>
+    <p class="lead">A member of the SkillSprint team reads every request and replies within two working days. When your demo is ready,
+      the login arrives at the work email you gave us and works for {{ days }} days.</p>
+    <div class="hero__ctas" style="margin-top: 30px">
+      <a class="sbtn sbtn--primary sbtn--lg" href="{{ url_for('site.platform') }}" data-magnetic>Meanwhile, see how it works <span class="sbtn__arrow">→</span></a>
+      <a class="sbtn sbtn--glass sbtn--lg" href="{{ url_for('site.home') }}">Back to the home page</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

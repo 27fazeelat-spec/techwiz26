@@ -1,5 +1,5 @@
-"""Public pages shown before sign-in: home, platform, trust and about."""
-from flask import Blueprint, redirect, render_template, url_for
+"""Public pages shown before sign-in: home, platform, trust, about and the demo request form."""
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 
 bp = Blueprint("site", __name__)
@@ -29,3 +29,23 @@ def trust():
 @bp.route("/about")
 def about():
     return render_template("site/about.html", m=MEASURED)
+
+
+@bp.route("/demo", methods=["GET", "POST"])
+def demo():
+    from src.services import demo as demos
+    if request.method == "POST":
+        try:
+            digest = demos.ip_hash(request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip(),
+                                   current_app.config["SECRET_KEY"])
+            demos.create_request(request.form, digest)
+            return redirect(url_for("site.demo_thanks"))
+        except demos.DemoError as exc:
+            flash(str(exc), "error")
+    return render_template("site/demo.html", form=request.form, sizes=demos.SIZES, days=demos.DEMO_DAYS)
+
+
+@bp.route("/demo/thanks")
+def demo_thanks():
+    from src.services import demo as demos
+    return render_template("site/demo_thanks.html", days=demos.DEMO_DAYS)

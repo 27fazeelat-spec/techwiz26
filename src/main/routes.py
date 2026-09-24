@@ -17,6 +17,8 @@ DOC_STATUSES = ["active", "scheduled", "superseded", "expired", "draft"]
 @login_required
 def home():
     role = current_user.app_role
+    if role == "platform_admin":
+        return redirect(url_for("console.overview"))
     if role == "training_manager":
         return redirect(url_for("main.trainer_dashboard"))
     if role == "reviewer":

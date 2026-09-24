@@ -1,0 +1,20 @@
+{% extends "console/base.html" %}
+{% block title %}Workspaces{% endblock %}
+{% block content %}
+<header class="chead"><p class="eyebrow">Clients</p><h1>Workspaces</h1>
+  <p>Each client company has its own workspace. Only figures are shown here; SkillSprint staff do not read a client's policies, people or plans.</p></header>
+<section class="ccard">
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Workspace</th><th class="num">Users</th><th class="num">Employees</th><th class="num">Documents</th><th class="num">Current plans</th><th>Last activity</th></tr></thead>
+      <tbody>
+      {% for w in rows %}
+        <tr><td><strong>{{ w.org.name }}</strong><div class="small muted mono">{{ w.org.org_code }}</div></td>
+          <td class="num">{{ w.users }}</td><td class="num">{{ w.employees }}</td><td class="num">{{ w.documents }}</td><td class="num">{{ w.plans }}</td>
+          <td class="nowrap muted">{{ w.last.strftime('%d %b %Y %H:%M') if w.last else '–' }}</td></tr>
+      {% else %}<tr><td colspan="6" class="muted">No workspaces yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

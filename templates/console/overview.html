@@ -1,0 +1,47 @@
+{% extends "console/base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<header class="chead">
+  <p class="eyebrow">{{ now.strftime('%A, %d %B %Y') }}</p>
+  <h1>Hello, {{ current_user.name.split(' ')[0] }}.</h1>
+  <p>{% if o.new %}{{ o.new }} demo request{{ 's' if o.new != 1 }} {{ 'is' if o.new == 1 else 'are' }} waiting for a reply.{% else %}No new demo requests.{% endif %}
+    {% if o.ending %}{{ o.ending|length }} demo{{ 's' if o.ending|length != 1 }} {{ 'ends' if o.ending|length == 1 else 'end' }} in the next two days.{% endif %}
+    <span class="chealth {{ '' if healthy else 'is-bad' }}" style="margin-left: 6px">{{ 'Database reachable' if healthy else 'Database not reachable' }}</span></p>
+</header>
+
+<dl class="cstats">
+  <div><dt>New requests</dt><dd>{{ o.new }}</dd><small>{{ o.this_week }} received this week</small></div>
+  <div><dt>Demos running</dt><dd>{{ o.live|length }}</dd><small>{{ o.ending|length }} ending within 2 days</small></div>
+  <div><dt>Won</dt><dd>{{ o.won }}</dd><small>requests marked won</small></div>
+  <div><dt>Workspaces</dt><dd>{{ orgs }}</dd><small>{{ users }} users · {{ plans }} plans</small></div>
+</dl>
+
+<div class="ccols">
+  <section class="ccard">
+    <div class="ccard__head"><h2>Needs a reply</h2><a href="{{ url_for('console.requests', status='new') }}">All new requests →</a></div>
+    <ul class="clist">
+      {% for r in o.new_requests %}
+      <li><a href="{{ url_for('console.request_detail', pk=r.id) }}"><span class="cstatus cstatus--new">New</span>
+        <span><strong>{{ r.company }}</strong><span class="muted">{{ r.name }}{% if r.job_title %}, {{ r.job_title }}{% endif %} · {{ r.company_size }} people{% if r.country %} · {{ r.country }}{% endif %}</span></span>
+        <time>{{ r.created_at.strftime('%d %b') }}</time></a></li>
+      {% endfor %}
+      {% for a in o.ending %}
+      <li><a href="{{ url_for('console.demo_detail', pk=a.id) }}"><span class="cstatus cstatus--booked">Ends soon</span>
+        <span><strong>{{ a.company or a.name }}</strong><span class="muted">{{ a.email }} · demo ends {{ a.expires_at.strftime('%d %b') }}</span></span>
+        <time>extend?</time></a></li>
+      {% endfor %}
+      {% if not o.new_requests and not o.ending %}<li class="cempty">Nothing needs a reply right now.</li>{% endif %}
+    </ul>
+  </section>
+
+  <section class="ccard">
+    <div class="ccard__head"><h2>Demo activity</h2><a href="{{ url_for('console.demos') }}">All demo accounts →</a></div>
+    <ul class="clist">
+      {% for v, a in o.activity %}
+      <li><a href="{{ url_for('console.demo_detail', pk=a.id) }}"><time>{{ v.ts.strftime('%d %b %H:%M') }}</time>
+        <span><strong>{{ a.name }}</strong><span class="muted">{{ a.company }} · {{ page_name(v.endpoint) }}</span></span><span></span></a></li>
+      {% else %}<li class="cempty">No demo visits yet. Pages that demo accounts open appear here.</li>{% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}

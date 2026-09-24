@@ -4,6 +4,7 @@
   ingest-folder     ingest every PDF/DOCX in a folder through the normal pipeline
   refresh-versions  recompute document statuses for today's date (activates scheduled versions)
   set-password      set a user's password and clear a lockout
+  console-user      create or update a SkillSprint staff login for the console
   detect-changes    compare document versions and record policy changes
   route-reviews     create review items for plans validated before the review queue existed
   export-reports    write every report as CSV, Excel and PDF
@@ -274,6 +275,28 @@ def register_cli(app):
             click.echo(f"  {plan.plan_code} v{plan.version}: {state['open']} open, {state['decided']} decided")
         db.session.commit()
         click.echo(f"{len(plans)} plan(s) checked.")
+
+    @app.cli.command("console-user")
+    @click.argument("email")
+    @click.option("--name", default="SkillSprint Admin", help="Name shown in the console.")
+    def console_user_command(email, name):
+        """Create a SkillSprint staff login (or reset its password). The password is prompted, never echoed."""
+        from database.models import DemoAccount, PlatformStaff
+        email = email.strip().lower()
+        if db.session.scalar(select(User.id).where(User.email == email)) or                 db.session.scalar(select(DemoAccount.id).where(DemoAccount.email == email)):
+            raise click.ClickException("That email already belongs to a workspace or demo account.")
+        password = click.prompt("Password", hide_input=True, confirmation_prompt=True)
+        if len(password) < 10:
+            raise click.ClickException("Use at least 10 characters.")
+        staff = db.session.scalar(select(PlatformStaff).where(PlatformStaff.email == email))
+        if staff is None:
+            staff = PlatformStaff(email=email, name=name, password_hash=hash_password(password))
+            db.session.add(staff)
+        else:
+            staff.password_hash, staff.failed_logins, staff.locked_until, staff.name = hash_password(password), 0, None, name
+        audit.record("console.staff_set", "platform_staff", email, actor={"user_id": "cli", "app_role": "system"}, commit=False)
+        db.session.commit()
+        click.echo(f"Console login ready for {email}.")
 
     @app.cli.command("set-password")
     @click.argument("email")

@@ -71,6 +71,7 @@ def create_app(overrides=None):
     from src.site.routes import bp as site_bp
     from src.api.routes import bp as api_bp
     from src.settings_web.routes import bp as settings_bp
+    from src.console.routes import bp as console_bp, tryout as tryout_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(documents_bp)
@@ -84,6 +85,37 @@ def create_app(overrides=None):
     app.register_blueprint(site_bp)
     app.register_blueprint(api_bp)
     app.register_blueprint(settings_bp)
+    app.register_blueprint(console_bp)
+    app.register_blueprint(tryout_bp)
+
+    @app.before_request
+    def keep_skillsprint_and_demo_accounts_in_their_lane():
+        """Demo visitors may look but never change anything; SkillSprint staff use the console, not a client workspace."""
+        from flask import abort, request
+        from flask_login import current_user
+        if not current_user.is_authenticated or not request.endpoint or request.endpoint == "static":
+            return None
+        open_to_all = {"auth.logout", "auth.login", "main.home", "main.healthz"}
+        if current_user.app_role == "demo" and request.method not in ("GET", "HEAD", "OPTIONS")                 and request.endpoint not in open_to_all:
+            abort(403)
+        if current_user.app_role == "platform_admin" and request.blueprint not in ("console", "site", "auth")                 and request.endpoint not in open_to_all:
+            abort(403)
+        return None
+
+    @app.after_request
+    def record_demo_visits(response):
+        """Pages a demo visitor opens are listed in the console (the form tells them so)."""
+        from flask import request
+        from flask_login import current_user
+        try:
+            if current_user.is_authenticated and current_user.app_role == "demo" and request.method == "GET"                     and response.status_code == 200 and response.mimetype == "text/html" and request.endpoint                     and request.blueprint not in ("api", "static"):
+                from database.models import DemoVisit
+                db.session.add(DemoVisit(account_id=int(current_user.id.split(":")[1]), endpoint=request.endpoint[:80],
+                                         path=request.full_path.rstrip("?")[:300]))
+                db.session.commit()
+        except Exception:                                          # never break the page over a visit record
+            db.session.rollback()
+        return response
 
     @app.before_request
     def pages_hidden_by_the_administrator():

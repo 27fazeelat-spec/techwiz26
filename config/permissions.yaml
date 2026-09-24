@@ -46,3 +46,21 @@ roles:
     permissions:
       - dashboard.employee
       - learning.*
+  # SkillSprint's own people. They never belong to a client workspace.
+  platform_admin:
+    label: SkillSprint staff
+    permissions:
+      - console.*              # demo requests, demo accounts, workspace figures; no client content
+  demo:
+    label: Demo visitor
+    permissions:               # look, never change: every other request is refused (src/__init__.py)
+      - dashboard.admin
+      - documents.view
+      - roles.view
+      - requirements.view
+      - matrix.view
+      - conflicts.view
+      - security.view
+      - plans.view
+      - review.view
+      - reports.view

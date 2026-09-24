@@ -414,3 +414,9 @@
 @media (max-width: 760px) { .cslides { grid-template-columns: minmax(0, 1fr); } .cslide:nth-child(even) { border-left: 0; } }
 .csection__moves [data-move="-1"] svg { transform: rotate(-90deg); }
 .csection__moves [data-move="1"] svg { transform: rotate(90deg); }
+
+/* ---------- demo visitors: a quiet strip under the top bar ---------- */
+.demobar { margin-left: var(--sidebar-w); display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; padding: 8px 20px; background: var(--ink); color: var(--bg); font-size: 13px; transition: margin-left 240ms var(--ease); }
+.demobar b { font-weight: 600; color: #EDB894; }
+.demobar a { color: var(--bg); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 960px) { .demobar { margin-left: 0; } }
