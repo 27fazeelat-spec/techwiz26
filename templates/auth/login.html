@@ -1,42 +1,52 @@
-{% extends "base.html" %}
-{% from "_macros.html" import icon %}
+{% extends "site/base_site.html" %}
 {% block title %}Sign in{% endblock %}
-{% block page_class %}page--auth{% endblock %}
+{% block body_class %}page-auth{% endblock %}
 {% block content %}
-<aside class="auth-aside">
-  <a class="brand" href="{{ url_for('auth.login') }}">
-    <img class="brand__mark" src="{{ url_for('static', filename='image/logo.png') }}" alt="">
-    <span class="brand__name">SkillSprint</span>
-  </a>
-  <div>
-    <h2>Onboarding plans you can trace back to policy.</h2>
-    <p>SkillSprint turns your approved documents into role-specific onboarding, then checks every item against the source before anyone is assigned it.</p>
-  </div>
-  <ul class="auth-points">
-    <li>{{ icon('file') }}<div><strong>Grounded in your documents</strong><span>Only active, approved versions are used as sources.</span></div></li>
-    <li>{{ icon('check') }}<div><strong>Verified by rules, not by AI</strong><span>Python validates coverage, sources and contradictions.</span></div></li>
-    <li>{{ icon('shield') }}<div><strong>Safe ingestion</strong><span>Hidden or injected instructions are quarantined before generation.</span></div></li>
-  </ul>
-</aside>
-<div class="auth-main">
-  <section class="auth">
-    <div>
-      <h1 class="auth__title">Sign in</h1>
-      <p class="muted small">Use your work email to continue.</p>
+<div class="auth2">
+  <aside class="auth2__art dark" data-spotlight>
+    <div class="hero__aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+    <a class="nav__brand" href="{{ url_for('site.home') }}" style="color: var(--d-ink)" data-cursor="Home">
+      <img src="{{ url_for('static', filename='image/logo.png') }}" alt="" width="30" height="30"><span>SkillSprint</span>
+    </a>
+    <div class="orbit" aria-hidden="true">
+      <div class="orbit__ring"></div><div class="orbit__ring"></div><div class="orbit__ring"></div>
+      <div class="orbit__core"><img src="{{ url_for('static', filename='image/logo.png') }}" alt=""></div>
+      <span class="orbit__node">Policies<small>44 documents</small></span>
+      <span class="orbit__node">Gemini drafts<small>cites every source</small></span>
+      <span class="orbit__node">Python verifies<small>17 rules</small></span>
+      <span class="orbit__node">People approve<small>audited</small></span>
     </div>
-    <form method="post" class="auth__card" novalidate>
-      {{ form.hidden_tag() }}
-      <p class="auth__workspace"><span class="label">Workspace</span>{{ org_name }}</p>
-      <div class="field">
-        <label for="email">Email</label>
-        {{ form.email(id="email", autocomplete="username", autofocus=true, placeholder="name@company.example") }}
+    <div>
+      <h2>Welcome back to <em>verified</em> onboarding.</h2>
+      <p>Every plan in this workspace was checked line by line against Aurelle's approved policies before anyone could assign it.</p>
+    </div>
+  </aside>
+
+  <div class="auth2__form">
+    <section class="auth2__box">
+      <a class="auth2__back" href="{{ url_for('site.home') }}" data-cursor="Back">← Back to the site</a>
+      <div>
+        <h1>Sign in</h1>
+        <p>Use your work email to open the workspace.</p>
       </div>
-      <div class="field">
-        <label for="password">Password</label>
-        {{ form.password(id="password", autocomplete="current-password") }}
-      </div>
-      <button type="submit" class="btn btn--primary btn--block">Sign in</button>
-    </form>
-  </section>
+      <div class="auth2__ws"><span>{{ (org_name or 'W')[0] }}</span><div><small>Workspace</small><b>{{ org_name }}</b></div></div>
+      {% with messages = get_flashed_messages(with_categories=true) %}{% endwith %}
+      <form method="post" class="stack" style="display: flex; flex-direction: column; gap: 14px" novalidate data-submit-busy="Signing in…">
+        {{ form.hidden_tag() }}
+        <div class="fieldx">
+          {{ form.email(id="email", autocomplete="username", autofocus=true, placeholder=" ") }}
+          <label for="email">Work email</label>
+        </div>
+        <div class="fieldx">
+          {{ form.password(id="password", autocomplete="current-password", placeholder=" ") }}
+          <label for="password">Password</label>
+          <button type="button" class="fieldx__toggle" data-reveal-password="password" aria-pressed="false" aria-label="Show password">Show</button>
+        </div>
+        <p class="caps" data-caps hidden>Caps Lock is on</p>
+        <button type="submit" class="sbtn sbtn--primary sbtn--lg auth2__submit" data-magnetic data-cursor="Sign in">Sign in <span class="sbtn__arrow">→</span></button>
+      </form>
+      <p class="auth2__foot">Five failed attempts lock the account for 15 minutes. Every sign-in is recorded in the audit trail.</p>
+    </section>
+  </div>
 </div>
 {% endblock %}

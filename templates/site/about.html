@@ -1,0 +1,59 @@
+{% extends "site/base_site.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}About{% endblock %}
+{% block body_class %}page-dark-top{% endblock %}
+{% block content %}
+<section class="phero phero--dark dark" data-spotlight>
+  <div class="hero__grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="kicker reveal">About</p>
+    <h1 class="reveal" data-split>Why we built a pipeline that checks its own AI.</h1>
+    <p class="lead reveal">SkillSprint AI is our entry to the TechWiz Generative AI PowerPlay competition (theme: OnboardVerse). The brief asked for personalised onboarding from company documents. We decided the interesting problem was not generating it, but proving it right.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split">
+    <div class="reveal">
+      <p class="kicker">The idea</p>
+      <p class="bigquote">A new hire should never learn a rule that <em>isn't in the policy</em>, or miss one that is.</p>
+    </div>
+    <div class="reveal" style="color: var(--muted); font-size: 16.5px; display: flex; flex-direction: column; gap: 14px">
+      <p>Language models are excellent at turning dense policy into readable lessons, and just as good at inventing a plausible deadline that appears nowhere in the source.</p>
+      <p>So we split the work. Deterministic Python builds the ground truth from the documents, a person approves it, Gemini drafts against it, Python checks the draft line by line, and a person signs off. Every number on this site comes from that pipeline running on its own test data.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap">
+    <header class="shead reveal"><p class="kicker">The demo workspace</p><h2>Aurelle Hotels &amp; Residences</h2>
+      <p>A fictional hotel group we designed to stress the system: realistic policies with deliberate traps.</p></header>
+    <div class="cards3">
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('file', 22) }}</div><h3>{{ m.documents }} documents</h3><p>Policies, SOPs, role descriptions, FAQs and memos, in PDF and Word, across several versions, including an expired SOP and an unapproved draft.</p></div>
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('split', 22) }}</div><h3>Planted traps</h3><p>{{ m.conflicts }} contradictions between documents, version changes, conditional rules and {{ m.attacks }} prompt-injection attacks hidden in the text.</p></div>
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('users', 22) }}</div><h3>{{ m.roles }} roles, 12 employees</h3><p>From Front Office Associate to Duty Manager across properties in three countries, each with its own plan.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <header class="shead reveal"><p class="kicker">Built with</p><h2>Plain, explainable technology</h2></header>
+    <div class="marquee"><div class="marquee__track">
+      {% for t in ['Python', 'Flask', 'PostgreSQL', 'SQLAlchemy', 'Google Gemini', 'Pydantic schemas', 'pdfplumber', 'python-docx', 'pytest · ' ~ m.tests ~ ' tests', 'openpyxl', 'ReportLab'] * 2 %}
+      <span class="marquee__item">{{ t }}</span>{% endfor %}
+    </div></div>
+  </div>
+</section>
+
+<section class="section section--cta">
+  <div class="wrap"><div class="cta dark reveal" data-spotlight>
+    <div><h2>Take the tour</h2><p>Start with the platform overview, or sign in and open a plan.</p></div>
+    <div class="cta__actions">
+      <a class="sbtn sbtn--primary sbtn--lg" href="{{ url_for('site.platform') }}" data-magnetic data-cursor="Explore">See the platform <span class="sbtn__arrow">→</span></a>
+      <a class="sbtn sbtn--glass sbtn--lg" href="{{ url_for('auth.login') }}" data-magnetic>Sign in</a>
+    </div>
+  </div></div>
+</section>
+{% endblock %}

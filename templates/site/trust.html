@@ -1,0 +1,86 @@
+{% extends "site/base_site.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Trust & security{% endblock %}
+{% block body_class %}page-dark-top{% endblock %}
+{% block content %}
+<section class="phero phero--dark dark" data-spotlight>
+  <div class="hero__grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="kicker reveal">Trust &amp; security</p>
+    <h1 class="reveal" data-split>AI can suggest. It can never decide.</h1>
+    <p class="lead reveal">Onboarding content is compliance content. SkillSprint is built so that a model's mistake, or a malicious document, cannot reach an employee unnoticed.</p>
+    <nav class="anchors reveal"><a href="#ai" data-cursor="Jump">How AI is used</a><a href="#injection" data-cursor="Jump">Injection defence</a><a href="#audit" data-cursor="Jump">Audit trail</a><a href="#data" data-cursor="Jump">Data &amp; access</a></nav>
+  </div>
+</section>
+
+<section class="section" id="ai">
+  <div class="wrap split">
+    <div class="reveal">
+      <p class="kicker">How AI is used</p>
+      <p class="bigquote">Gemini <em>writes</em>. It does not score, validate, detect contradictions or approve anything.</p>
+    </div>
+    <div class="panelx reveal" data-spot>
+      <table class="table-x">
+        <thead><tr><th>Decision</th><th>Made by</th></tr></thead>
+        <tbody>
+          <tr><td>What counts as a requirement</td><td><span class="okx">Python rules</span></td></tr>
+          <tr><td>Which policy wins a conflict</td><td><span class="okx">Precedence rules / reviewer</span></td></tr>
+          <tr><td>What each role must learn</td><td><span class="okx">Approved matrix</span></td></tr>
+          <tr><td>Drafting the plan text</td><td><span class="warnx">Gemini</span></td></tr>
+          <tr><td>Whether the draft is correct</td><td><span class="okx">{{ m.rules }} Python rules</span></td></tr>
+          <tr><td>Whether it reaches an employee</td><td><span class="okx">A person</span></td></tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin-top: 12px; color: var(--muted); font-size: 13.5px">An automated test fails the build if the validation package ever imports a GenAI library.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint" id="injection">
+  <div class="wrap">
+    <header class="shead reveal"><p class="kicker">Injection defence</p><h2>Documents are data, never instructions</h2>
+      <p>Uploaded files are scanned before anything uses them. All {{ m.attacks }} attack types planted in the test collection are caught, with no false alarms on normal policy text.</p></header>
+    <div class="cards3">
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('shield', 22) }}</div><h3>Scanned at upload</h3><p>Direct instructions, fake authority, system impersonation, encoded and zero-width text, markup and prompt-extraction attempts.</p></div>
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('x', 22) }}</div><h3>Quarantined, not deleted</h3><p>Suspicious sections are kept as evidence, shown in the security report, and never sent to Gemini or used as a requirement.</p></div>
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('check', 22) }}</div><h3>Powerless even if missed</h3><p>Sources are delimited as data, output must match a schema, and no status is ever taken from the model's own words.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="audit">
+  <div class="wrap split">
+    <div class="panelx reveal" data-spot>
+      <h4>Audit trail (append-only)</h4>
+      <div class="rowx"><span class="mono">plan.assigned</span><span>P-E001 v5 · training@</span></div>
+      <div class="rowx"><span class="mono">review.overridden</span><span>RV-00372 · reason recorded</span></div>
+      <div class="rowx"><span class="mono">conflict.resolved</span><span>CF-0008 · reviewer</span></div>
+      <div class="rowx"><span class="mono">matrix.approved</span><span>v2 · admin@</span></div>
+      <div class="rowx"><span class="mono">user.login_failed</span><span>ip recorded</span></div>
+    </div>
+    <div class="reveal">
+      <p class="kicker">Audit trail</p>
+      <p class="bigquote">Every decision keeps <em>who</em>, <em>when</em>, <em>what it was before</em> and <em>why</em>.</p>
+      <p style="margin-top: 16px; color: var(--muted)">The application can only insert into the audit log; updates and deletes are refused by the code and, on PostgreSQL, by database privileges. Overrides never overwrite the computed result; both are kept side by side.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint" id="data">
+  <div class="wrap">
+    <header class="shead reveal"><p class="kicker">Data &amp; access</p><h2>Least privilege, least data</h2></header>
+    <div class="cards3">
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('users', 22) }}</div><h3>Five roles, checked on the server</h3><p>Administrator, Training Manager, Reviewer, Manager and Employee. Managers see only their own team; employees only their own plan.</p></div>
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('user', 22) }}</div><h3>No sensitive personal data</h3><p>Onboarding needs a role, a property, a joining date and experience. National IDs, salaries and health data are never asked for.</p></div>
+      <div class="cardx reveal" data-spot><div class="cardx__icon">{{ icon('file', 22) }}</div><h3>Secrets stay out of code</h3><p>API keys and database credentials live in the environment. Database connections use TLS with full certificate verification.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--cta">
+  <div class="wrap"><div class="cta dark reveal" data-spotlight>
+    <div><h2>Check it yourself</h2><p>Open any plan item and follow it to the clause, the rule results and the reviewer's decision.</p></div>
+    <div class="cta__actions"><a class="sbtn sbtn--primary sbtn--lg" href="{{ url_for('auth.login') }}" data-magnetic data-cursor="Sign in">Open the workspace <span class="sbtn__arrow">→</span></a></div>
+  </div></div>
+</section>
+{% endblock %}

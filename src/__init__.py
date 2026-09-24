@@ -68,6 +68,7 @@ def create_app(overrides=None):
     from src.learning.routes import bp as learning_bp
     from src.people.routes import bp as people_bp
     from src.reports_web.routes import bp as reports_bp
+    from src.site.routes import bp as site_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(documents_bp)
@@ -78,6 +79,7 @@ def create_app(overrides=None):
     app.register_blueprint(learning_bp)
     app.register_blueprint(people_bp)
     app.register_blueprint(reports_bp)
+    app.register_blueprint(site_bp)
 
     from src.cli import bootstrap_local, register_cli
     register_cli(app)

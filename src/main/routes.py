@@ -13,7 +13,7 @@ bp = Blueprint("main", __name__)
 DOC_STATUSES = ["active", "scheduled", "superseded", "expired", "draft"]
 
 
-@bp.route("/")
+@bp.route("/app")
 @login_required
 def home():
     if has_permission(current_user, "dashboard.admin"):

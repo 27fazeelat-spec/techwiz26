@@ -1,0 +1,79 @@
+{% from "_macros.html" import icon %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SkillSprint turns your approved policies into role-specific onboarding and proves every line against its source before anyone is assigned it.">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='image/logo.png') }}">
+  <title>{% block title %}SkillSprint{% endblock %} · Verified onboarding</title>
+  <script>
+    try { var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+</head>
+<body class="site {% block body_class %}{% endblock %}">
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="cursor is-hidden" aria-hidden="true">
+  <div class="cursor__ring"><span class="cursor__label"></span></div>
+  <div class="cursor__dot"></div>
+</div>
+
+{% block header %}
+<header class="nav" data-nav>
+  <div class="nav__inner">
+    <a class="nav__brand" href="{{ url_for('site.home') }}" data-cursor="Home">
+      <img src="{{ url_for('static', filename='image/logo.png') }}" alt="" width="30" height="30"><span>SkillSprint</span>
+    </a>
+    {% set ep = request.endpoint or '' %}
+    <nav class="nav__links" aria-label="Main">
+      <a href="{{ url_for('site.platform') }}" class="{{ 'is-active' if ep == 'site.platform' }}">Platform</a>
+      <a href="{{ url_for('site.trust') }}" class="{{ 'is-active' if ep == 'site.trust' }}">Trust &amp; security</a>
+      <a href="{{ url_for('site.about') }}" class="{{ 'is-active' if ep == 'site.about' }}">About</a>
+    </nav>
+    <div class="nav__actions">
+      <button type="button" class="nav__icon" data-theme-toggle aria-label="Switch theme" data-cursor="Theme">
+        <span class="themetoggle__sun">{{ icon('sun', 17) }}</span><span class="themetoggle__moon">{{ icon('moon', 17) }}</span>
+      </button>
+      <a class="sbtn sbtn--ghost nav__signin" href="{{ url_for('auth.login') }}">Sign in</a>
+      <a class="sbtn sbtn--primary" href="{{ url_for('site.platform') }}" data-magnetic data-cursor="Explore">See how it works</a>
+      <button type="button" class="nav__icon nav__menu" data-menu-open aria-label="Open menu" aria-expanded="false">{{ icon('menu', 18) }}</button>
+    </div>
+  </div>
+  <div class="nav__sheet" data-menu hidden>
+    <a href="{{ url_for('site.platform') }}">Platform</a>
+    <a href="{{ url_for('site.trust') }}">Trust &amp; security</a>
+    <a href="{{ url_for('site.about') }}">About</a>
+    <a href="{{ url_for('auth.login') }}">Sign in</a>
+  </div>
+</header>
+{% endblock %}
+
+<main id="main">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}<div class="toasts" role="status">{% for category, message in messages %}<div class="toast toast--{{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+{% block footer %}
+<footer class="foot">
+  <div class="foot__inner">
+    <div class="foot__brand">
+      <a class="nav__brand" href="{{ url_for('site.home') }}"><img src="{{ url_for('static', filename='image/logo.png') }}" alt="" width="28" height="28"><span>SkillSprint</span></a>
+      <p>Onboarding plans written by generative AI, verified line by line by deterministic rules, approved by people.</p>
+    </div>
+    <div class="foot__cols">
+      <div><h4>Product</h4><a href="{{ url_for('site.platform') }}">Platform</a><a href="{{ url_for('site.platform') }}#pipeline">The verification pipeline</a><a href="{{ url_for('site.platform') }}#learning">Learning &amp; progress</a></div>
+      <div><h4>Trust</h4><a href="{{ url_for('site.trust') }}">Security</a><a href="{{ url_for('site.trust') }}#audit">Audit trail</a><a href="{{ url_for('site.trust') }}#ai">How AI is used</a></div>
+      <div><h4>Project</h4><a href="{{ url_for('site.about') }}">About</a><a href="{{ url_for('auth.login') }}">Sign in</a></div>
+    </div>
+  </div>
+  <div class="foot__base"><span>SkillSprint AI · built for TechWiz Generative AI PowerPlay</span><span>Demo workspace: Aurelle Hotels &amp; Residences (fictional)</span></div>
+</footer>
+{% endblock %}
+<script src="{{ url_for('static', filename='js/site.js') }}"></script>
+</body>
+</html>

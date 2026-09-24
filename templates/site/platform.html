@@ -1,0 +1,154 @@
+{% extends "site/base_site.html" %}
+{% block title %}Platform{% endblock %}
+{% block body_class %}page-dark-top{% endblock %}
+{% block content %}
+<section class="phero phero--dark dark" data-spotlight>
+  <div class="hero__grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="kicker reveal">Platform</p>
+    <h1 class="reveal" data-split>One pipeline from policy to proof.</h1>
+    <p class="lead reveal">Six stages, each with a clear owner. Generative AI appears in exactly one of them, and every other stage exists to check it.</p>
+    <nav class="anchors reveal" aria-label="Stages">
+      <a href="#read" data-cursor="Jump">Read</a><a href="#ground" data-cursor="Jump">Ground truth</a><a href="#pipeline" data-cursor="Jump">Generate</a>
+      <a href="#verify" data-cursor="Jump">Verify</a><a href="#review" data-cursor="Jump">Review</a><a href="#learning" data-cursor="Jump">Learn &amp; update</a>
+    </nav>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 40px">
+  <div class="wrap">
+    <article class="stage" id="read">
+      <div class="stage__n">Stage<b>01</b></div>
+      <div class="reveal">
+        <h2>Read every document, keep every reference</h2>
+        <p>PDF and Word files are checked by their content, not their name, parsed with page and paragraph numbers, and cut into sections that remember where they came from.</p>
+        <ul class="ticks">
+          <li>Headings, tables, footers and watermarks handled; hidden white text excluded</li>
+          <li>Active, superseded, scheduled, expired and draft versions tracked automatically</li>
+          <li>Prompt-injection scanner: {{ m.attacks }} techniques, suspicious sections quarantined</li>
+        </ul>
+        <span class="who">Python</span>
+      </div>
+      <div class="panelx reveal" data-spot>
+        <h4>Upload result</h4>
+        <div class="rowx"><span>File type</span><span class="okx">PDF, checked from content</span></div>
+        <div class="rowx"><span>Sections</span><span class="mono">18 chunks · pages 1–4</span></div>
+        <div class="rowx"><span>Security scan</span><span class="warnx">1 section quarantined</span></div>
+        <div class="rowx"><span>Requirements</span><span class="mono">9 extracted</span></div>
+        <div class="rowx"><span>Version</span><span class="okx">v2.0 active · v1.0 superseded</span></div>
+      </div>
+    </article>
+
+    <article class="stage" id="ground">
+      <div class="stage__n">Stage<b>02</b></div>
+      <div class="reveal">
+        <h2>Build the ground truth, and let a person approve it</h2>
+        <p>Every "must", "shall" and "required" becomes a requirement with its obligation, due stage and source. When two documents disagree, your precedence rules pick the winner and explain why. The resulting Role Requirement Matrix is approved by a person before any plan is judged against it.</p>
+        <ul class="ticks">
+          <li>{{ m.recall }}% recall and {{ m.precision }}% precision against a {{ m.requirements }}-clause answer key</li>
+          <li>Numbers, deadlines, frequencies and permission vs prohibition compared across documents</li>
+          <li>Equal authority? The conflict waits for a reviewer, and the decision is kept</li>
+        </ul>
+        <span class="who">Python + people</span>
+      </div>
+      <div class="panelx reveal" data-spot>
+        <h4>Conflict CF-0003</h4>
+        <div class="rowx"><span>ESC-01 §2.1</span><span class="okx">Report injuries within 15 minutes</span></div>
+        <div class="rowx"><span>HSP-01 §2.1</span><span class="badx" style="text-decoration: line-through">Before the end of the shift</span></div>
+        <div class="rowx"><span>Rule applied</span><span class="mono">life safety: the stricter rule wins</span></div>
+      </div>
+    </article>
+
+    <article class="stage" id="pipeline">
+      <div class="stage__n">Stage<b>03</b></div>
+      <div class="reveal">
+        <h2>Gemini drafts a plan for one person</h2>
+        <p>For a named employee, Gemini chooses which clauses apply and drafts modules, objectives, checklists, tasks, scenarios, quizzes and rubric-based assessments. Output is structured JSON, validated against a schema, and every item must cite a document and section.</p>
+        <ul class="ticks">
+          <li>Versioned prompt templates; model, prompt version and source versions logged for every call</li>
+          <li>Bounded retry, JSON repair and a fallback model when the service is slow or over quota</li>
+          <li>Sources are delimited as data; overridden and quarantined clauses are never sent</li>
+        </ul>
+        <span class="who who--ai">Gemini</span>
+      </div>
+      <div class="panelx reveal" data-spot>
+        <h4>Generation run</h4>
+        <div class="rowx"><span>Outline</span><span class="mono">4 parallel calls · gemini-3.5-flash</span></div>
+        <div class="rowx"><span>Modules</span><span class="mono">8 in parallel · flash-lite</span></div>
+        <div class="rowx"><span>Schema</span><span class="okx">valid</span></div>
+        <div class="rowx"><span>Items</span><span class="mono">133, each with a citation</span></div>
+      </div>
+    </article>
+
+    <article class="stage" id="verify">
+      <div class="stage__n">Stage<b>04</b></div>
+      <div class="reveal">
+        <h2>Python checks every line, independently</h2>
+        <p>{{ m.rules }} deterministic rules compare the draft with the approved matrix and the source text. None of them imports or asks a language model. The result is a score you can recompute and a status you can explain.</p>
+        <ul class="ticks">
+          <li>Mandatory coverage, source validity, role and condition fit, stage and sequence</li>
+          <li>Numeric facts and quiz answers must appear in the cited clause</li>
+          <li>GenAI vs Python comparison, field by field, for every requirement</li>
+        </ul>
+        <span class="who">Python</span>
+      </div>
+      <div class="panelx reveal" data-spot>
+        <h4>Validation result</h4>
+        <div class="rowx"><span>Mandatory coverage</span><span class="mono">82 / 96 · 85.4%</span></div>
+        <div class="rowx"><span>Source traceability</span><span class="okx">100%</span></div>
+        <div class="rowx"><span>Contradictions</span><span class="okx">0</span></div>
+        <div class="rowx"><span>Plan status</span><span class="badx">Incomplete: 14 missing</span></div>
+      </div>
+    </article>
+
+    <article class="stage" id="review">
+      <div class="stage__n">Stage<b>05</b></div>
+      <div class="reveal">
+        <h2>A person decides what Python could not</h2>
+        <p>Unsupported items and missing requirements go to a review queue. Reviewers approve, reject, edit, override with a reason, or regenerate a single module. A plan can only be assigned when nothing is left waiting.</p>
+        <ul class="ticks">
+          <li>Edits are schema-checked and the whole plan is re-validated</li>
+          <li>Regeneration touches one module; decisions on unchanged items carry over</li>
+          <li>Every decision is written to an append-only audit trail</li>
+        </ul>
+        <span class="who">People</span>
+      </div>
+      <div class="panelx reveal" data-spot>
+        <h4>Review queue</h4>
+        <div class="rowx"><span>RV-00369 · R-CMP-01-006</span><span class="warnx">Requirement missing</span></div>
+        <div class="rowx"><span>Decision</span><span class="okx">Added to module M08, regenerated</span></div>
+        <div class="rowx"><span>New version</span><span class="mono">v5 · coverage 86.5%</span></div>
+      </div>
+    </article>
+
+    <article class="stage" id="learning">
+      <div class="stage__n">Stage<b>06</b></div>
+      <div class="reveal">
+        <h2>Learn, measure, and keep up with policy changes</h2>
+        <p>New hires work through checklists, tasks signed off by their manager and quizzes scored against the verified answer key. When a policy changes, the platform shows what changed, which items and people it affects, and rebuilds only those modules.</p>
+        <ul class="ticks">
+          <li>On Track, Requires Attention, Behind Schedule, Assessment Required, Completed</li>
+          <li>Weak areas from wrong answers; recommendations a manager accepts or dismisses</li>
+          <li>Twelve reports exported as CSV, Excel and PDF</li>
+        </ul>
+        <span class="who">Python + people</span>
+      </div>
+      <div class="panelx reveal" data-spot>
+        <h4>Policy change · GDP-01 v1.0 → v2.0</h4>
+        <p class="diff-demo" style="margin: 0">Delete scans within <del>7 days</del> <ins>3 days</ins> of check-out</p>
+        <div class="rowx" style="margin-top: 10px"><span>Affected</span><span class="mono">9 items · 1 plan · 1 employee</span></div>
+        <div class="rowx"><span>Rebuilt</span><span class="okx">module M03 only</span></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="section section--cta">
+  <div class="wrap">
+    <div class="cta dark reveal" data-spotlight>
+      <div><h2>Follow one plan through all six stages</h2><p>The demo workspace has 44 documents, 10 roles and plans you can open and trace.</p></div>
+      <div class="cta__actions"><a class="sbtn sbtn--primary sbtn--lg" href="{{ url_for('auth.login') }}" data-magnetic data-cursor="Sign in">Open the workspace <span class="sbtn__arrow">→</span></a></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
