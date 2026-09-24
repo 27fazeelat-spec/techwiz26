@@ -18,7 +18,7 @@
     </div>
     <div>
       <h2>Welcome back to <em>verified</em> onboarding.</h2>
-      <p>Every plan in this workspace was checked line by line against Aurelle's approved policies before anyone could assign it.</p>
+      <p>Every plan is checked line by line against the company's approved policies before anyone can assign it.</p>
     </div>
   </aside>
 
@@ -27,9 +27,8 @@
       <a class="auth2__back" href="{{ url_for('site.home') }}" data-cursor="Back">← Back to the site</a>
       <div>
         <h1>Sign in</h1>
-        <p>Use your work email to open the workspace.</p>
+        <p>Use the email and password you were given.</p>
       </div>
-      <div class="auth2__ws"><span>{{ (org_name or 'W')[0] }}</span><div><small>Workspace</small><b>{{ org_name }}</b></div></div>
       {% with messages = get_flashed_messages(with_categories=true) %}{% endwith %}
       <form method="post" class="stack" style="display: flex; flex-direction: column; gap: 14px" novalidate data-submit-busy="Signing in…">
         {{ form.hidden_tag() }}
