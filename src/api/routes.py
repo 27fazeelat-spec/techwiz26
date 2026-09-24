@@ -3,7 +3,7 @@ import time
 
 from flask import Blueprint, abort, current_app, jsonify
 from flask_login import current_user, login_required
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from config.loader import load_config
 from database import db
@@ -84,3 +84,50 @@ def known_documents():
         cache["ids"] = sorted(set(db.session.scalars(select(Document.doc_id))))
         cache["at"] = time.time()
     return cache["ids"]
+
+
+@bp.route("/search")
+@login_required
+def search():
+    """Ctrl+K palette: a few matches per kind, each limited to what the viewer may open. Read-only."""
+    from flask import request, url_for
+    from sqlalchemy import or_
+    from database.models import Employee, Plan
+    q = (request.args.get("q") or "").strip()
+    if len(q) < 2:
+        return jsonify({"groups": []})
+    like, groups = f"%{q}%", []
+    if has_permission(current_user, "documents.view"):
+        docs = db.session.scalars(select(Document).where(Document.status.in_(["active", "expired", "draft", "scheduled"]),
+                                                         or_(Document.doc_id.ilike(like), Document.title.ilike(like)))
+                                  .order_by(Document.doc_id, Document.id.desc()).limit(12)).all()
+        seen, items = set(), []
+        for d in docs:
+            if d.doc_id not in seen and len(items) < 5:
+                seen.add(d.doc_id)
+                items.append({"title": d.title or d.doc_id, "code": f"{d.doc_id} v{d.version}", "meta": d.status,
+                              "url": url_for("documents.detail", doc_id=d.doc_id, version=d.version)})
+        groups.append({"label": "Documents", "items": items})
+    if has_permission(current_user, "requirements.view"):
+        reqs = db.session.execute(select(Requirement.id, Requirement.req_id, Requirement.text)
+                                  .join(Document, Requirement.document_id == Document.id)
+                                  .where(Document.status == "active", or_(Requirement.req_id.ilike(like), Requirement.text.ilike(like)))
+                                  .order_by(Requirement.req_id).limit(6)).all()
+        groups.append({"label": "Requirements", "items": [
+            {"title": t[:90], "code": code, "url": url_for("ground_truth.requirement_detail", pk=pk)} for pk, code, t in reqs]})
+    if has_permission(current_user, "plans.view"):
+        people = db.session.scalars(select(Employee).where(or_(Employee.name.ilike(like), Employee.employee_code.ilike(like)))
+                                    .order_by(Employee.employee_code).limit(6)).all()
+        latest = dict(db.session.execute(select(Plan.employee_id, func.max(Plan.id)).where(
+            Plan.employee_id.in_([e.id for e in people]), Plan.status.notin_(["superseded", "Failed"]))
+            .group_by(Plan.employee_id)).all()) if people else {}
+        groups.append({"label": "Employees", "items": [
+            {"title": e.name, "code": e.employee_code, "meta": "open plan" if e.id in latest else "no plan yet",
+             "url": url_for("plans.plan_detail", pk=latest[e.id]) if e.id in latest else url_for("plans.employees", q=e.employee_code)}
+            for e in people]})
+    if has_permission(current_user, "conflicts.view") or has_permission(current_user, "requirements.view"):
+        found = db.session.scalars(select(Conflict).where(Conflict.conflict_code.ilike(like)).limit(4)).all()
+        groups.append({"label": "Conflicts", "items": [
+            {"title": c.conflict_code, "code": c.status.replace("_", " "), "url": url_for("ground_truth.conflicts") + f"#{c.conflict_code}"}
+            for c in found]})
+    return jsonify({"groups": [g for g in groups if g["items"]]})

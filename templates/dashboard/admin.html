@@ -1,130 +1,149 @@
 {% extends "base.html" %}
-{% from "_macros.html" import status_badge, icon, empty, help %}
+{% from "_macros.html" import icon, help %}
 {% block title %}Overview{% endblock %}
 {% block content %}
-<section class="heroband rise">
-  <img class="heroband__art" src="{{ url_for('static', filename='img/aurelle/photos/lobby.jpg') }}" alt="">
-  <div class="heroband__row">
-    <div>
-      <p class="heroband__kicker">{{ org_name }}</p>
-      <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}</h1>
-      <p>From uploaded policy to verified onboarding. Every stage below feeds the next, and every number links to the rows behind it.</p>
-      <div class="heroband__actions">
-        {% if can('documents.upload') %}<a class="btn btn--gold" href="{{ url_for('documents.upload') }}" data-cursor="Upload">{{ icon('upload', 15) }}Upload a policy</a>{% endif %}
-        <a class="btn" href="{{ url_for('main.trainer_dashboard') }}">{{ icon('grid', 15) }}Plans board</a>
-        <a class="btn" href="{{ url_for('reports.index') }}">{{ icon('file', 15) }}Reports</a>
+{% set m = stats.matrix %}
+{% set draft_waiting = stats.matrix_draft and (not m or stats.matrix_draft.version_no > m.version_no) %}
+{% set todo_count = stats.conflicts_open + (1 if draft_waiting else 0) + (1 if stats.review_open else 0) + attention|length %}
+
+<header class="ahead">
+  <div class="ahead__text">
+    <p class="eyebrow">{{ today.strftime('%A, %d %B %Y') }}</p>
+    <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}.</h1>
+    <p class="ahead__lead">
+      {% if todo_count %}{{ todo_count }} thing{{ 's' if todo_count != 1 }} need{{ 's' if todo_count == 1 }} you today. <a href="#todo">See the list</a>, or carry on where you left off.
+      {% else %}Everything is up to date. Policies are current, conflicts are settled and no plan is waiting for a decision.{% endif %}
+    </p>
+    <div class="ahead__actions">
+      {% if can('documents.upload') %}<a class="btn btn--primary" href="{{ url_for('documents.upload') }}" data-cursor="Upload">{{ icon('upload', 15) }}Upload a policy</a>{% endif %}
+      <a class="btn" href="{{ url_for('plans.employees') }}">{{ icon('users', 15) }}Employees &amp; plans</a>
+      <a class="btn btn--ghost" href="{{ url_for('reports.index') }}">{{ icon('file', 15) }}Reports</a>
+    </div>
+  </div>
+  <figure class="ahead__photo">
+    <img src="{{ url_for('static', filename='img/aurelle/photos/lobby.jpg') }}" alt="A hotel lobby with tall windows and lounge chairs">
+    <figcaption>The lobby, {{ org_name }}</figcaption>
+  </figure>
+</header>
+
+<!-- ============ the pipeline ============ -->
+<section class="asec">
+  <div class="asec__head"><h2>From policy to plan</h2><p>Six stages, each feeding the next. Open any stage to see the rows behind its number.</p></div>
+  <ol class="pipe">
+    <li class="pstep is-ok"><a href="{{ url_for('documents.index') }}">
+      <span class="pstep__n">01</span><span class="pstep__name">Ingest</span>
+      <span class="pstep__value">{{ stats.lineages }}</span><span class="pstep__label">documents</span>
+      <span class="pstep__note">{{ counts.active }} active, {{ stats.chunks }} passages read</span>
+      <span class="pstep__state">Up to date</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
+    <li class="pstep {{ 'is-todo' if stats.quarantined else 'is-ok' }}"><a href="{{ url_for('ground_truth.security') }}">
+      <span class="pstep__n">02</span><span class="pstep__name">Scan</span>
+      <span class="pstep__value">{{ stats.findings }}</span><span class="pstep__label">security findings</span>
+      <span class="pstep__note">{{ stats.quarantined }} passage{{ 's' if stats.quarantined != 1 }} held back from the AI</span>
+      <span class="pstep__state">{{ 'Worth a look' if stats.quarantined else 'Clean' }}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
+    <li class="pstep is-ok"><a href="{{ url_for('ground_truth.requirements') }}">
+      <span class="pstep__n">03</span><span class="pstep__name">Extract</span>
+      <span class="pstep__value">{{ stats.requirements }}</span><span class="pstep__label">requirements</span>
+      <span class="pstep__note">found by rules, each traced to its clause</span>
+      <span class="pstep__state">Up to date</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
+    <li class="pstep {{ 'is-todo' if stats.conflicts_open else 'is-ok' }}"><a href="{{ url_for('ground_truth.conflicts') }}">
+      <span class="pstep__n">04</span><span class="pstep__name">Resolve</span>
+      <span class="pstep__value">{{ stats.conflicts }}</span><span class="pstep__label">conflicts</span>
+      <span class="pstep__note">between policies that disagree</span>
+      <span class="pstep__state">{% if stats.conflicts_open %}{{ stats.conflicts_open }} to decide{% else %}All settled{% endif %}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
+    <li class="pstep {{ 'is-todo' if draft_waiting else ('is-ok' if m else 'is-idle') }}"><a href="{{ url_for('ground_truth.matrix_index') }}">
+      <span class="pstep__n">05</span><span class="pstep__name">Approve</span>
+      <span class="pstep__value">{% if m %}v{{ m.version_no }}{% elif stats.matrix_draft %}Draft{% else %}–{% endif %}</span><span class="pstep__label">role matrix</span>
+      <span class="pstep__note">which rules each role must learn</span>
+      <span class="pstep__state">{% if draft_waiting %}v{{ stats.matrix_draft.version_no }} waiting{% elif m %}Approved{% else %}Not built yet{% endif %}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
+    <li class="pstep {{ 'is-todo' if stats.review_open else ('is-ok' if stats.plans else 'is-idle') }}"><a href="{{ url_for('plans.employees') }}">
+      <span class="pstep__n">06</span><span class="pstep__name">Generate</span>
+      <span class="pstep__value">{{ stats.plans }}</span><span class="pstep__label">plans</span>
+      <span class="pstep__note">{{ stats.plans_verified }} verified, for {{ stats.employees }} employees</span>
+      <span class="pstep__state">{% if stats.review_open %}{{ stats.review_open }} items in review{% elif stats.plans %}Up to date{% else %}None yet{% endif %}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
+  </ol>
+</section>
+
+<!-- ============ today ============ -->
+<section class="asec acols" id="todo">
+  <div class="acard">
+    <div class="acard__head"><h3>Needs you</h3><span>{{ todo_count or 'Nothing' }} waiting</span></div>
+    <ul class="todo">
+      {% if draft_waiting %}
+      <li><a href="{{ url_for('ground_truth.matrix_view', number=stats.matrix_draft.version_no) }}">
+        <span class="todo__kind">Matrix</span>
+        <span class="todo__text"><strong>Role matrix v{{ stats.matrix_draft.version_no }} is waiting for approval</strong><span>Plans are only verified against an approved matrix.</span></span>
+        <span class="todo__go">Review →</span></a></li>
+      {% endif %}
+      {% if stats.conflicts_open %}
+      <li><a href="{{ url_for('ground_truth.conflicts') }}">
+        <span class="todo__kind">Conflict</span>
+        <span class="todo__text"><strong>{{ stats.conflicts_open }} policy conflict{{ 's' if stats.conflicts_open != 1 }} need{{ 's' if stats.conflicts_open == 1 }} a decision</strong><span>Two sources with the same authority say different things.</span></span>
+        <span class="todo__go">Decide →</span></a></li>
+      {% endif %}
+      {% if stats.review_open %}
+      <li><a href="{{ url_for('review.queue') }}">
+        <span class="todo__kind todo__kind--olive">Review</span>
+        <span class="todo__text"><strong>{{ stats.review_open }} plan item{{ 's' if stats.review_open != 1 }} wait{{ 's' if stats.review_open == 1 }} for a reviewer</strong><span>A plan can be assigned once nothing is waiting.</span></span>
+        <span class="todo__go">Open queue →</span></a></li>
+      {% endif %}
+      {% for d in attention %}
+      {% set hidden = d.parse and d.parse.hidden_blocks %}
+      <li><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}" data-drawer>
+        <span class="todo__kind {{ 'todo__kind--bad' if hidden else 'todo__kind--ink' }}">{{ 'Hidden text' if hidden else d.status|capitalize }}</span>
+        <span class="todo__text"><strong>{{ d.title }}</strong><span class="mono">{{ d.doc_id }} v{{ d.version }}</span>{% if not hidden %}<span> · {{ 'no longer in force' if d.status == 'expired' else 'not approved yet' }}</span>{% endif %}</span>
+        <span class="todo__go">Look →</span></a></li>
+      {% endfor %}
+      {% if not todo_count %}<li class="todo__empty">Nothing is waiting for you. A quiet day.</li>{% endif %}
+    </ul>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 28px">
+    {% set mix_total = plan_mix.values()|sum %}
+    {% set palette = {'Verified': 'var(--ok)', 'Verified with Warning': '#9AAA6E', 'Incomplete': '#C4622D', 'Unsupported': '#D9A07B',
+                      'Contradictory': 'var(--bad)', 'Manual Review Required': 'var(--info)', 'Failed': 'var(--faint)', 'generating': 'var(--line-strong)'} %}
+    <div class="acard">
+      <div class="acard__head"><h3>Plans by result</h3><span><a href="{{ url_for('main.trainer_dashboard') }}" style="color: var(--primary); font-weight: 600">Plans board →</a></span></div>
+      <div class="acard__body">
+        {% if mix_total %}
+        <div class="bignum"><b>{{ mix_total }}</b><span>current plan{{ 's' if mix_total != 1 }}</span></div>
+        <div class="mix" role="img" aria-label="Plans by result">{% for st, n in plan_mix.items() %}<span style="flex: {{ n }}; background: {{ palette.get(st, 'var(--faint)') }}" title="{{ status_label('plan', st)[0] }}: {{ n }}"></span>{% endfor %}</div>
+        <ul class="mixlist">{% for st, n in plan_mix.items() %}<li><i style="background: {{ palette.get(st, 'var(--faint)') }}"></i>{{ status_label('plan', st)[0] }}<b>{{ n }}</b></li>{% endfor %}</ul>
+        {% else %}<p class="muted small">No plans yet. Generate one from Employees &amp; plans.</p>{% endif %}
       </div>
     </div>
-    <div class="heroband__stats">
-      <div class="glass"><b data-count="{{ stats.lineages }}">{{ stats.lineages }}</b><span>documents</span></div>
-      <div class="glass"><b data-count="{{ stats.requirements }}">{{ stats.requirements }}</b><span>rules</span></div>
-      <div class="glass"><b data-count="{{ stats.plans }}">{{ stats.plans }}</b><span>plans</span></div>
+    <div class="acard">
+      <div class="acard__head"><h3>Coverage by role {{ help('coverage') }}</h3><span>average of current plans</span></div>
+      <div class="acard__body">
+        {% if role_cov %}<div class="hbars">
+          {% for code, name, cov, n in role_cov %}<div class="hbar"><span>{{ name }}</span><span class="hbar__track"><i data-w="{{ (cov or 0)|round(1) }}%" style="width: {{ (cov or 0)|round(1) }}%"></i></span><b>{{ (cov or 0)|round(1) }}%</b></div>{% endfor %}
+        </div>{% else %}<p class="muted small">Coverage appears once plans are generated.</p>{% endif %}
+      </div>
     </div>
   </div>
 </section>
 
-{% set m = stats.matrix %}
-<nav class="flow" aria-label="Verification pipeline">
-  <a class="flow__step flow__step--ok" href="{{ url_for('documents.index') }}">
-    <span class="flow__num">1 · Ingest</span><span class="flow__value">{{ stats.lineages }}</span>
-    <span class="flow__label">Documents</span><span class="flow__note">{{ counts.active }} active · {{ stats.chunks }} chunks</span></a>
-  <a class="flow__step {{ 'flow__step--bad' if stats.quarantined else 'flow__step--ok' }}" href="{{ url_for('ground_truth.security') }}">
-    <span class="flow__num">2 · Scan</span><span class="flow__value">{{ stats.findings }}</span>
-    <span class="flow__label">Security findings</span><span class="flow__note">{{ stats.quarantined }} chunks quarantined</span></a>
-  <a class="flow__step flow__step--ok" href="{{ url_for('ground_truth.requirements') }}">
-    <span class="flow__num">3 · Extract</span><span class="flow__value">{{ stats.requirements }}</span>
-    <span class="flow__label">Requirements</span><span class="flow__note">rule-based, with lineage</span></a>
-  <a class="flow__step {{ 'flow__step--warn' if stats.conflicts_open else 'flow__step--ok' }}" href="{{ url_for('ground_truth.conflicts') }}">
-    <span class="flow__num">4 · Resolve</span><span class="flow__value">{{ stats.conflicts }}</span>
-    <span class="flow__label">Conflicts</span><span class="flow__note">{% if stats.conflicts_open %}{{ stats.conflicts_open }} need a reviewer{% else %}all resolved{% endif %}</span></a>
-  <a class="flow__step {{ 'flow__step--ok' if m else ('flow__step--info' if stats.matrix_draft else 'flow__step--idle') }}" href="{{ url_for('ground_truth.matrix_index') }}">
-    <span class="flow__num">5 · Approve</span><span class="flow__value">{% if m %}v{{ m.version_no }}{% elif stats.matrix_draft %}Draft{% else %}—{% endif %}</span>
-    <span class="flow__label">Role matrix</span><span class="flow__note">{% if m %}approved ground truth{% elif stats.matrix_draft %}v{{ stats.matrix_draft.version_no }} awaiting approval{% else %}not built yet{% endif %}</span></a>
-  <a class="flow__step {{ 'flow__step--ok' if stats.plans else 'flow__step--idle' }}" href="{{ url_for('plans.employees') }}">
-    <span class="flow__num">6 · Generate</span><span class="flow__value">{{ stats.plans }}</span>
-    <span class="flow__label">Plans</span><span class="flow__note">{{ stats.plans_verified }} verified · {{ stats.employees }} employees</span></a>
-</nav>
-
-{% if stats.matrix_draft and (not m or stats.matrix_draft.version_no > m.version_no) %}
-<div class="notice notice--info">Matrix draft <span class="mono">v{{ stats.matrix_draft.version_no }}</span> is waiting for review.
-  Plans are only verified against an approved matrix. <a href="{{ url_for('ground_truth.matrix_view', number=stats.matrix_draft.version_no) }}">Review the draft</a></div>
-{% endif %}
-
-{% set mix_total = plan_mix.values()|sum %}
-{% set palette = {'Verified': 'var(--ok)', 'Verified with Warning': '#7CC7A5', 'Incomplete': 'var(--bad)', 'Unsupported': '#E8826F',
-                  'Contradictory': '#B42318', 'Manual Review Required': 'var(--info)', 'Failed': 'var(--faint)', 'generating': 'var(--line-strong)'} %}
-{% set ns = namespace(acc=0, stops=[]) %}
-{% for st, n in plan_mix.items() %}{% set a0 = ns.acc %}{% set ns.acc = ns.acc + (100 * n / mix_total if mix_total else 0) %}
-  {% set ns.stops = ns.stops + [palette.get(st, 'var(--faint)') ~ ' ' ~ a0 ~ '% ' ~ ns.acc ~ '%'] %}{% endfor %}
-<div class="grid-2">
-  <section class="panel rise">
-    <h2 class="panel__title">Plans by result</h2>
-    {% if mix_total %}
-    <div class="chartrow">
-      <div class="donut" style="background: conic-gradient({{ ns.stops|join(', ') }})"><div class="donut__center"><div><b data-count="{{ mix_total }}">{{ mix_total }}</b><span>plans</span></div></div></div>
-      <ul class="legend" style="flex-direction: column; margin: 0">
-        {% for st, n in plan_mix.items() %}<li><span class="legend__dot" style="background: {{ palette.get(st, 'var(--faint)') }}"></span>{{ status_label('plan', st)[0] }}<strong>{{ n }}</strong></li>{% endfor %}
-      </ul>
-    </div>
-    {% else %}{{ empty('No plans yet', 'Generate a plan from the plans board.', 'grid') }}{% endif %}
-  </section>
-  <section class="panel rise">
-    <h2 class="panel__title">Average coverage by role {{ help('coverage') }}</h2>
-    {% if role_cov %}<div class="hbars">
-      {% for code, name, cov, n in role_cov %}<div class="hbar"><span>{{ name }}</span><span class="hbar__track"><i data-w="{{ (cov or 0)|round(1) }}%"></i></span><b>{{ (cov or 0)|round(1) }}%</b></div>{% endfor %}
-    </div>{% else %}<p class="muted small">Coverage appears once plans are generated.</p>{% endif %}
-  </section>
-</div>
-
-<div class="grid-2">
-  <section class="panel">
-    <h2 class="panel__title">Document versions by status <span class="panel__aside">{{ stats.documents }} files</span></h2>
-    {% set total = stats.documents or 1 %}
-    <div class="stackbar" role="img" aria-label="Document versions by status">
-      {% for s in statuses %}{% if counts[s] %}<span class="stackbar__seg stackbar__seg--{{ s }}" style="flex: {{ counts[s] }}" title="{{ s|capitalize }}: {{ counts[s] }}"></span>{% endif %}{% endfor %}
-    </div>
-    <ul class="legend">
-      {% for s in statuses %}<li><span class="legend__dot legend__dot--{{ s }}"></span>{{ s|capitalize }}<strong>{{ counts[s] }}</strong></li>{% endfor %}
-    </ul>
-    <p class="muted small">Only active versions are used as sources. Superseded, expired, draft and not-yet-effective versions are kept for traceability and change analysis.</p>
-  </section>
-
-  <section class="panel">
-    <h2 class="panel__title">Needs attention {% if attention %}<span class="badge badge--warn">{{ attention|length }}</span>{% endif %}</h2>
-    {% if attention %}
-    <ul class="rows">
-      {% for d in attention %}
-      <li class="rows__item">
-        <a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}"><span class="mono muted">{{ d.doc_id }} v{{ d.version }}</span> {{ d.title }}</a>
-        <span class="rows__meta">
-          {% if d.parse and d.parse.hidden_blocks %}<span class="badge badge--bad">Hidden content</span>{% endif %}
-          {% if d.status in ['expired', 'draft'] %}{{ status_badge(d.status) }}{% endif %}
-        </span>
-      </li>
+<!-- ============ records ============ -->
+<section class="asec acols">
+  <div class="acard">
+    <div class="acard__head"><h3>Recent activity</h3><span>from the audit trail, newest first</span></div>
+    {% if recent %}<ul class="alog">
+      {% for g in recent %}{% set e = g.last %}
+      <li><time datetime="{{ e.ts.isoformat() }}">{{ e.ts.strftime('%d %b %H:%M') }}</time>
+        <div><b>{{ g.action|replace('.', ' ')|replace('_', ' ')|capitalize }}</b>{% if g.count > 1 %} <span>×{{ g.count }}</span>{% endif %} ·
+          {% if g.count > 1 %}{{ g.first.entity_id }} to {{ e.entity_id }}{% else %}{{ e.entity_id }}{% endif %}{% if e.entity_version %} <span>({{ e.entity_version if not e.entity_version[:1].isdigit() else 'v' ~ e.entity_version }})</span>{% endif %}<br>
+          <span>{{ g.who or 'system' }}</span></div></li>
       {% endfor %}
-    </ul>
-    {% else %}{{ empty('All clear', 'No expired, draft or suspicious documents.', 'check') }}{% endif %}
-  </section>
-</div>
-
-<section class="panel panel--flush">
-  <div class="panel__bar"><h2 class="panel__title">Recent activity</h2><span class="panel__aside">Append-only audit trail</span></div>
-  {% if recent %}
-  <div class="tablewrap">
-    <table class="table">
-      <thead><tr><th>When (UTC)</th><th>Action</th><th>Item</th><th>By</th></tr></thead>
-      <tbody>
-      {% for e in recent %}
-        <tr>
-          <td class="nowrap muted">{{ e.ts.strftime('%d %b %H:%M') }}</td>
-          <td><span class="tag mono">{{ e.action }}</span></td>
-          <td>{{ e.entity_id }}{% if e.entity_version %} <span class="muted">v{{ e.entity_version }}</span>{% endif %}</td>
-          <td class="muted">{{ e.actor.email or e.actor.user_id }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    </ul>{% else %}<p class="todo__empty">No activity yet.</p>{% endif %}
   </div>
-  {% else %}{{ empty('No activity yet', 'Uploads, approvals and generations will appear here.') }}{% endif %}
+  <div class="acard">
+    <div class="acard__head"><h3>Policy library</h3><span>{{ stats.documents }} files, all versions</span></div>
+    <div class="acard__body">
+      <div class="stackbar" role="img" aria-label="Document versions by status">
+        {% for s in statuses %}{% if counts[s] %}<span class="stackbar__seg stackbar__seg--{{ s }}" style="flex: {{ counts[s] }}" title="{{ s|capitalize }}: {{ counts[s] }}"></span>{% endif %}{% endfor %}
+      </div>
+      <ul class="mixlist">{% for s in statuses %}<li><i class="legend__dot--{{ s }}" style="border-radius: 2px"></i>{{ s|capitalize }}<b>{{ counts[s] }}</b></li>{% endfor %}</ul>
+      <p class="small muted" style="margin-top: 14px">Only active versions teach anything. Older, draft and future versions are kept so every change can be traced.</p>
+    </div>
+  </div>
 </section>
 {% endblock %}

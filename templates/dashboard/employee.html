@@ -160,7 +160,7 @@
 <section class="lquote" data-parallax>
   <div class="lquote__bg"><img src="{{ url_for('static', filename='img/aurelle/photos/resort.jpg') }}" alt="" loading="lazy"></div>
   <div class="lquote__inner rise">
-    <img src="{{ url_for('static', filename=brand.logo) }}" alt="" class="lquote__logo">
+    <img src="{{ url_for('static', filename=brand.logo_light or brand.logo) }}" alt="" class="lquote__logo">
     <p>Excellence is not a skill, it’s an attitude.</p>
     <small>{{ brand.name }} {{ brand.tagline }}</small>
   </div>

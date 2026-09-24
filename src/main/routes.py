@@ -5,7 +5,7 @@ from sqlalchemy import case, func, or_, select
 import database
 from database import db
 from database.models import (AuditLog, Chunk, Conflict, Document, Employee, JobRole, MatrixVersion, Plan, Requirement,
-                             SecurityFinding)
+                             ReviewItem, SecurityFinding)
 from src.rbac import has_permission, require_permission
 
 bp = Blueprint("main", __name__)
@@ -111,11 +111,12 @@ def admin_dashboard():
         sub(select(func.count()).select_from(Requirement).join(Document).where(Document.status.in_(["active", "expired"]))),
         sub(select(func.count()).select_from(SecurityFinding)),
         sub(select(func.count()).select_from(Chunk).where(Chunk.quarantined)),
+        sub(select(func.count()).select_from(ReviewItem).where(ReviewItem.status == "open")),
     )).one()
     stats = {
         "documents": sum(counts.values()),
         "lineages": counters[0], "chunks": counters[1], "roles": counters[2], "employees": counters[3],
-        "requirements": counters[4], "findings": counters[5], "quarantined": counters[6],
+        "requirements": counters[4], "findings": counters[5], "quarantined": counters[6], "review_open": counters[7],
         "matrix": db.session.scalar(select(MatrixVersion).where(MatrixVersion.status == "approved")),
         "matrix_draft": db.session.scalar(select(MatrixVersion).where(MatrixVersion.status == "draft")
                                           .order_by(MatrixVersion.version_no.desc())),
@@ -135,11 +136,23 @@ def admin_dashboard():
                                   .join(Plan, Plan.job_role_id == JobRole.id)
                                   .where(Plan.status.notin_(["superseded", "Failed"]))
                                   .group_by(JobRole.code, JobRole.name).order_by(JobRole.code)).all()
-    recent = db.session.scalars(select(AuditLog).order_by(AuditLog.ts.desc()).limit(8)).all()
+    # Consecutive entries of the same action by the same person read as one line ("Review approved x7").
+    recent = []
+    for e in db.session.scalars(select(AuditLog).order_by(AuditLog.ts.desc()).limit(60)):
+        who = (e.actor or {}).get("email") or (e.actor or {}).get("user_id")
+        if recent and recent[-1]["action"] == e.action and recent[-1]["who"] == who:
+            recent[-1]["count"] += 1
+            recent[-1]["first"] = e
+        elif len(recent) < 8:
+            recent.append({"action": e.action, "who": who, "last": e, "first": e, "count": 1})
+        else:
+            break
     attention = db.session.scalars(
         select(Document).where(or_(Document.status.in_(["expired", "draft"]), hidden))
         .order_by(Document.doc_id).limit(8)).all()
-    return render_template("dashboard/admin.html", counts=counts, stats=stats, recent=recent,
+    from config.settings import today
+    from flask import current_app
+    return render_template("dashboard/admin.html", counts=counts, stats=stats, recent=recent, today=today(current_app.config),
                            attention=attention, statuses=DOC_STATUSES, plan_mix=plan_mix, role_cov=role_cov)
 
 

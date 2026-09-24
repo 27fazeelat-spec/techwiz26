@@ -40,7 +40,7 @@
       <tbody>
       {% for d in docs %}
         <tr>
-          <td><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}"><span class="mono muted">{{ d.doc_id }}</span> {{ d.title }}</a></td>
+          <td><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}" data-drawer><span class="mono muted">{{ d.doc_id }}</span> {{ d.title }}</a></td>
           <td class="mono">{{ d.version }}</td>
           <td>{{ d.category }}</td>
           <td class="num">{{ d.tier if d.tier else '—' }}</td>

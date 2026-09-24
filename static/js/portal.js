@@ -4,6 +4,7 @@
   var root = document.documentElement;
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var calm = document.body.classList.contains("theme-terra");   // quieter theme: no tilt, pull or counting
 
   // greeting by the viewer's own clock
   document.querySelectorAll("[data-greeting]").forEach(function (el) {
@@ -32,7 +33,7 @@
     if (el.dataset.counted) return;
     el.dataset.counted = "1";
     var target = parseFloat(el.dataset.count), dec = parseInt(el.dataset.decimals || "0", 10);
-    if (reduce || isNaN(target)) { el.textContent = isNaN(target) ? el.textContent : target.toFixed(dec); return; }
+    if (reduce || calm || isNaN(target)) { el.textContent = isNaN(target) ? el.textContent : target.toFixed(dec); return; }
     var start = performance.now();
     (function step(now) {
       var p = Math.min(1, (now - start) / 1300), v = target * (1 - Math.pow(1 - p, 4));
@@ -44,34 +45,37 @@
   if (reduce || !fine) return;
 
   // spotlight on cards
-  var SPOT = ".kpi, .panel, .flow__step, .modcard, .pcard, .kindcard, .teamcard, .upnext li a";
-  document.querySelectorAll(SPOT).forEach(function (el) { el.classList.add("spot"); });
-  document.addEventListener("pointermove", function (e) {
-    var el = e.target.closest && e.target.closest(".spot");
-    if (!el) return;
-    var r = el.getBoundingClientRect();
-    el.style.setProperty("--sx", (e.clientX - r.left) + "px");
-    el.style.setProperty("--sy", (e.clientY - r.top) + "px");
-  }, { passive: true });
-
-  // 3D tilt
-  document.querySelectorAll("[data-tilt]").forEach(function (el) {
-    el.addEventListener("pointermove", function (e) {
-      var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      el.style.setProperty("--ry", (x * 7).toFixed(2) + "deg");
-      el.style.setProperty("--rx", (-y * 7).toFixed(2) + "deg");
-    });
-    el.addEventListener("pointerleave", function () { el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); });
-  });
-
-  // magnetic primary actions
-  document.querySelectorAll(".btn--primary, .btn--gold, [data-magnetic]").forEach(function (el) {
-    el.addEventListener("pointermove", function (e) {
+  if (!calm) {
+    var SPOT = ".kpi, .panel, .flow__step, .modcard, .pcard, .kindcard, .teamcard, .upnext li a";
+    document.querySelectorAll(SPOT).forEach(function (el) { el.classList.add("spot"); });
+    document.addEventListener("pointermove", function (e) {
+      var el = e.target.closest && e.target.closest(".spot");
+      if (!el) return;
       var r = el.getBoundingClientRect();
-      el.style.transform = "translate(" + ((e.clientX - r.left - r.width / 2) * 0.18).toFixed(1) + "px," + ((e.clientY - r.top - r.height / 2) * 0.28).toFixed(1) + "px)";
+      el.style.setProperty("--sx", (e.clientX - r.left) + "px");
+      el.style.setProperty("--sy", (e.clientY - r.top) + "px");
+    }, { passive: true });
+
+    // 3D tilt
+    document.querySelectorAll("[data-tilt]").forEach(function (el) {
+      el.addEventListener("pointermove", function (e) {
+        var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        el.style.setProperty("--ry", (x * 7).toFixed(2) + "deg");
+        el.style.setProperty("--rx", (-y * 7).toFixed(2) + "deg");
+      });
+      el.addEventListener("pointerleave", function () { el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); });
     });
-    el.addEventListener("pointerleave", function () { el.style.transform = ""; });
-  });
+
+    // magnetic primary actions
+    document.querySelectorAll(".btn--primary, .btn--gold, [data-magnetic]").forEach(function (el) {
+      el.addEventListener("pointermove", function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.transform = "translate(" + ((e.clientX - r.left - r.width / 2) * 0.18).toFixed(1) + "px," + ((e.clientY - r.top - r.height / 2) * 0.28).toFixed(1) + "px)";
+      });
+      el.addEventListener("pointerleave", function () { el.style.transform = ""; });
+    });
+
+  }
 
   // custom cursor
   var cursor = document.querySelector(".cursor");

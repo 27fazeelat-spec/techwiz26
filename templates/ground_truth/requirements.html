@@ -44,7 +44,7 @@
       <tbody>
       {% for r, d in rows %}
         <tr>
-          <td><a href="{{ url_for('ground_truth.requirement_detail', pk=r.id) }}" class="reqid" data-ref="req:{{ r.req_id }}">{{ r.req_id }}</a>
+          <td><a href="{{ url_for('ground_truth.requirement_detail', pk=r.id) }}" class="reqid" data-drawer data-ref="req:{{ r.req_id }}">{{ r.req_id }}</a>
               <div class="reqtext">{{ r.text }}</div>
               {% if r.condition %}<span class="chip" title="{{ r.condition.text }}">only if: {{ r.condition.field }} {{ r.condition.op }} {{ r.condition.value }}</span>{% endif %}</td>
           <td class="nowrap">{% if r.mandatory %}<span class="badge badge--info">{{ r.req_type }}</span>{% else %}<span class="badge badge--neutral">{{ r.req_type }}</span>{% endif %}</td>
