@@ -44,6 +44,7 @@ NAV = {
     ],
     "manager": [
         ("Home", [("My team", "main.team_dashboard", "users", "main.team_dashboard"),
+                  ("Team questions", "bot.team_questions", "chat", "bot.team_questions"),
                   ("Team reports", "reports.index", "file", "reports.")]),
     ],
     "employee": [
@@ -52,6 +53,7 @@ NAV = {
               ("My Progress", "learning.progress_page", "chart", "learning.progress_page"),
               ("Assessments", "learning.assessments", "check", "learning.assessments"),
               ("Resources", "learning.resources", "file", "learning.resources"),
+              ("Ask the bot", "bot.ask", "chat", "bot.ask"),
               ("Calendar", "learning.calendar", "calendar", "learning.calendar"),
               ("Certificate", "learning.certificate", "trophy", "learning.certificate")]),
     ],
@@ -60,7 +62,8 @@ NAV = {
 
 # Demo visitors see what the administrator sees (read-only), without Settings, plus a sample employee's home.
 NAV["demo"] = [g for g in NAV["admin"] if g[0] != "Settings"] + [
-    ("Try it", [("See as an employee", "tryout.employee", "user", "tryout.employee")])]
+    ("Try it", [("See as an employee", "tryout.employee", "user", "tryout.employee"),
+                ("Ask the bot", "bot.ask", "chat", "bot.ask")])]
 
 
 def items_for(role):

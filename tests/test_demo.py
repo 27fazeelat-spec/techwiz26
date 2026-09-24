@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from flask import current_app
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 
 from database import db, utcnow
 from database.models import DemoAccount, DemoRequest, DemoVisit, PlatformStaff
@@ -56,7 +56,7 @@ def test_console_is_for_skillsprint_staff_only(corpus):
     assert client.get("/console/").status_code == 403
 
 
-def test_approving_creates_a_read_only_demo_that_ends(corpus):
+def test_approving_creates_a_read_only_demo_that_ends(corpus, monkeypatch):
     fresh()
     public = current_app.test_client()
     public.post("/demo", data=FORM)
@@ -88,6 +88,17 @@ def test_approving_creates_a_read_only_demo_that_ends(corpus):
     assert "Welcome</span>, Maya." in sample and "Saffron Table" in sample
     assert "Aurelle" not in sample and "Leila" not in sample                          # no client data in the sample
     assert db.session.scalar(select(DemoVisit).where(DemoVisit.endpoint == "tryout.employee")) is not None
+
+    from database.models import BotQuestion
+    from src.services import bot
+    from tests.test_bot import BotProvider
+    monkeypatch.setattr(bot, "build_provider", lambda config: BotProvider(needle="allergen"))
+    stored = db.session.scalar(select(func.count()).select_from(BotQuestion))
+    asked = visitor.post("/ask", data={"question": "How must allergen information be given to guests?"})
+    html = asked.get_data(as_text=True)
+    assert asked.status_code == 200 and "are not stored" in html                   # the one thing a visitor may post
+    assert ("ALG-01" in html or "FSP-01" in html) and "GDP-01" not in html and "Aurelle" not in html   # sample documents only
+    assert db.session.scalar(select(func.count()).select_from(BotQuestion)) == stored
 
     admin = current_app.test_client()                                                # the client's own view is untouched
     login(admin, "admin@aurelle.example")

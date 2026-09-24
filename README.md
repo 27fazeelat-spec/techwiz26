@@ -139,6 +139,7 @@ The suite ingests the full sample collection and checks the results against the 
 | Twelve reports from stored data (comparison, validation, traceability, hallucination, progress, …) exported as CSV, Excel and PDF | ✅ |
 | Employee filters (role, department, property, verification result, progress) and plan comparison | ✅ |
 | Topic check: refuses topics the approved documents do not cover (deterministic, `hallucination_checks/`) | ✅ |
+| Ask the bot: employees ask questions answered only from approved passages; Python checks every citation and number, uncovered questions never reach Gemini, and the employee can send any question to their line manager | ✅ |
 | Job roles dashboard: required rules, plans, coverage and onboarding progress per role | ✅ |
 | Ctrl+K search across pages, documents, requirements, employees and modules | ✅ |
 | Administrator settings: which pages each role sees, composable employee home | ✅ |
@@ -162,6 +163,7 @@ Sign in as `admin@aurelle.example` (all steps) or the role named in each step.
 | 9 | **Review hallucination warnings** | Plan page, *Findings* (V-HALLUCINATION, V-SOURCE); *What the sources do not cover*; *Knowledge > Topic check*; report *Hallucination flags* |
 | 10 | **Review contradictions** | *Ground truth > Conflicts* (Reviewer: `evaluator@aurelle.example`) |
 | 11 | **Approve content** | *Review queue*: approve, reject, edit, override with a reason; then *Assign plan* on the plan page |
+| 12a | **Ask the bot** | Employee: *Ask the bot*, or *Ask about this module* on a module page. Try a covered question ("How much cash can my float have?"), an uncovered one, and *Ask my manager*; the manager replies on *Team questions*. Unanswered questions appear in the report *Questions the documents did not answer* |
 | 12 | **Track employee progress** | Employee: `leila.haddad@aurelle.example`. Manager: `omar.siddiqui@aurelle.example` (*My team*, sign-offs) |
 | 13 | **Update policy** | Upload a new version of an existing document (for example `hidden_test_ready/documents/GDP-01_v3.0.pdf`) |
 | 14 | **Regenerate affected content** | *Policy changes*, open the change, *Regenerate affected modules* |
@@ -188,6 +190,7 @@ Sign in as `admin@aurelle.example` (all steps) or the role named in each step.
 
 - **Generation time.** A full plan takes about 30 to 85 seconds with Gemini, mostly model time; the SRS target is 30 seconds. Regenerating one module is much faster.
 - **Deterministic extraction has limits.** Recall is 99.5% and precision 100% on our register, but stage (51%), priority (67%) and exact roles (71%) are right less often (`reports/extraction_accuracy.md`). Unusual wording on hidden documents may need review.
+- **Ask the bot finds passages by words, not meaning.** Everyday words are mapped to policy words in `config/bot.yaml`; a question phrased very differently from the documents may be told the documents do not cover it and can be sent to the manager. Answers are short summaries; the quoted passage is the authority.
 - **Topic check matches words, not meaning.** A topic phrased with words the documents do not use (for example "kept" where the policy says "deleted") scores lower and is sent to a person rather than refused.
 - **Numbers-based hallucination check.** V-HALLUCINATION compares numbers, durations and named facts with the cited source; a wrong statement with no checkable fact relies on the reviewer.
 - **No OCR, no languages other than English.**
@@ -231,6 +234,7 @@ python_validation/    the 17 validation rules
 comparison_engine/    GenAI vs Python comparison and scores
 contradiction_checks/ conflict detection and precedence
 hallucination_checks/ topic support check (refuses uncovered topics)
+src/bot/             Ask the bot (service in src/services/bot.py, prompt prompt_templates/ask_bot.j2)
 tests/                pytest suites
 sample_documents/     the Aurelle document collection (PDF + DOCX)
 hidden_test_ready/    rehearsal pack for the hidden evaluation and its runner

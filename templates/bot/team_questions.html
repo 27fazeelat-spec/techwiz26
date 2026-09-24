@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}Team questions{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">My team</p><h1>Team questions</h1>
+  <p class="pagehead__meta">Questions your new hires sent you from Ask the bot, usually because the company documents do not answer them.
+    {% if waiting %}<strong>{{ waiting }} waiting for your reply.</strong>{% else %}Nothing is waiting.{% endif %}</p></div></div>
+
+<div class="stack">
+{% for q in rows %}
+  <article class="botq botq--{{ q.status }}" id="q-{{ q.id }}">
+    <header class="botq__head">
+      <div><p class="label">{{ q.employee.name }} · {{ q.employee.job_role.name }} · {{ q.escalated_at.strftime('%d %b, %H:%M') if q.escalated_at }}</p>
+        <p class="botq__question">{{ q.question }}</p></div>
+      <span class="badge badge--{{ 'info' if q.status == 'escalated' else 'ok' }}">{{ 'Waiting for you' if q.status == 'escalated' else 'Replied' }}</span>
+    </header>
+    {% if q.answer %}
+      <div class="botq__answer botq__answer--muted">{{ icon('chat', 16) }}<p><span class="label">What the bot said</span>{{ q.answer }}</p></div>
+    {% else %}
+      <p class="botq__reason">{{ 'The bot held its answer back because Python could not match it to the documents.' if q.check.missing_facts or q.check.unknown_citations else 'The company documents do not cover this, so the bot did not answer.' }}</p>
+    {% endif %}
+    {% if q.status == 'escalated' %}
+    <form method="post" action="{{ url_for('bot.reply', pk=q.id) }}" class="botreply">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="sr-only" for="reply-{{ q.id }}">Your reply</label>
+      <textarea id="reply-{{ q.id }}" name="reply" rows="3" maxlength="2000" required placeholder="Reply to {{ q.employee.name.split()[0] }}…"></textarea>
+      <button class="btn btn--primary" type="submit">Send reply</button>
+    </form>
+    {% else %}
+      <div class="botq__manager"><p class="label">{{ icon('user', 14) }} Your reply · {{ q.answered_at.strftime('%d %b, %H:%M') if q.answered_at }}</p><p>{{ q.manager_answer }}</p></div>
+    {% endif %}
+  </article>
+{% else %}
+  <section class="panel">{{ empty('No questions from your team', 'When a new hire asks something the documents do not cover, they can send it to you. It appears here.', 'chat') }}</section>
+{% endfor %}
+</div>
+{% endblock %}

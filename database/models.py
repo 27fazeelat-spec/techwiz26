@@ -746,3 +746,40 @@ class DemoVisit(db.Model):
     ts: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     endpoint: Mapped[str] = mapped_column(String(80))
     path: Mapped[str] = mapped_column(String(300))
+
+
+# --------------------------------------------------------------------------- Ask the bot
+
+BOT_STATUSES = ("answered", "no_source", "blocked", "escalated", "manager_answered")
+
+
+class BotQuestion(db.Model):
+    """A question an employee asked the bot, what the sources and the checks decided, and any manager reply.
+
+    answered          the bot answered from approved passages and Python accepted the answer
+    no_source         no approved passage covers the question; Gemini was not asked (or said it cannot answer)
+    blocked           Gemini answered but Python rejected it (unknown citation or a fact not in the sources)
+    escalated         the employee sent it to their line manager
+    manager_answered  the line manager replied
+    """
+    __tablename__ = "bot_questions"
+    __table_args__ = (CheckConstraint(_in("status", BOT_STATUSES), name="ck_bot_questions_status"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id", ondelete="CASCADE"), index=True)
+    module_key: Mapped[str | None] = mapped_column(String(10))
+    question: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20))
+    score: Mapped[float] = mapped_column(default=0.0)                 # best passage's share of the question's key words
+    answer: Mapped[str] = mapped_column(Text, default="")
+    sources: Mapped[list] = mapped_column(JSONType, default=list)     # [{ref, doc_id, section_id, text, cited}]
+    check: Mapped[dict] = mapped_column(JSONType, default=dict)       # what Python checked and why it decided
+    run_id: Mapped[int | None] = mapped_column(ForeignKey("generation_runs.id", ondelete="SET NULL"))
+    helpful: Mapped[bool | None] = mapped_column(Boolean)
+    manager_code: Mapped[str | None] = mapped_column(String(20), index=True)
+    escalated_at: Mapped[datetime | None] = mapped_column(DateTime)
+    manager_answer: Mapped[str] = mapped_column(Text, default="")
+    answered_by: Mapped[str | None] = mapped_column(String(254))
+    answered_at: Mapped[datetime | None] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+    employee: Mapped["Employee"] = relationship()

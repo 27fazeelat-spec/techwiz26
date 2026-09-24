@@ -1,0 +1,29 @@
+# Ask the bot: employees ask questions, answered only from approved passages and checked by Python.
+# Retrieval uses the same deterministic word matching as the Topic check (hallucination_checks/topic_support.py).
+answer_from: 0.25           # best passage must hold this share of the question's key words, or Gemini is not asked
+passages: 6                 # passages given to Gemini
+max_question_chars: 300
+daily_limit: 30             # questions per employee per day
+demo_limit: 10              # questions per demo sign-in session (nothing is stored for demo visitors)
+max_answer_chars: 900
+# Question words that say nothing about the topic.
+extra_stopwords: [what, whats, how, when, who, why, which, where, need, needs, allowed, allow, happen, happens,
+                  tell, please, about, know, does, did, doing, get, got, there, any, much, many, long, ok, okay,
+                  hi, hello, thanks, thank, like, want, would, should, could, shall, supposed, also, just, still]
+# Everyday words mapped to the words the policies use. Only for finding passages; the question sent to the
+# model and the answer check are unchanged.
+synonyms:
+  whatsapp: messaging apps personal mobile phones
+  phone: mobile phone
+  photo: photographed photograph
+  photos: photographed photograph
+  pic: photographed photograph
+  boss: manager line manager
+  sick: sickness absence
+  holiday: annual leave
+  vacation: annual leave
+  money: cash
+  id: identity document
+  passport: passport identity document
+  uniform: uniform dress
+  late: lateness

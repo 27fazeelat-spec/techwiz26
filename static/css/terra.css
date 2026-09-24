@@ -439,3 +439,36 @@
 .topicmatches { list-style: none; margin: 0; padding: 0; }
 .topicmatches li { padding: 14px 20px; border-top: 1px solid var(--line); }
 .topicmatches__ref { margin: 0 0 8px; font-size: 13px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* Ask the bot ------------------------------------------------------------------------------------ */
+.botask form { display: grid; gap: 12px; }
+.botask__field textarea, .botreply textarea { width: 100%; resize: vertical; font: inherit; font-size: 16px; line-height: 1.5; padding: 12px 14px;
+  border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--ink); }
+.botask__row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.botask__row select { margin-left: 6px; max-width: 280px; }
+.botask__hint { flex: 1 1 220px; display: inline-flex; gap: 6px; align-items: center; }
+.botq { border: 1px solid var(--line); border-left: 4px solid var(--faint); border-radius: 8px; background: var(--surface); padding: 16px 20px; display: grid; gap: 12px; scroll-margin-top: 80px; }
+.botq--answered, .botq--manager_answered { border-left-color: var(--ok); }
+.botq--no_source { border-left-color: var(--warn); }
+.botq--blocked { border-left-color: var(--bad); }
+.botq--escalated { border-left-color: var(--info); }
+.botq.is-fresh { box-shadow: 0 0 0 3px var(--ok-bg); }
+.botq__head { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; }
+.botq__question { margin: 0; font-family: var(--font-display); font-size: 19px; line-height: 1.35; }
+.botq__answer { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 8px; background: var(--surface-sunk); color: var(--ink); }
+.botq__answer svg { flex-shrink: 0; margin-top: 3px; color: var(--primary); }
+.botq__answer p { margin: 0; line-height: 1.6; }
+.botq__answer--muted { color: var(--muted); }
+.botq__answer--muted .label { margin-bottom: 2px; }
+.botq__reason, .botq__note { margin: 0; color: var(--muted); display: flex; gap: 6px; align-items: flex-start; }
+.botq__note { color: var(--warn); font-size: 14px; }
+.botq__manager { padding: 12px 14px; border-radius: 8px; border: 1px dashed var(--line-strong); }
+.botq__manager p { margin: 0; }
+.botq__manager p + p { margin-top: 4px; }
+.botq__sources summary { cursor: pointer; color: var(--muted); font-size: 13.5px; display: inline-flex; gap: 6px; align-items: center; }
+.botq__sources .quote { margin-top: 8px; }
+.botq__foot { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 10px; }
+.botq__actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.botq__actions form.inline { display: inline-flex; gap: 6px; align-items: center; }
+.botreply { display: grid; gap: 8px; justify-items: start; }
+@media (max-width: 640px) { .botq__head { flex-direction: column; } .botq { padding: 14px; } }

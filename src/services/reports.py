@@ -292,11 +292,39 @@ def audit_trail(role=None, employee_ids=None, limit=2000):
     return t
 
 
+
+def bot_questions(role=None, employee_ids=None):
+    from database.models import BotQuestion
+    t = Table("bot_questions", "Questions the documents did not answer",
+              "Questions employees asked in Ask the bot that the approved documents could not answer, answers Python "
+              "held back, answers marked not helpful and questions sent to a manager. Each one points to a gap in the "
+              "documents or in the training.",
+              ["Asked (UTC)", "Employee", "Role", "Question", "Outcome", "Why", "Best match %", "Closest document",
+               "Helpful", "Manager reply"],
+              pdf_columns=["Asked (UTC)", "Role", "Question", "Outcome", "Why"])
+    query = (select(BotQuestion, Employee, JobRole).join(Employee, BotQuestion.employee_id == Employee.id)
+             .join(JobRole, Employee.job_role_id == JobRole.id)
+             .where((BotQuestion.status != "answered") | (BotQuestion.helpful.is_(False)))
+             .order_by(BotQuestion.created_at.desc()))
+    if role:
+        query = query.where(JobRole.code == role)
+    if employee_ids is not None:
+        query = query.where(Employee.id.in_(employee_ids))
+    outcome = {"no_source": "Not in the documents", "blocked": "Answer held back", "escalated": "Sent to manager",
+               "manager_answered": "Manager replied", "answered": "Answered, not helpful"}
+    for q, e, r in db.session.execute(query):
+        closest = next((f"{s['doc_id']} §{s['section_id']}" for s in q.sources or []), "")
+        t.rows.append([q.created_at.strftime("%Y-%m-%d %H:%M"), e.employee_code, r.code, q.question,
+                       outcome.get(q.status, q.status), (q.check or {}).get("reason", ""), round((q.score or 0) * 100),
+                       closest, "" if q.helpful is None else ("yes" if q.helpful else "no"), q.manager_answer or ""])
+    return t
+
+
 REPORTS = {
     "comparison": comparison, "validation": validation, "findings": findings, "hallucination": hallucination,
     "traceability": traceability, "mandatory_training": mandatory_training, "role_coverage": role_coverage,
     "policy_coverage": policy_coverage, "progress": progress, "assessment_results": assessment_results,
-    "security": security, "audit": audit_trail,
+    "security": security, "bot_questions": bot_questions, "audit": audit_trail,
 }
 TEAM_REPORTS = ("progress", "assessment_results")          # what a line manager may export for their team
 

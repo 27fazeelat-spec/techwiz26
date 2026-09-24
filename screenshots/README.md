@@ -32,3 +32,5 @@ Taken from a local SQLite copy of the Aurelle sample workspace (fictional data).
 | `26_request_demo.png` | Public demo request form |
 | `27_skillsprint_console.png` | SkillSprint staff console (demo requests and accounts) |
 | `28_demo_sample_workspace.png` | What a demo visitor sees: the fictional sample workspace, never client data |
+| `29_ask_the_bot.png` | Ask the bot: answers from the policies with their source, a question sent to the manager |
+| `30_manager_team_questions.png` | Line manager replies to a question the documents do not answer |

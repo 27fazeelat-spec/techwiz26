@@ -72,6 +72,7 @@ def create_app(overrides=None):
     from src.api.routes import bp as api_bp
     from src.settings_web.routes import bp as settings_bp
     from src.console.routes import bp as console_bp, tryout as tryout_bp
+    from src.bot.routes import bp as bot_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(documents_bp)
@@ -87,6 +88,7 @@ def create_app(overrides=None):
     app.register_blueprint(settings_bp)
     app.register_blueprint(console_bp)
     app.register_blueprint(tryout_bp)
+    app.register_blueprint(bot_bp)
 
     @app.before_request
     def keep_skillsprint_and_demo_accounts_in_their_lane():
@@ -103,7 +105,8 @@ def create_app(overrides=None):
             if not demo_db.available():
                 abort(503)                                         # fail closed: never fall back to a client's data
             g.demo_db = True                                       # from here on, client tables are the sample's
-        if current_user.app_role == "demo" and request.method not in ("GET", "HEAD", "OPTIONS")                 and request.endpoint not in open_to_all:
+        writes = request.method not in ("GET", "HEAD", "OPTIONS") and request.endpoint not in open_to_all
+        if current_user.app_role == "demo" and writes and request.endpoint != "bot.ask":   # asking stores nothing
             abort(403)
         if current_user.app_role == "platform_admin" and request.blueprint not in ("console", "site", "auth")                 and request.endpoint not in open_to_all:
             abort(403)

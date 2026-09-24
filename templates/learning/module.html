@@ -9,6 +9,7 @@
   <span class="lchip"><b>{{ ns.d }}</b> of {{ ns.t }} steps done</span>
   {% if quiz %}<a class="btn btn--gold" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">{{ icon('spark', 15) }}{{ 'Retake the quiz' if attempts else 'Take the quiz' }}</a>{% endif %}
   <a class="btn btn--glass" href="{{ url_for('learning.modules') }}">All modules</a>
+  {% if page_on('bot.ask') and can('bot.ask') %}<a class="btn btn--glass" href="{{ url_for('bot.ask', module=m.module_key) }}">{{ icon('chat', 15) }}Ask about this module</a>{% endif %}
 {% endcall %}
 
 {% set objectives = items | selectattr('item_type', 'equalto', 'objective') | list %}

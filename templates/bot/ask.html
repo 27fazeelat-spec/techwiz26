@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% from "learning/_ui.html" import pagehero %}
+{% block title %}Ask the bot{% endblock %}
+{% block content %}
+{% macro qcard(q, fresh=false) -%}
+{% set label = {'answered': ('Answered from the policies', 'ok'), 'no_source': ('Not in the policies', 'warn'),
+                'blocked': ('Answer held back', 'bad'), 'escalated': ('With your manager', 'info'),
+                'manager_answered': ('Your manager replied', 'ok')} %}
+<article class="botq botq--{{ q.status }}{{ ' is-fresh' if fresh }}" {% if q.id %}id="q-{{ q.id }}"{% endif %}>
+  <header class="botq__head">
+    <p class="botq__question">{{ q.question }}</p>
+    <span class="badge badge--{{ label[q.status][1] }}">{{ label[q.status][0] }}</span>
+  </header>
+
+  {% if q.answer %}
+    <div class="botq__answer">{{ icon('chat', 18) }}<p>{{ q.answer }}</p></div>
+    {% if q.check.open_conflicts %}
+    <p class="botq__note">{{ icon('alert', 15) }} Two documents disagree on this and a reviewer is deciding ({{ q.check.open_conflicts|join(', ') }}). Check with your manager before you act on it.</p>
+    {% endif %}
+  {% elif q.status == 'no_source' %}
+    <p class="botq__reason">The approved company documents do not answer this, so the bot will not guess.{% if not is_demo and has_manager %} Your manager can answer it.{% endif %}</p>
+  {% elif q.status == 'blocked' %}
+    <p class="botq__reason">{{ q.check.reason }}{% if q.sources %} Read the passages below instead.{% endif %}</p>
+  {% elif q.status == 'escalated' %}
+    <p class="botq__reason">The bot could not answer this from the documents, so you sent it to your manager.</p>
+  {% endif %}
+
+  {% if q.manager_answer %}
+    <div class="botq__manager"><p class="label">{{ icon('user', 14) }} Reply from your manager{% if q.answered_at %} · {{ q.answered_at.strftime('%d %b, %H:%M') }}{% endif %}</p>
+      <p>{{ q.manager_answer }}</p></div>
+  {% endif %}
+
+  {% set shown = q.sources|selectattr('cited')|list if q.answer else (q.sources if q.status == 'blocked' else []) %}
+  {% if shown %}
+  <details class="botq__sources" {{ 'open' if fresh or q.status == 'blocked' }}>
+    <summary>{{ icon('file', 14) }} {{ 'Where this comes from' if q.answer else 'What the documents say nearby' }} · {{ shown|length }} passage{{ 's' if shown|length != 1 }}</summary>
+    {% for s in shown %}
+      <blockquote class="quote">{{ s.text[:520] }}{% if s.text|length > 520 %}…{% endif %}
+        <span class="quote__src">{{ s.doc_id }} · section {{ s.section_id }}{% for r in s.requirements[:2] %} · {{ r }}{% endfor %}</span></blockquote>
+    {% endfor %}
+  </details>
+  {% endif %}
+
+  {% if not is_demo and q.id %}
+  <footer class="botq__foot">
+    <span class="small muted">{{ q.created_at.strftime('%d %b, %H:%M') }}{% if q.module_key %} · {{ q.module_key }}{% endif %}</span>
+    <span class="botq__actions">
+      {% if q.status == 'answered' %}
+        {% if q.helpful is none %}
+        <form method="post" action="{{ url_for('bot.feedback', pk=q.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <span class="small muted">Did this help?</span>
+          <button class="btn btn--sm" name="helpful" value="yes">Yes</button>
+          <button class="btn btn--sm" name="helpful" value="no">No</button>
+        </form>
+        {% else %}<span class="small muted">{{ 'Marked helpful' if q.helpful else 'Marked not helpful' }}</span>{% endif %}
+      {% endif %}
+      {% if q.status in ['answered', 'no_source', 'blocked'] and has_manager %}
+        <form method="post" action="{{ url_for('bot.escalate', pk=q.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn--sm {{ 'btn--primary' if q.status != 'answered' }}">{{ icon('user', 14) }} Ask my manager</button>
+        </form>
+      {% elif q.status == 'escalated' %}<span class="small muted">Sent {{ q.escalated_at.strftime('%d %b') }}; the reply will appear here.</span>{% endif %}
+    </span>
+  </footer>
+  {% endif %}
+</article>
+{%- endmacro %}
+
+{% call pagehero('img/aurelle/photos/reception.jpg', 'Ask the bot', 'Not sure about a rule? Ask.',
+                 'Answers come only from the approved company documents, and every answer is checked before you see it. If the documents do not say, the bot tells you so and you can ask your manager.') %}{% endcall %}
+
+<section class="panel botask">
+  <form method="post" action="{{ url_for('bot.ask') }}" data-busy="Reading the policies…">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="botask__field">
+      <span class="sr-only">Your question</span>
+      <textarea name="question" rows="3" maxlength="{{ cfg.max_question_chars }}" required autofocus
+        placeholder="e.g. How long are guest passport scans kept?">{{ request.form.question if request.method == 'POST' and not answer else '' }}</textarea>
+    </label>
+    <div class="botask__row">
+      {% if modules %}
+      <label class="small">About
+        <select name="module">
+          <option value="">Any topic</option>
+          {% for key, title in modules.items() %}<option value="{{ key }}" {{ 'selected' if key == module_key }}>{{ key }} · {{ title }}</option>{% endfor %}
+        </select></label>
+      {% endif %}
+      <span class="small muted botask__hint">{{ icon('shield', 14) }} Python checks every citation and number against the documents.</span>
+      <button class="btn btn--primary" type="submit">{{ icon('spark', 15) }} Ask</button>
+    </div>
+  </form>
+  {% if is_demo %}<p class="small muted" style="margin: 10px 0 0">Demo: you are asking as a new hire at {{ org_name }}. Questions are answered from the sample documents and are not stored.</p>{% endif %}
+</section>
+
+{% if answer %}{{ qcard(answer, fresh=true) }}{% endif %}
+
+{% if not is_demo %}
+<h2 class="section-title">Your questions</h2>
+<div class="stack">
+  {% for q in history %}{{ qcard(q) }}
+  {% else %}<section class="panel">{{ empty('No questions yet', 'Ask about anything in your onboarding: a deadline, a procedure, who to call.', 'chat') }}</section>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

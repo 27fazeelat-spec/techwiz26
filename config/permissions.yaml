@@ -41,11 +41,13 @@ roles:
       - plans.view_team
       - progress.verify_team
       - reports.team
+      - bot.answer             # reply to questions the team sent from Ask the bot
   employee:
     label: Employee
     permissions:
       - dashboard.employee
       - learning.*
+      - bot.ask
   # SkillSprint's own people. They never belong to a client workspace.
   platform_admin:
     label: SkillSprint staff
@@ -64,3 +66,4 @@ roles:
       - plans.view
       - review.view
       - reports.view
+      - bot.ask                # answered as the sample employee; nothing is stored
