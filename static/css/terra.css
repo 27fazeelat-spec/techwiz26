@@ -279,3 +279,13 @@
 .theme-terra .kpi__value { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.02em; }
 .theme-terra .pcard .btn--primary, .theme-terra .pcard .btn--gold { background: transparent; color: var(--primary); border-color: color-mix(in srgb, var(--primary) 45%, transparent); }
 .theme-terra .pcard .btn--primary:hover, .theme-terra .pcard .btn--gold:hover { background: var(--primary-soft); color: var(--primary-hover); border-color: var(--primary); }
+
+/* ---------- logo: charcoal on paper, cream in the dark theme ---------- */
+.theme-terra .sidebar .brand__mark { object-fit: contain; }
+.theme-terra .brand__mark--on-dark { display: none; }
+:root[data-theme="dark"] .theme-terra .brand__mark--on-light { display: none; }
+:root[data-theme="dark"] .theme-terra .brand__mark--on-dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-terra .brand__mark--on-light { display: none; }
+  :root:not([data-theme="light"]) .theme-terra .brand__mark--on-dark { display: block; }
+}

@@ -22,4 +22,4 @@ hotel group; no real property or brand is implied. Photo IDs:
 | interior.jpg | 1571460 |
 
 Photos showing alcohol were deliberately excluded (dataset rule: no alcohol content).
-`hero-facade.svg`, `skyline.svg` and `logo-mark.svg` were drawn for this project; `logo-aurelle.png` is the team's logo.
+`hero-facade.svg`, `skyline.svg` and `logo-mark.svg` were drawn for this project. `dark_logo.png`, `light_logo.png` and `logo-mark.png` are the team's logo; `light_logo_clean.png` is `light_logo.png` with its background haze made transparent.

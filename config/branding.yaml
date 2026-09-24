@@ -3,8 +3,8 @@
 name: Aurelle
 tagline: Hotels & Residences
 product_name: Aurelle Learning          # browser tab and portal title
-logo: img/aurelle/logo-mark-square.png   # the team's logo, charcoal on transparent (cropped from logo-mark.png)
-logo_light: img/aurelle/logo-mark-light.png   # the same mark in cream, for dark backgrounds
+logo: img/aurelle/dark_logo.png          # the team's logo in charcoal, for light backgrounds
+logo_light: img/aurelle/light_logo_clean.png   # cream version for dark backgrounds (light_logo.png with its background haze removed)
 primary: "#14213D"                       # Midnight Navy: buttons, links, active navigation
 primary_hover: "#0B1529"
 primary_dark_mode: "#9DB2FF"             # the same colour, readable on dark backgrounds

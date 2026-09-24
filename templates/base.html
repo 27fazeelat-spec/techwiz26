@@ -49,7 +49,9 @@
 {% set ep = request.endpoint or '' %}
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
   <a class="brand" href="{{ url_for('main.home') }}" aria-label="{{ brand.name }} home">
-    <img class="brand__mark" src="{{ url_for('static', filename=brand.logo if terra else (brand.logo_light or brand.logo)) }}" alt="">
+    {% if terra %}<img class="brand__mark brand__mark--on-light" src="{{ url_for('static', filename=brand.logo) }}" alt="">
+    <img class="brand__mark brand__mark--on-dark" src="{{ url_for('static', filename=brand.logo_light or brand.logo) }}" alt="">
+    {% else %}<img class="brand__mark" src="{{ url_for('static', filename=brand.logo_light or brand.logo) }}" alt="">{% endif %}
     <span class="brand__word"><b>{{ brand.name|upper }}</b><small>{{ brand.tagline|upper }}</small></span>
   </a>
 

@@ -440,7 +440,7 @@ def certificate_pdf(cert, brand, logo_path, verify_url):
     c.setStrokeColor(gold); c.setLineWidth(1.5); c.rect(34, 34, w - 68, h - 68, stroke=1, fill=0)
     c.setLineWidth(0.6); c.rect(40, 40, w - 80, h - 80, stroke=1, fill=0)
     try:
-        c.drawImage(logo_path, w / 2 - 34, h - 150, 68, 68, mask="auto")
+        c.drawImage(logo_path, w / 2 - 34, h - 150, 68, 68, mask="auto", preserveAspectRatio=True, anchor="c")
     except Exception:
         pass
     c.setFillColor(gold); c.setFont("Times-Roman", 13)
