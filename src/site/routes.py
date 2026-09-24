@@ -4,9 +4,18 @@ from flask_login import current_user
 
 bp = Blueprint("site", __name__)
 
+def _test_count():
+    """Automated tests in the repository, counted rather than typed, so the public figure never goes stale."""
+    from pathlib import Path
+    import re
+    folder = Path(__file__).resolve().parents[2] / "tests"
+    count = sum(len(re.findall(r"^def test_", f.read_text(encoding="utf-8"), re.M)) for f in folder.glob("test_*.py"))
+    return count or None
+
+
 # Figures measured on the Aurelle sample collection (see reports/ and the test suite); nothing here is invented.
 MEASURED = {"recall": 99.5, "precision": 100, "attacks": 12, "conflicts": 12, "documents": 44, "requirements": 185,
-            "roles": 10, "rules": 17, "tests": 129}
+            "roles": 10, "rules": 17, "tests": _test_count() or 157}
 
 
 @bp.route("/")

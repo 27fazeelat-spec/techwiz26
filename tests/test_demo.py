@@ -103,3 +103,28 @@ def test_approving_creates_a_read_only_demo_that_ends(corpus):
     staff.post(f"/console/demos/{account.id}", data={"action": "extend"})
     db.session.refresh(account)
     assert account.active and account.expires_at > utcnow() + timedelta(days=6)
+
+
+def test_staff_page_adds_resets_and_guards(corpus):
+    fresh()
+    client = current_app.test_client()
+    login(client, STAFF_EMAIL, STAFF_PASSWORD)
+    assert b"SkillSprint staff" in client.get("/console/staff").data
+    taken = client.post("/console/staff", data={"action": "add", "name": "X", "email": "admin@aurelle.example",
+                                                "password": "long-enough-1"}, follow_redirects=True)
+    assert b"already exists" in taken.data                                            # a client's email stays theirs
+    client.post("/console/staff", data={"action": "add", "name": "Bilal Ahmed", "email": "bilal@skillsprint.example",
+                                        "password": "bilal-pass-1"})
+    bilal = db.session.scalar(select(PlatformStaff).where(PlatformStaff.email == "bilal@skillsprint.example"))
+    me = db.session.scalar(select(PlatformStaff).where(PlatformStaff.email == STAFF_EMAIL))
+    own = client.post("/console/staff", data={"action": "off", "id": me.id}, follow_redirects=True)
+    assert b"cannot switch off your own login" in own.data
+    client.post("/console/staff", data={"action": "password", "id": bilal.id, "password": "bilal-pass-2"})
+    client.post("/console/staff", data={"action": "off", "id": bilal.id})
+    db.session.refresh(bilal)
+    assert not bilal.active
+    other = current_app.test_client()
+    assert b"incorrect" in login(other, "bilal@skillsprint.example", "bilal-pass-2").data   # switched off: no sign-in
+    login(client, STAFF_EMAIL, STAFF_PASSWORD)
+    client.post("/console/staff", data={"action": "on", "id": bilal.id})
+    assert login(other, "bilal@skillsprint.example", "bilal-pass-2").status_code == 302

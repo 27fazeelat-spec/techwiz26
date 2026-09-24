@@ -20,7 +20,8 @@
     {% for label, endpoint, icon_name, match in [('Overview', 'console.overview', 'home', 'console.overview'),
                                                   ('Demo requests', 'console.requests', 'inbox', 'console.request'),
                                                   ('Demo accounts', 'console.demos', 'users', 'console.demo'),
-                                                  ('Workspaces', 'console.workspaces', 'building', 'console.workspaces')] %}
+                                                  ('Workspaces', 'console.workspaces', 'building', 'console.workspaces'),
+                                                  ('Staff', 'console.staff', 'user', 'console.staff')] %}
     <a href="{{ url_for(endpoint) }}" class="{{ 'is-active' if ep.startswith(match) }}">{{ icon(icon_name, 17) }}<span>{{ label }}</span></a>
     {% endfor %}
   </nav>

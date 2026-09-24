@@ -68,3 +68,8 @@
   .cstats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ccols, .cdetail { grid-template-columns: minmax(0, 1fr); }
 }
+
+.cstaff__more { margin-top: 6px; }
+.cstaff__more summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--primary); }
+.cstaff__more[open] { padding: 10px 0 4px; }
+.cstaff__more .cform { max-width: 360px; margin-top: 8px; }

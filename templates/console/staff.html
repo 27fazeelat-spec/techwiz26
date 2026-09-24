@@ -1,0 +1,50 @@
+{% extends "console/base.html" %}
+{% block title %}Staff{% endblock %}
+{% block content %}
+<header class="chead"><p class="eyebrow">Team</p><h1>SkillSprint staff</h1>
+  <p>People who can sign in to this console. They never see a client's workspace. Everything here is recorded in the audit trail.</p></header>
+
+<div class="ccols">
+  <section class="ccard">
+    <div class="ccard__head"><h2>Who has access</h2><span>{{ people|selectattr('active')|list|length }} active</span></div>
+    <ul class="clist">
+      {% for p in people %}
+      <li><div>
+        <span class="cstatus cstatus--{{ 'live' if p.active else 'ended' }}">{{ 'Active' if p.active else 'Switched off' }}</span>
+        <span><strong>{{ p.name }}{% if p.email == me %} <span class="muted">(you)</span>{% endif %}</strong>
+          <span class="muted">{{ p.email }} · last sign-in {{ p.last_login_at.strftime('%d %b %Y %H:%M') if p.last_login_at else 'never' }}</span>
+          <details class="cstaff__more"><summary>Change</summary>
+            <form method="post" class="cform" autocomplete="off">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ p.id }}"><input type="hidden" name="action" value="password">
+              <div class="field"><label for="pw{{ p.id }}">New password <span class="muted">(at least {{ min_password }} characters)</span></label>
+                <input id="pw{{ p.id }}" name="password" type="password" minlength="{{ min_password }}" autocomplete="new-password"></div>
+              <div><button class="btn btn--sm" type="submit">Set the new password</button></div>
+            </form>
+            {% if p.email != me %}
+            <form method="post" style="margin-top: 10px">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ p.id }}">
+              <input type="hidden" name="action" value="{{ 'off' if p.active else 'on' }}">
+              <button class="btn btn--sm {{ '' if p.active else 'btn--primary' }}" type="submit">{{ 'Switch off this login' if p.active else 'Switch this login back on' }}</button>
+            </form>
+            {% endif %}
+          </details></span>
+        <span></span>
+      </div></li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="ccard">
+    <div class="ccard__head"><h2>Add a person</h2><span>they can sign in straight away</span></div>
+    <form method="post" class="ccard__body cform" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="add">
+      <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" value="{{ form.get('name', '') if form.get('action') == 'add' else '' }}"></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" value="{{ form.get('email', '') if form.get('action') == 'add' else '' }}"></div>
+      <div class="field"><label for="password">Password <span class="muted">(at least {{ min_password }} characters)</span></label>
+        <input id="password" name="password" type="password" minlength="{{ min_password }}" autocomplete="new-password"></div>
+      <p class="small muted">Share the password with them yourself. They sign in on the normal sign-in page and land in this console.</p>
+      <div><button class="btn btn--primary" type="submit">Add to the console</button></div>
+    </form>
+  </section>
+</div>
+{% endblock %}

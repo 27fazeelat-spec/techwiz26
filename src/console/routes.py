@@ -10,7 +10,8 @@ from sqlalchemy import func, or_, select
 
 import database
 from database import audit, db, utcnow
-from database.models import AuditLog, DemoAccount, DemoRequest, DemoVisit, Document, Employee, Organization, Plan, User
+from database.models import (AuditLog, DemoAccount, DemoRequest, DemoVisit, Document, Employee, Organization, Plan,
+                             PlatformStaff, User)
 from src.rbac import require_permission
 from src.services import demo, mailer
 
@@ -146,6 +147,32 @@ def workspaces():
                      "plans": db.session.scalar(select(func.count()).select_from(Plan).where(Plan.status != "superseded")),
                      "last": db.session.scalar(select(func.max(AuditLog.ts)))})
     return render_template("console/workspaces.html", rows=rows)
+
+
+@bp.route("/staff", methods=["GET", "POST"])
+@require_permission("console.view")
+def staff():
+    from src.services import staff as people
+    if request.method == "POST":
+        try:
+            action = request.form.get("action")
+            if action == "add":
+                person = people.add(request.form.get("name"), request.form.get("email"), request.form.get("password"), _staff())
+                flash(f"{person.name} can now sign in to the console as {person.email}.", "success")
+            else:
+                person = db.session.get(PlatformStaff, int(request.form.get("id", 0))) or abort(404)
+                if action == "password":
+                    people.reset_password(person, request.form.get("password"), _staff())
+                    flash(f"New password set for {person.email}.", "success")
+                elif action in ("off", "on"):
+                    people.set_active(person, action == "on", _staff())
+                    flash(f"{person.email} is {'active again' if action == 'on' else 'switched off'}.", "success")
+            return redirect(url_for("console.staff"))
+        except people.StaffError as exc:
+            db.session.rollback()
+            flash(str(exc), "error")
+    return render_template("console/staff.html", people=people.all_staff(), me=current_user.email,
+                           min_password=demo.MIN_PASSWORD, form=request.form)
 
 
 # --------------------------------------------------------------------------- demo visitors: a sample employee
