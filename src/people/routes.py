@@ -70,13 +70,16 @@ def _choices():
 def employee_new():
     if request.method == "POST":
         try:
+            email, password = people.check_login(request.form) if has_permission(current_user, "accounts.manage") else (None, None)
             e = people.create_employee(request.form, _actor())
-            flash(f"{e.name} added. Generate a plan when you are ready.", "success")
+            if email:
+                people.set_login(e, email, password, _actor())
+            flash(f"{e.name} added{' with a login for ' + email if email else ''}. Generate a plan when you are ready.", "success")
             return redirect(url_for("plans.employees"))
         except people.PeopleError as exc:
             db.session.rollback()
             flash(str(exc), "error")
-    return render_template("people/employee_form.html", employee=None, form=request.form, **_choices())
+    return render_template("people/employee_form.html", employee=None, form=request.form, login=None, **_choices())
 
 
 @bp.route("/employees/<code>/edit", methods=["GET", "POST"])
@@ -85,7 +88,10 @@ def employee_edit(code):
     employee = db.session.scalar(select(Employee).where(Employee.employee_code == code)) or abort(404)
     if request.method == "POST":
         try:
+            email, password = people.check_login(request.form, employee) if has_permission(current_user, "accounts.manage") else (None, None)
             people.update_employee(employee, request.form, _actor())
+            if email:
+                people.set_login(employee, email, password, _actor())
             flash("Profile saved. Regenerate the plan if the role or experience changed.", "success")
             return redirect(url_for("plans.employees"))
         except people.PeopleError as exc:
@@ -97,4 +103,7 @@ def employee_edit(code):
         "experience_years": employee.experience_years, "previous_experience": employee.previous_experience or "",
         "joining_date": employee.joining_date.isoformat(), "reporting_manager_code": employee.reporting_manager_code or "",
         "shift_pattern": employee.shift_pattern, "certifications": ", ".join(employee.certifications or [])}
-    return render_template("people/employee_form.html", employee=employee, form=form, **_choices())
+    login = people.login_for(employee)
+    if request.method != "POST" and login:
+        form = {**form, "login_email": login.email}
+    return render_template("people/employee_form.html", employee=employee, form=form, login=login, **_choices())

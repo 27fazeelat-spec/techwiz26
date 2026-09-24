@@ -342,3 +342,8 @@
 .people__prog em { color: var(--bad); font-style: normal; font-weight: 600; }
 .people__prog .badge { font-size: 11px; }
 @media (max-width: 760px) { .people li > a, .people li > div { grid-template-columns: 40px minmax(0, 1fr); } .people__prog { grid-column: 2; } }
+
+/* ---------- employee form: sign-in box ---------- */
+.loginbox { margin: var(--space-5) 0 0; padding: 16px 18px 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-sunk); }
+.loginbox legend { padding: 0 6px; font-family: var(--font-display); font-size: 17px; font-weight: 500; }
+.loginbox .formgrid { margin-top: 12px; }

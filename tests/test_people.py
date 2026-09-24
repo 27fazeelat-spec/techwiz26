@@ -73,3 +73,41 @@ def test_set_password_command(corpus):
     assert authenticate("leila.haddad@aurelle.example", new_password)[0] is not None
     runner.invoke(args=["set-password", "leila.haddad@aurelle.example"], input="correct-horse\ncorrect-horse\n")
     assert runner.invoke(args=["set-password", "nobody@example.com", "--generate"]).exit_code != 0
+
+
+def test_admin_gives_a_new_employee_a_login_and_can_reset_it(corpus):
+    client = current_app.test_client()
+    login(client, "admin@aurelle.example")
+    form = {**EMPLOYEE, "employee_code": "E951", "name": "Sana Mir"}
+    assert b"Sign-in email" in client.get("/employees/new").data
+    short = client.post("/employees/new", data={**form, "login_email": "sana@aurelle.example", "login_password": "short"},
+                        follow_redirects=True)
+    assert b"at least 10 characters" in short.data
+    assert db.session.scalar(select(Employee).where(Employee.employee_code == "E951")) is None      # nothing half-saved
+    taken = client.post("/employees/new", data={**form, "login_email": "admin@aurelle.example", "login_password": "long-enough-1"},
+                        follow_redirects=True)
+    assert b"already uses this email" in taken.data
+    client.post("/employees/new", data={**form, "login_email": "Sana@Aurelle.example", "login_password": "first-password-1"})
+    user = db.session.scalar(select(User).where(User.employee_code == "E951"))
+    assert user.email == "sana@aurelle.example" and user.app_role == "employee"
+    assert "first-password-1" not in user.password_hash
+    entry = db.session.scalar(select(AuditLog).where(AuditLog.action == "user.created", AuditLog.entity_id == user.email))
+    assert entry is not None and "password" not in str(entry.after)
+    # the administrator resets it from the edit page; leaving it empty keeps the old one
+    client.post("/employees/E951/edit", data={**form, "login_email": "sana@aurelle.example", "login_password": ""})
+    client.post("/employees/E951/edit", data={**form, "login_email": "sana@aurelle.example", "login_password": "second-password-2"})
+    client.post("/logout")
+    assert b"incorrect" in login(client, "sana@aurelle.example", "first-password-1").data           # old password no longer works
+    response = login(client, "sana@aurelle.example", "second-password-2")
+    assert response.status_code == 302 and "/login" not in response.headers["Location"]
+
+
+def test_only_the_administrator_sets_logins(corpus):
+    client = current_app.test_client()
+    login(client, "training@aurelle.example")
+    page = client.get("/employees/new").get_data(as_text=True)
+    assert "Sign-in email" not in page and "administrator sets up" in page
+    client.post("/employees/new", data={**EMPLOYEE, "employee_code": "E952", "name": "No Login",
+                                        "login_email": "sneaky@aurelle.example", "login_password": "trainer-made-1"})
+    assert db.session.scalar(select(Employee).where(Employee.employee_code == "E952")) is not None
+    assert db.session.scalar(select(User).where(User.email == "sneaky@aurelle.example")) is None     # fields ignored

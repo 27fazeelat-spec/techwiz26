@@ -25,6 +25,18 @@
   </div>
   <div class="field" style="margin-top: var(--space-4)"><label for="previous_experience">Previous experience</label><input id="previous_experience" name="previous_experience" type="text" value="{{ form.get('previous_experience', '') }}"></div>
   <div class="field" style="margin-top: var(--space-4)"><label for="certifications">Certifications <span class="muted">(comma separated)</span></label><input id="certifications" name="certifications" type="text" value="{{ form.get('certifications', '') }}"></div>
+  <fieldset class="loginbox">
+    <legend>Sign-in</legend>
+    {% if can('accounts.manage') %}
+    <p class="small muted">{% if login %}This employee signs in with the email below. Type a new password only to replace the current one; employees cannot change it themselves.{% else %}Give the employee a sign-in email and password. Leave both empty to add the profile without a login. Employees cannot change the password themselves.{% endif %}</p>
+    <div class="formgrid">
+      <div class="field"><label for="login_email">Sign-in email</label><input id="login_email" name="login_email" type="email" autocomplete="off" placeholder="name@aurelle.example" value="{{ form.get('login_email', '') }}"></div>
+      <div class="field"><label for="login_password">{{ 'New password' if login else 'Password' }} <span class="muted">(at least 10 characters{{ '; leave empty to keep' if login }})</span></label>
+        <input id="login_password" name="login_password" type="password" autocomplete="new-password" minlength="10" value=""></div>
+    </div>
+    {% elif login %}<p class="small muted">Signs in as <strong>{{ login.email }}</strong>. The administrator manages logins.</p>
+    {% else %}<p class="small muted">No login yet. The administrator sets up the employee's sign-in email and password.</p>{% endif %}
+  </fieldset>
   <div class="actions" style="margin-top: var(--space-5)"><button class="btn btn--primary" type="submit">Save</button><a class="btn btn--ghost" href="{{ url_for('plans.employees') }}">Cancel</a></div>
 </form>
 {% endblock %}
