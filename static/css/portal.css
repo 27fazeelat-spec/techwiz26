@@ -33,8 +33,9 @@
 .btn--gold:hover { filter: brightness(1.06); color: var(--navy-deep); }
 .heroband__stats { display: flex; gap: 10px; flex-wrap: wrap; }
 .glass { padding: 12px 16px; border-radius: 16px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); backdrop-filter: blur(10px); min-width: 120px; }
-.glass b { display: block; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; color: #fff; font-variant-numeric: tabular-nums; }
+.glass b, .glass b span { display: block; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; color: #fff; font-variant-numeric: tabular-nums; }
 .glass span { font-size: 12px; color: rgba(244, 241, 232, 0.72); font-weight: 600; }
+
 
 /* ---------- gold progress ring ---------- */
 .gring { --v: 0; position: relative; width: 132px; height: 132px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center;
