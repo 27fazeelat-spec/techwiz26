@@ -292,7 +292,7 @@ def _regenerate(r, actor, reason, app_config, provider):
         new_plan = regenerate_modules(r.plan, [], actor, app_config, reason=reason, provider=provider,
                                       add_requirements=[r.target_key])
         label = f"the module that now covers {r.target_key}"
-    elif r.original_status == "Unsupported Requirement":   # included but does not apply: take it out
+    elif r.original_status in ("Unsupported Requirement", "Contradiction Detected"):   # does not apply, or lost a conflict
         new_plan = regenerate_modules(r.plan, [], actor, app_config, reason=reason, provider=provider,
                                       drop_requirements=[r.target_key])
         label = f"the module that contained {r.target_key}"
@@ -351,6 +351,13 @@ def suggestion(r):
                 "reason": f"Not required for {role}; remove it to keep the plan focused.",
                 "fallback": {"action": "approve", "button": "Keep it as extra reading",
                              "reason": f"Not required for {role}, but harmless awareness content; keeping it."}}
+    if s == "Contradiction Detected" and r.target_type == "requirement":
+        return {"meaning": f"The plan teaches {subject}, but a reviewer or the precedence rules decided that another "
+                           f"document's rule applies instead (see Conflicts). Teaching it would give {who} the overridden version.",
+                "action": "regenerate", "button": "Remove it from the plan",
+                "reason": "Overridden by the winning rule in a resolved conflict; remove it from the plan.",
+                "fallback": {"action": "approve", "button": "Keep it for now",
+                             "reason": f"Overridden rule kept for now; the trainer will teach {who} the winning rule instead."}}
     if s in ("Source Support Missing", "Unsupported Requirement"):
         return {"meaning": "This item says something the policy section it cites does not say, or cites no valid "
                            "section. Teaching it could spread a rule that does not exist.",

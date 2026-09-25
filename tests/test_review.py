@@ -191,3 +191,34 @@ def test_reference_cards_explain_codes_in_plain_words(corpus):
     client.post("/logout")
     login(client, "leila.haddad@aurelle.example")
     assert client.get(f"/api/ref/req/{req.req_id}").status_code == 403
+
+
+def test_a_rule_that_lost_a_conflict_after_planning_can_be_removed(corpus):
+    """A conflict decided after the plan was made: the plan still teaches the losing rule. Remove it cleanly."""
+    from database.models import Conflict, Requirement
+    from src.services.planning import validate_plan
+    from src.services.review import route_for_review
+    plan = fresh_plan()
+    in_plan = [r["requirement_id"] for r in plan.outline["requirements"]]
+    loser = db.session.scalar(select(Requirement).where(Requirement.req_id == in_plan[0]).order_by(Requirement.id.desc()))
+    winner = db.session.scalar(select(Requirement).where(Requirement.req_id.notin_(in_plan)).order_by(Requirement.id))
+    conflict = Conflict(conflict_code="CF-9901", kind="cross_document", pair_key="test:lost-after-planning",
+                        left_requirement_id=loser.id, right_requirement_id=winner.id, differences=[], similarity=1.0,
+                        rule_applied="reviewer", winner_requirement_id=winner.id, explanation="Decided by a reviewer.",
+                        status="resolved_by_reviewer")
+    db.session.add(conflict)
+    db.session.commit()
+    try:
+        route_for_review(plan, validate_plan(plan))
+        db.session.commit()
+        item = next(x for x in open_items(plan) if x.target_type == "requirement" and x.target_key == loser.req_id)
+        assert item.original_status == "Contradiction Detected"
+        advice = review.suggestion(item)
+        assert advice["action"] == "regenerate" and advice["button"] == "Remove it from the plan"
+        _, new_plan = review.decide(item, "regenerate", ACTOR, REASON, CONFIG, provider=ScriptedProvider())
+        assert loser.req_id not in {r["requirement_id"] for r in new_plan.outline["requirements"]}
+        assert not db.session.scalar(select(ReviewItem).where(ReviewItem.plan_id == new_plan.id,   # not "missing" either
+                                                              ReviewItem.target_key == loser.req_id))
+    finally:
+        db.session.delete(db.session.get(Conflict, conflict.id))            # tests share one database
+        db.session.commit()

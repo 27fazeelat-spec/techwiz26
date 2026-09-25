@@ -486,6 +486,9 @@ def build_context(plan):
             conflicts[c.loser.req_id] = {**base, "type": "lost", "winner": c.winner.req_id}
             if c.status == "auto_resolved_warning":
                 conflicts[c.winner.req_id] = {**base, "type": "safety_override"}
+    for req_id, info in conflicts.items():
+        if info["type"] == "lost":
+            matrix.pop(req_id, None)       # lost a conflict after this matrix was approved: no longer required
     return ValidationContext(conflicts=conflicts, employee=brief, role_code=plan.job_role.code, outline=plan.outline, modules=modules,
                              matrix=matrix, requirements=requirements, sections=sections, doc_status=doc_status,
                              prerequisites=prereqs, stage_order=stage_order,
