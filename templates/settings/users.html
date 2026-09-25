@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">Settings</p><h1>Users</h1>
+  <p class="pagehead__meta">Training managers, reviewers, line managers and administrators who can sign in to this workspace.
+    Employees get their login on the employee form ({{ employees }} employee login{{ 's' if employees != 1 }}).
+    Every change here is recorded in the audit trail.</p></div></div>
+
+<div class="userscols">
+  <section class="acard">
+    <div class="acard__head"><h2>Who can sign in</h2><span class="small muted">{{ people|selectattr('active')|list|length }} active</span></div>
+    <ul class="userlist">
+      {% for u in people %}
+      <li class="userrow{{ ' is-off' if not u.active }}">
+        <div class="userrow__main">
+          <span class="avatar" aria-hidden="true">{{ u.name.split()|map('first')|join('')|upper|truncate(2, true, '') }}</span>
+          <div>
+            <p class="userrow__name">{{ u.name }}{% if u.email == me %} <span class="muted small">(you)</span>{% endif %}</p>
+            <p class="small muted">{{ u.email }} · last sign-in {{ u.last_login_at.strftime('%d %b %Y, %H:%M') if u.last_login_at else 'never' }}</p>
+          </div>
+          <span class="userrow__tags">
+            <span class="badge badge--neutral">{{ roles[u.app_role] }}</span>
+            {% if u.employee_code %}<span class="tag mono" data-tip="Manager code · {{ teams.get(u.employee_code, 0) }} employee(s) report to them">{{ u.employee_code }} · {{ teams.get(u.employee_code, 0) }}</span>{% endif %}
+            {% if not u.active %}<span class="badge badge--bad">Switched off</span>{% elif u.locked_until %}<span class="badge badge--warn">Locked</span>{% endif %}
+          </span>
+        </div>
+        {% if u.email != me %}
+        <details class="userrow__more"><summary>Change</summary>
+          <div class="userrow__forms">
+            <form method="post" class="userform">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ u.id }}"><input type="hidden" name="action" value="role">
+              <label class="small">Role <select name="role">{% for key, label in roles.items() %}<option value="{{ key }}" {{ 'selected' if key == u.app_role }}>{{ label }}</option>{% endfor %}</select></label>
+              <label class="small">Manager code <input name="manager_code" type="text" value="{{ u.employee_code or '' }}" placeholder="M002" maxlength="20" size="8"></label>
+              <button class="btn btn--sm" type="submit">Save role</button>
+            </form>
+            <form method="post" class="userform" autocomplete="off">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ u.id }}"><input type="hidden" name="action" value="password">
+              <label class="small">New password <input name="password" type="password" minlength="{{ min_password }}" autocomplete="new-password" placeholder="at least {{ min_password }} characters"></label>
+              <button class="btn btn--sm" type="submit">Set password</button>
+            </form>
+            <form method="post" class="userform">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ u.id }}"><input type="hidden" name="action" value="{{ 'off' if u.active else 'on' }}">
+              <button class="btn btn--sm {{ 'btn--primary' if not u.active }}" type="submit">{{ 'Switch off this login' if u.active else 'Switch this login back on' }}</button>
+            </form>
+          </div>
+        </details>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="acard">
+    <div class="acard__head"><h2>Add a person</h2><span class="small muted">they can sign in straight away</span></div>
+    <form method="post" class="useradd" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="add">
+      {% set f = form if form.get('action') == 'add' else {} %}
+      <div class="field"><label for="u-name">Name</label><input id="u-name" name="name" type="text" value="{{ f.get('name', '') }}"></div>
+      <div class="field"><label for="u-email">Work email</label><input id="u-email" name="email" type="email" value="{{ f.get('email', '') }}"></div>
+      <div class="field"><label for="u-role">Role</label><select id="u-role" name="role">
+        {% for key, label in roles.items() %}<option value="{{ key }}" {{ 'selected' if f.get('role') == key }}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="u-code">Manager code <span class="muted">(line managers only)</span></label>
+        <input id="u-code" name="manager_code" type="text" placeholder="M002" maxlength="20" value="{{ f.get('manager_code', '') }}"></div>
+      <div class="field"><label for="u-password">Password <span class="muted">(at least {{ min_password }} characters)</span></label>
+        <input id="u-password" name="password" type="password" minlength="{{ min_password }}" autocomplete="new-password"></div>
+      <p class="small muted">Share the password with them yourself; it is stored only as a hash. A line manager appears under "Line manager" on the employee form.</p>
+      <div><button class="btn btn--primary" type="submit">{{ icon('user', 15) }}Add this person</button></div>
+    </form>
+  </section>
+</div>
+{% endblock %}

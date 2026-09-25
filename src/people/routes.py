@@ -6,7 +6,7 @@ from sqlalchemy import case, func, select
 from database import audit, db
 from database.models import Employee, JobRole, Property
 from src.rbac import has_permission, require_permission
-from src.services import people
+from src.services import people, users
 
 bp = Blueprint("people", __name__)
 
@@ -97,7 +97,7 @@ def role_detail(code):
 def _choices():
     return {"roles": db.session.scalars(select(JobRole).where(JobRole.status == "active").order_by(JobRole.name)).all(),
             "properties": db.session.scalars(select(Property).order_by(Property.name)).all(),
-            "levels": people.LEVELS, "shifts": people.SHIFTS}
+            "levels": people.LEVELS, "shifts": people.SHIFTS, "managers": users.managers()}
 
 
 @bp.route("/employees/new", methods=["GET", "POST"])

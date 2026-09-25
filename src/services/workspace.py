@@ -79,7 +79,7 @@ PAGE_PERMISSION = {               # the permission each page needs (mirrors the 
     "main.employee_dashboard": "dashboard.employee", "learning.modules": "learning.view",
     "learning.progress_page": "learning.view", "learning.assessments": "learning.view", "learning.resources": "learning.view",
     "learning.calendar": "learning.view", "learning.certificate": "learning.view",
-    "bot.ask": "bot.ask", "bot.team_questions": "bot.answer",
+    "bot.ask": "bot.ask", "bot.team_questions": "bot.answer", "settings.users": "accounts.manage",
 }
 REPORT_PERMISSIONS = ("reports.view", "reports.team")
 

@@ -142,7 +142,7 @@ The suite ingests the full sample collection and checks the results against the 
 | Ask the bot: employees ask questions answered only from approved passages; Python checks every citation and number, uncovered questions never reach Gemini, and the employee can send any question to their line manager | ✅ |
 | Job roles dashboard: required rules, plans, coverage and onboarding progress per role | ✅ |
 | Ctrl+K search across pages, documents, requirements, employees and modules | ✅ |
-| Administrator settings: which pages each role sees, composable employee home | ✅ |
+| Administrator settings: which pages each role sees, composable employee home, staff logins (add, change role, reset password, switch off) | ✅ |
 | Public site, demo requests, SkillSprint staff console and time-limited read-only demo accounts on a separate sample workspace | ✅ |
 | Hidden-document rehearsal pack (10 unseen layouts, all ingested with no special-casing) | ✅ |
 

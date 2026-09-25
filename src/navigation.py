@@ -20,7 +20,8 @@ NAV = {
         ("Organisation", [("Job roles", "people.roles", "users", "people."),
                           ("Reports", "reports.index", "file", "reports.")]),
         ("Settings", [("Employee home", "settings.employee_home", "home", "settings.employee_home"),
-                      ("Roles & access", "settings.pages", "lock", "settings.pages")]),
+                      ("Roles & access", "settings.pages", "lock", "settings.pages"),
+                      ("Users", "settings.users", "users", "settings.users")]),
     ],
     "training_manager": [
         ("Home", [("Plans board", "main.trainer_dashboard", "home", "main.trainer_dashboard")]),

@@ -92,6 +92,6 @@ def load_user(user_id):
         return None
     if account is None:
         return None
-    if isinstance(account, DemoAccount) and (not account.active or account.expires_at <= utcnow()):
-        return None                                               # an ended demo signs out on its next page
+    if not account.active or (isinstance(account, DemoAccount) and account.expires_at <= utcnow()):
+        return None                                               # a switched-off login or ended demo signs out on its next page
     return _identity(account)

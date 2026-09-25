@@ -19,7 +19,12 @@
       {% for l in levels %}<option value="{{ l }}" {{ 'selected' if form.get('experience_level') == l }}>{{ l }}</option>{% endfor %}</select></div>
     <div class="field"><label for="experience_years">Years of experience</label><input id="experience_years" name="experience_years" type="text" inputmode="numeric" value="{{ form.get('experience_years', '0') }}"></div>
     <div class="field"><label for="joining_date">Joining date</label><input id="joining_date" name="joining_date" type="date" value="{{ form.get('joining_date', '') }}"></div>
-    <div class="field"><label for="reporting_manager_code">Reporting manager code</label><input id="reporting_manager_code" name="reporting_manager_code" type="text" placeholder="M001" value="{{ form.get('reporting_manager_code', '') }}"></div>
+    {% set current = form.get('reporting_manager_code', '') %}
+    <div class="field"><label for="reporting_manager_code">Line manager</label><select id="reporting_manager_code" name="reporting_manager_code">
+      <option value="">No line manager yet</option>
+      {% for code, name in managers %}<option value="{{ code }}" {{ 'selected' if code == current }}>{{ name }} · {{ code }}</option>{% endfor %}
+      {% if current and current not in managers|map(attribute=0)|list %}<option value="{{ current }}" selected>{{ current }} (no active login)</option>{% endif %}
+    </select></div>
     <div class="field"><label for="shift_pattern">Shift pattern</label><select id="shift_pattern" name="shift_pattern">
       {% for s in shifts %}<option value="{{ s }}" {{ 'selected' if form.get('shift_pattern', 'day') == s }}>{{ s|capitalize }}</option>{% endfor %}</select></div>
   </div>

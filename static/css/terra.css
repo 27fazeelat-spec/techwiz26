@@ -485,3 +485,24 @@
 .acard { max-width: 100%; }
 /* Long status badges (for example "Assigned ... by ...") wrap on small screens. */
 .badge--lg { white-space: normal; max-width: 100%; }
+
+/* Settings > Users ----------------------------------------------------------------------------------- */
+.userscols { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.userscols .acard__head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.userscols .acard__head h2 { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin: 0; }
+.userlist { list-style: none; margin: 0; padding: 0; }
+.userrow { padding: 14px 20px; border-top: 1px solid var(--line); }
+.userrow:first-child { border-top: 0; }
+.userrow.is-off { opacity: 0.65; }
+.userrow__main { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.userrow__main > div { flex: 1 1 200px; min-width: 0; }
+.userrow__main p { margin: 0; overflow-wrap: anywhere; }
+.userrow__name { font-weight: 600; }
+.userrow__tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.userrow__more { margin-top: 8px; }
+.userrow__more summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.userrow__forms { display: grid; gap: 10px; margin-top: 10px; padding: 12px; border-radius: 8px; background: var(--surface-sunk); }
+.userform { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.userform label { display: grid; gap: 4px; }
+.useradd { display: grid; gap: 12px; padding: 18px 20px; }
+@media (max-width: 900px) { .userscols { grid-template-columns: 1fr; } }
