@@ -98,7 +98,11 @@ def requirement_detail(pk):
                      actor=audit.actor_from_user(current_user), before=before, after=after,
                      reason=form.reason.data, commit=False)
         db.session.commit()
-        flash(f"{req.req_id} was {form.decision.data}. Build a new matrix draft to include the change.", "success")
+        changed = [k for k in EDITABLE if k != "review_status" and before[k] != after[k]]
+        rebuild = bool(changed) or "rejected" in (before["review_status"], after["review_status"])
+        flash(f"{req.req_id} was {form.decision.data}. " + (
+            "Build a new matrix draft to include the change." if rebuild
+            else "No values changed; the matrix does not need rebuilding."), "success")
         return redirect(url_for("ground_truth.requirement_detail", pk=req.id))
     prereqs = db.session.execute(
         select(Requirement, RequirementPrerequisite.source)
