@@ -29,7 +29,8 @@ def roles():
         except people.PeopleError as exc:
             db.session.rollback()
             flash(str(exc), "error")
-    counts = dict(db.session.execute(select(Employee.job_role_id, func.count()).group_by(Employee.job_role_id)).all())
+    counts = dict(db.session.execute(select(Employee.job_role_id, func.count()).where(Employee.left_on.is_(None))
+                                     .group_by(Employee.job_role_id)).all())
     rows = db.session.scalars(select(JobRole).order_by(JobRole.status.desc(), JobRole.code)).all()
     return render_template("people/roles.html", rows=rows, counts=counts, form=request.form, stats=_role_stats())
 
@@ -97,7 +98,13 @@ def role_detail(code):
 def _choices():
     return {"roles": db.session.scalars(select(JobRole).where(JobRole.status == "active").order_by(JobRole.name)).all(),
             "properties": db.session.scalars(select(Property).order_by(Property.name)).all(),
-            "levels": people.LEVELS, "shifts": people.SHIFTS, "managers": users.managers()}
+            "levels": people.LEVELS, "shifts": people.SHIFTS, "managers": users.managers(), "today": _today()}
+
+
+def _today():
+    from flask import current_app
+    from config.settings import today
+    return today(current_app.config)
 
 
 @bp.route("/employees/new", methods=["GET", "POST"])
@@ -142,3 +149,21 @@ def employee_edit(code):
     if request.method != "POST" and login:
         form = {**form, "login_email": login.email}
     return render_template("people/employee_form.html", employee=employee, form=form, login=login, **_choices())
+
+
+@bp.route("/employees/<code>/left", methods=["POST"])
+@require_permission("employees.edit")
+def employee_left(code):
+    employee = db.session.scalar(select(Employee).where(Employee.employee_code == code)) or abort(404)
+    try:
+        if request.form.get("action") == "return":
+            people.mark_returned(employee, _actor())
+            flash(f"{employee.name} is back: shown on the boards again and their login works.", "success")
+        else:
+            people.mark_left(employee, request.form.get("left_on"), request.form.get("reason"), _actor())
+            flash(f"{employee.name} is marked as left. Their login is switched off; their plan, progress and audit "
+                  "history are kept.", "success")
+    except people.PeopleError as exc:
+        db.session.rollback()
+        flash(str(exc), "error")
+    return redirect(url_for("people.employee_edit", code=code))

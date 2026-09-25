@@ -4,7 +4,7 @@ from collections import Counter
 
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from database import audit, db
 from database.models import (Chunk, ComparisonRow, Document, Employee, Finding, GenerationRun, Plan,
@@ -35,6 +35,10 @@ def employees():
         query = query.where(Employee.department == args["department"])
     if args.get("property"):
         query = query.join(Property, Employee.property_id == Property.id).where(Property.code == args["property"])
+    if args.get("employment") == "left":
+        query = query.where(Employee.left_on.is_not(None))
+    elif args.get("employment") != "all":
+        query = query.where(Employee.left_on.is_(None))               # people who left are hidden unless asked for
     people = db.session.scalars(query).all()
     # Show the newest usable plan; a later failed attempt is flagged next to it, never shown in its place.
     latest, failed = {}, {}
@@ -59,6 +63,7 @@ def employees():
                            roles=db.session.scalars(select(JobRole).order_by(JobRole.code)).all(),
                            properties=db.session.scalars(select(Property).order_by(Property.name)).all(),
                            departments=sorted(set(db.session.scalars(select(Employee.department)))),
+                           left_count=db.session.scalar(select(func.count()).select_from(Employee).where(Employee.left_on.is_not(None))),
                            results=["No plan", "Verified", "Verified with Warning", "Incomplete", "Unsupported",
                                     "Contradictory", "Manual Review Required", "Failed"],
                            progress_statuses=["Not assigned"] + list(progress.cfg()["status_order"]))
@@ -68,6 +73,9 @@ def employees():
 @require_permission("plans.generate")
 def generate(code):
     employee = db.session.scalar(select(Employee).where(Employee.employee_code == code)) or abort(404)
+    if employee.has_left:
+        flash(f"{employee.name} has left; mark them as returned before generating a plan.", "error")
+        return redirect(url_for("plans.employees"))
     try:
         plan = planning.generate_plan(employee, audit.actor_from_user(current_user), current_app.config)
     except ValueError as exc:

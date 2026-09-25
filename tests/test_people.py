@@ -111,3 +111,41 @@ def test_only_the_administrator_sets_logins(corpus):
                                         "login_email": "sneaky@aurelle.example", "login_password": "trainer-made-1"})
     assert db.session.scalar(select(Employee).where(Employee.employee_code == "E952")) is not None
     assert db.session.scalar(select(User).where(User.email == "sneaky@aurelle.example")) is None     # fields ignored
+
+
+def test_an_employee_who_leaves_drops_off_the_lists_but_the_record_stays(corpus):
+    from datetime import date
+    from flask import current_app, g
+    from database import db
+    from database.models import Employee, User
+    from src.services import people
+    from tests.conftest import login
+    leila = db.session.scalar(select(Employee).where(Employee.employee_code == "E001"))
+    temp = Employee(organization_id=leila.organization_id, employee_code="E990", name="Tara Temp", job_role_id=leila.job_role_id,
+                    property_id=leila.property_id, department=leila.department, experience_level="Beginner",
+                    experience_years=0, joining_date=date(2026, 10, 1), reporting_manager_code="M001")
+    db.session.add(temp)
+    db.session.commit()
+    people.set_login(temp, "tara.temp@aurelle.example", "tara-pass-123", {"email": "admin@aurelle.example"})
+
+    admin = current_app.test_client()
+    g.pop("_login_user", None)
+    login(admin, "admin@aurelle.example")
+    admin.post("/employees/E990/left", data={"action": "left", "left_on": "2026-10-20", "reason": "Resigned"})
+    db.session.refresh(temp)
+    assert temp.left_on == date(2026, 10, 20) and temp.left_reason == "Resigned"
+    assert not db.session.scalar(select(User).where(User.email == "tara.temp@aurelle.example")).active
+    assert "E990" not in admin.get("/employees").get_data(as_text=True)               # hidden by default
+    assert "E990" in admin.get("/employees?employment=left").get_data(as_text=True)
+    assert "Tara Temp" not in admin.get("/dashboard/plans").get_data(as_text=True).split("flashes")[-1]
+    assert admin.post("/employees/E990/generate").status_code == 302                  # refused, no plan made
+    other = current_app.test_client()
+    g.pop("_login_user", None)
+    assert login(other, "tara.temp@aurelle.example", "tara-pass-123").status_code != 302   # login switched off
+
+    g.pop("_login_user", None)
+    login(admin, "admin@aurelle.example")
+    admin.post("/employees/E990/left", data={"action": "return"})
+    db.session.refresh(temp)
+    assert temp.left_on is None and db.session.scalar(select(User).where(User.email == "tara.temp@aurelle.example")).active
+    g.pop("_login_user", None)

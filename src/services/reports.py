@@ -174,9 +174,12 @@ def progress(role=None, employee_ids=None):
             continue
         plan = prog.assigned_plan(e)
         if plan is None:
-            t.rows.append([e.name, e.employee_code, e.job_role.code, e.property.name, "Not assigned", "", "", "", "", "", "", "", ""])
+            t.rows.append([e.name, e.employee_code, e.job_role.code, e.property.name, "Not assigned",
+                           "", f"Left {e.left_on:%d %b %Y}" if e.left_on else "", "", "", "", "", "", ""])
             continue
         s = prog.summary(plan, e, day)
+        if e.left_on:
+            s = {**s, "status": f"Left {e.left_on:%d %b %Y}", "overdue": 0}
         part = lambda k: f"{s['by_type'][k]['done']}/{s['by_type'][k]['total']}" if k in s["by_type"] else ""
         t.rows.append([e.name, e.employee_code, e.job_role.code, e.property.name, f"{plan.plan_code} v{plan.version}",
                        s["pct"], s["status"], s["overdue"], part("checklist"), part("quiz_question"), part("task"),

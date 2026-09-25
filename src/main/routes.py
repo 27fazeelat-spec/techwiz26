@@ -50,7 +50,7 @@ def trainer_dashboard():
     from config.settings import today
     from database.models import ReviewItem
     from src.services import progress
-    people = db.session.scalars(select(Employee).order_by(Employee.name)).all()
+    people = db.session.scalars(select(Employee).where(Employee.left_on.is_(None)).order_by(Employee.name)).all()
     latest, failed = _current_plans()
     open_by_plan = dict(db.session.execute(select(ReviewItem.plan_id, func.count())
                                            .where(ReviewItem.status == "open").group_by(ReviewItem.plan_id)).all())
@@ -167,8 +167,8 @@ def team_dashboard():
     from config.settings import today
     from flask import current_app
     from src.services import progress
-    team = db.session.scalars(select(Employee).where(Employee.reporting_manager_code == current_user.employee_code)
-                              .order_by(Employee.name)).all()
+    team = db.session.scalars(select(Employee).where(Employee.reporting_manager_code == current_user.employee_code,
+                                                     Employee.left_on.is_(None)).order_by(Employee.name)).all()
     states = {}
     for e in team:
         plan = progress.assigned_plan(e)

@@ -48,5 +48,7 @@ def engine():
                 from database import db                             # tables added after the sample was built
                 client = [t for name, t in db.metadata.tables.items() if name not in PLATFORM_TABLES]
                 db.metadata.create_all(eng, tables=client, checkfirst=True)
+                from database import schema                         # and columns added since
+                schema.apply(eng, schema.missing_columns(eng, db.metadata, {t.name for t in client})[0])
                 app.extensions["demo_engine"] = eng
     return eng

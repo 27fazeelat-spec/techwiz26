@@ -123,7 +123,7 @@ def search():
             Plan.employee_id.in_([e.id for e in people]), Plan.status.notin_(["superseded", "Failed"]))
             .group_by(Plan.employee_id)).all()) if people else {}
         groups.append({"label": "Employees", "items": [
-            {"title": e.name, "code": e.employee_code, "meta": "open plan" if e.id in latest else "no plan yet",
+            {"title": e.name, "code": e.employee_code, "meta": "left" if e.has_left else ("open plan" if e.id in latest else "no plan yet"),
              "url": url_for("plans.plan_detail", pk=latest[e.id]) if e.id in latest else url_for("plans.employees", q=e.employee_code)}
             for e in people]})
     elif has_permission(current_user, "employees.view_team") and current_user.employee_code:     # line managers: their own team

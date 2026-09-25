@@ -95,6 +95,12 @@ class Employee(db.Model):
     assignments: Mapped[list] = mapped_column(JSONType, default=list)
     shift_pattern: Mapped[str] = mapped_column(String(20), default="day")
     training_status: Mapped[str] = mapped_column(String(20), default="not_started")
+    left_on: Mapped[date | None] = mapped_column(Date)                # set when the person leaves; the record stays
+    left_reason: Mapped[str | None] = mapped_column(String(300))
+
+    @property                                  # defined before the "property" relationship below, which shadows the name
+    def has_left(self):
+        return self.left_on is not None
 
     job_role: Mapped[JobRole] = relationship()
     property: Mapped[Property] = relationship()

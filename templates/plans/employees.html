@@ -42,6 +42,9 @@
     {% for r in results %}<option value="{{ r }}" {{ 'selected' if args.result == r }}>{{ r }}</option>{% endfor %}</select></div>
   <div class="field"><label for="f-progress">Progress</label><select id="f-progress" name="progress" data-autosubmit><option value="">Any</option>
     {% for r in progress_statuses %}<option value="{{ r }}" {{ 'selected' if args.progress == r }}>{{ r }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-employment">Employment</label><select id="f-employment" name="employment" data-autosubmit>
+    <option value="">Current employees</option><option value="left" {{ 'selected' if args.employment == 'left' }}>Left ({{ left_count }})</option>
+    <option value="all" {{ 'selected' if args.employment == 'all' }}>Everyone</option></select></div>
   <button class="btn btn--primary" type="submit">Apply</button>
   {% if args %}<a class="btn btn--ghost" href="{{ url_for('plans.employees') }}">Clear</a>{% endif %}
 </form>
@@ -67,7 +70,7 @@
       {% for e in people %}{% set p = latest.get(e.id) %}
         <tr data-filter-item data-filter-value="{{ 'none' if not p else ('verified' if plan_tone(p.status) == 'ok' else 'attention') }}">
           <td class="middle"><div class="person"><span class="avatar" aria-hidden="true">{{ initials(e.name) }}</span>
-            <span><span class="person__name">{{ e.name }}</span><span class="person__meta mono">{{ e.employee_code }}{% if can('employees.edit') %} · <a href="{{ url_for('people.employee_edit', code=e.employee_code) }}">edit</a>{% endif %}</span></span></div></td>
+            <span><span class="person__name">{{ e.name }}{% if e.has_left %} <span class="badge badge--neutral">Left {{ e.left_on.strftime('%d %b %Y') }}</span>{% endif %}</span><span class="person__meta mono">{{ e.employee_code }}{% if can('employees.edit') %} · <a href="{{ url_for('people.employee_edit', code=e.employee_code) }}">edit</a>{% endif %}</span></span></div></td>
           <td class="middle"><span class="person__name small">{{ e.job_role.name }}</span><span class="person__meta">{{ e.property.name }}</span></td>
           <td class="middle small">{{ e.experience_level }}</td>
           <td class="middle small nowrap">{{ e.joining_date.strftime('%d %b %Y') }}</td>
@@ -77,7 +80,7 @@
           <td class="middle">{% if p and p.score_coverage is not none %}
               <span class="coverage">{{ meter(p.score_coverage, score_tone(p.score_coverage)) }}<b>{{ p.score_coverage }}%</b></span>
               {% else %}<span class="muted small">—</span>{% endif %}</td>
-          <td class="middle">{% if can('plans.generate') and matrix %}
+          <td class="middle">{% if can('plans.generate') and matrix and not e.has_left %}
             <form method="post" action="{{ url_for('plans.generate', code=e.employee_code) }}" style="margin: 0"
                   data-busy="Generating {{ e.name.split(' ')[0] }}'s plan"
                   data-busy-steps="Retrieving approved sources for {{ e.job_role.name }}|Gemini drafts the outline|Gemini writes module content|Python validates every item|Comparing against the approved matrix"

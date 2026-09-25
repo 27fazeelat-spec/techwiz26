@@ -208,33 +208,17 @@ def register_cli(app):
         create_all() creates missing tables but never alters existing ones. This command only adds
         new nullable columns; it never drops, renames or changes data.
         """
-        from sqlalchemy import inspect, text
-        inspector = inspect(db.engine)
-        existing_tables = set(inspector.get_table_names())
-        statements = []
-        for table in db.Model.metadata.sorted_tables:
-            if table.name not in existing_tables:
-                continue                                   # create_all() handles new tables
-            present = {c["name"] for c in inspector.get_columns(table.name)}
-            for column in table.columns:
-                if column.name in present:
-                    continue
-                if not column.nullable:
-                    click.echo(f"  SKIPPED {table.name}.{column.name}: not nullable, needs a manual migration")
-                    continue
-                col_type = column.type.compile(dialect=db.engine.dialect)
-                fk = next(iter(column.foreign_keys), None)
-                ref = f" REFERENCES {fk.column.table.name}({fk.column.name})" if fk is not None else ""
-                statements.append(f'ALTER TABLE {table.name} ADD COLUMN {column.name} {col_type}{ref}')
+        from database import schema
+        statements, skipped = schema.missing_columns(db.engine, db.Model.metadata)
+        for name in skipped:
+            click.echo(f"  SKIPPED {name}: not nullable, needs a manual migration")
         if not statements:
             click.echo("Database schema is up to date.")
             return
         for s in statements:
             click.echo(("  WOULD RUN  " if dry_run else "  RUN  ") + s)
         if not dry_run:
-            with db.engine.begin() as conn:
-                for s in statements:
-                    conn.execute(text(s))
+            schema.apply(db.engine, statements)
             audit.record("system.schema_upgraded", "database", "schema", detail={"statements": statements})
             click.echo(f"Added {len(statements)} column(s).")
 

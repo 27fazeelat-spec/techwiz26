@@ -228,3 +228,35 @@ def set_login(employee, email, password, actor):
             audit.record("user.login_updated", "user", email, actor=actor, after=changed, commit=False)
     db.session.commit()
     return user
+
+
+def mark_left(employee, on, reason, actor):
+    """The person has left: they drop off the boards and lists, their login stops, and every record stays."""
+    from database.models import User
+    if employee.has_left:
+        raise PeopleError(f"{employee.name} is already marked as left.")
+    try:
+        day = date.fromisoformat(on or "")
+    except ValueError as exc:
+        raise PeopleError("Enter the last working day.") from exc
+    employee.left_on, employee.left_reason = day, (" ".join((reason or "").split())[:300] or None)
+    login = db.session.scalar(select(User).where(User.employee_code == employee.employee_code, User.app_role == "employee"))
+    if login is not None:
+        login.active = False
+    audit.record("employee.left", "employee", employee.employee_code, actor=actor,
+                 after={"left_on": day.isoformat(), "reason": employee.left_reason, "login_switched_off": login is not None},
+                 commit=False)
+    db.session.commit()
+
+
+def mark_returned(employee, actor):
+    from database.models import User
+    if not employee.has_left:
+        raise PeopleError(f"{employee.name} is not marked as left.")
+    before = {"left_on": employee.left_on.isoformat(), "reason": employee.left_reason}
+    employee.left_on = employee.left_reason = None
+    login = db.session.scalar(select(User).where(User.employee_code == employee.employee_code, User.app_role == "employee"))
+    if login is not None:
+        login.active = True
+    audit.record("employee.returned", "employee", employee.employee_code, actor=actor, before=before, commit=False)
+    db.session.commit()

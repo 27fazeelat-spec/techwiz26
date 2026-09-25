@@ -2,7 +2,7 @@
 {% block title %}{{ 'Edit ' ~ employee.name if employee else 'Add employee' }}{% endblock %}
 {% block content %}
 <div class="pagehead"><div><p class="eyebrow"><a href="{{ url_for('plans.employees') }}">Employees &amp; plans</a></p>
-  <h1>{{ employee.name if employee else 'Add employee' }}</h1>
+  <h1>{{ employee.name if employee else 'Add employee' }}{% if employee and employee.has_left %} <span class="badge badge--neutral badge--lg">Left {{ employee.left_on.strftime('%d %b %Y') }}</span>{% endif %}</h1>
   <p class="pagehead__meta">Only what onboarding needs. No national ID, salary or health information is collected.</p></div></div>
 
 <form method="post" class="panel">
@@ -44,4 +44,29 @@
   </fieldset>
   <div class="actions" style="margin-top: var(--space-5)"><button class="btn btn--primary" type="submit">Save</button><a class="btn btn--ghost" href="{{ url_for('plans.employees') }}">Cancel</a></div>
 </form>
+
+{% if employee %}
+<section class="panel" style="margin-top: var(--space-5)">
+  <h2 class="panel__title">Employment</h2>
+  {% if employee.has_left %}
+    <p>{{ employee.name }} left on <strong>{{ employee.left_on.strftime('%d %B %Y') }}</strong>{% if employee.left_reason %} ({{ employee.left_reason }}){% endif %}.
+      They are hidden from the plans board, their manager's team and the employee list; their login is switched off.
+      Their plan, progress, quiz results and audit history are kept.</p>
+    <form method="post" action="{{ url_for('people.employee_left', code=employee.employee_code) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="return">
+      <button class="btn" type="submit">Mark as returned</button>
+    </form>
+  {% else %}
+    <p class="small muted">When someone leaves, mark them here instead of deleting them. They drop off the boards and lists and
+      their login stops, but every record stays for the audit trail.</p>
+    <form method="post" action="{{ url_for('people.employee_left', code=employee.employee_code) }}" class="formgrid"
+          onsubmit="return confirm('Mark {{ employee.name }} as left? Their login will be switched off.')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="left">
+      <div class="field"><label for="left_on">Last working day</label><input id="left_on" name="left_on" type="date" value="{{ today.isoformat() }}" required></div>
+      <div class="field"><label for="reason">Reason <span class="muted">(optional)</span></label><input id="reason" name="reason" type="text" maxlength="300" placeholder="e.g. Resigned, contract ended"></div>
+      <div class="actions"><button class="btn" type="submit">Mark as left</button></div>
+    </form>
+  {% endif %}
+</section>
+{% endif %}
 {% endblock %}
