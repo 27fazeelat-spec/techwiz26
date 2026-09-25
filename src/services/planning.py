@@ -21,6 +21,7 @@ from database.models import (Chunk, ComparisonRow, Conflict, Document, Finding, 
 from genai_pipeline import prompts
 from genai_pipeline.client import call_structured
 from genai_pipeline.providers import build_provider, model_names
+from src.services import staging
 from genai_pipeline.retrieval import build_bundle, employee_brief
 from python_validation import ValidationContext, validate
 from python_validation.engine import ruleset_hash
@@ -223,7 +224,9 @@ def generate_plan(employee, actor, app_config, provider=None):
     t = time.perf_counter()
     _store_modules(plan, jobs, results, bundle, reqs_by_module, {**params, "models": module_models})
     db.session.flush()
-    timeline.mark("Store plan", t)
+    tidied = staging.tidy(plan)
+    timeline.mark("Store plan", t, f"Day 1 steps {tidied['day1_before']} -> {tidied['day1_after']}; "
+                                   f"{len(tidied['dropped'])} checklist items left to tasks and quizzes, {len(tidied['merged'])} merged")
 
     t = time.perf_counter()
     validation = validate_plan(plan)
@@ -378,6 +381,7 @@ def regenerate_modules(plan, module_keys, actor, app_config, reason="", provider
     _store_modules(new_plan, jobs, results, bundle, reqs_by_module, params)
     db.session.flush()
     db.session.refresh(new_plan)
+    staging.tidy(new_plan)
     timeline.mark("Store plan", t, f"{len(keys)} items copied")
 
     t = time.perf_counter()

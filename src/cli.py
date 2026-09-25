@@ -9,6 +9,7 @@
   route-reviews     create review items for plans validated before the review queue existed
   export-reports    write every report as CSV, Excel and PDF
   generate-plans    generate and validate one plan per job role
+  restage-plans     apply the plan tidy-up rules to stored plans (--dry-run first)
 """
 import csv
 import json
@@ -412,6 +413,36 @@ def register_cli(app):
         detect_changes()
         db.session.commit()
         click.echo("Done.")
+
+    @app.cli.command("restage-plans")
+    @click.option("--dry-run", is_flag=True, help="Only show what would change; nothing is written.")
+    @click.option("--plan", "plan_code", default=None, help="One plan code, for example P-E001.")
+    def restage_plans_command(dry_run, plan_code):
+        """Apply the plan tidy-up rules (stages from the matrix, action-only checklists, merged duplicates) to plans
+        stored before them. No GenAI call. Assigned plans keep their progress; only not-started items get new dates."""
+        from database.models import Plan
+        from src.services import staging
+        from src.services.planning import validate_plan
+        from src.services.review import route_for_review
+        query = select(Plan).where(Plan.status.notin_(["superseded", "Failed", "generating"])).order_by(Plan.plan_code)
+        if plan_code:
+            query = query.where(Plan.plan_code == plan_code)
+        actor = {"email": "cli", "app_role": "system"}
+        for plan in db.session.scalars(query).all():
+            s = staging.tidy(plan, dry_run=dry_run)
+            click.echo(f"  {s['plan']:<14} Day 1 steps {s['day1_before']:>3} -> {s['day1_after']:<3} "
+                       f"{s['restaged']} restaged, {len(s['dropped'])} checklist items left to tasks/quizzes, "
+                       f"{len(s['merged'])} merged{' (assigned: dates of not-started items move)' if plan.approved_at else ''}")
+            if dry_run:
+                continue
+            run = validate_plan(plan)
+            db.session.flush()
+            route_for_review(plan, run)
+            audit.record("plan.restaged", "plan", plan.plan_code, actor=actor, version=str(plan.version),
+                         after={"day1": [s["day1_before"], s["day1_after"]], "dropped": s["dropped"], "merged": s["merged"],
+                                "status": plan.status, "coverage": plan.score_coverage}, commit=False)
+            db.session.commit()
+        click.echo("Dry run: nothing was written." if dry_run else "Done.")
 
     @app.cli.command("detect-changes")
     def detect_changes_command():

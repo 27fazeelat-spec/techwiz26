@@ -26,3 +26,10 @@ plan:
   max_modules: 8                   # smallest knowledge areas are merged beyond this
   min_module_requirements: 2
   day1_max_items: 12
+  # Plan tidy-up after Gemini writes (src/services/staging.py). Every item is due at its requirement's matrix stage.
+  checklist_types: [Must Complete, Must Acknowledge]   # other rules are taught by tasks, scenarios and quizzes
+  # A checklist item is an action when its wording starts with one of these verbs, or its requirement says the thing
+  # "must be completed / signed / ..." (the extractor may type such passive sentences as Must Know).
+  checklist_action_verbs: [complete, attend, sign, acknowledge, declare, collect, submit, register, enrol, enroll,
+                           obtain, locate, read, return, hand, receive, set, activate, confirm, pass, watch, meet, tour]
+  checklist_merge_overlap: 0.8     # share of key words two checklist items must have in common to become one

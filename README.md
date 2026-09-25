@@ -212,6 +212,7 @@ All run as `python -m flask --app run <command>`:
 | `db-check` / `upgrade-db --dry-run` | read-only connection check; list additive schema changes |
 | `generate-plans [--roles ...]` | generate and validate one plan per job role |
 | `console-user EMAIL` | create or update a SkillSprint console login |
+| `restage-plans [--dry-run] [--plan CODE]` | apply the plan tidy-up rules (stages from the matrix, action-only checklists, merged duplicates) to plans stored before them; no GenAI call |
 
 Tools (plain Python): `tools/extraction_accuracy.py`, `tools/build_hidden_pack.py`, `hidden_test_ready/rehearse.py`, `tools/build_demo_db.py`, `tools/verify_ca_certificate.py`.
 
