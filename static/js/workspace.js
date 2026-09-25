@@ -120,6 +120,8 @@
       if (!main) throw new Error("fallback");
       main.querySelectorAll(".flashes, script").forEach(function (n) { n.remove(); });
       body.innerHTML = main.innerHTML;
+      // A form without an action posts to the page it came from, not to the list the drawer is open on.
+      body.querySelectorAll("form").forEach(function (f) { if (!f.getAttribute("action")) f.setAttribute("action", url); });
       body.querySelectorAll(".rise").forEach(function (n) { n.classList.add("is-in"); });
       body.scrollTop = 0;
     }).catch(function () { window.location.href = url; });
