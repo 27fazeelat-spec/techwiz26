@@ -4,7 +4,8 @@
   var root = document.documentElement;
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
-  var calm = document.body.classList.contains("theme-terra");   // quieter theme: no tilt, pull or counting
+  var calm = root.dataset.calm === "on";                        // Calm mode (motion.js): no tilt, pull or counting
+  var terra = document.body.classList.contains("theme-terra");  // its own card tilt and button ripple live in motion.js
 
   // greeting by the viewer's own clock
   document.querySelectorAll("[data-greeting]").forEach(function (el) {
@@ -66,8 +67,8 @@
       el.addEventListener("pointerleave", function () { el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); });
     });
 
-    // magnetic primary actions
-    document.querySelectorAll(".btn--primary, .btn--gold, [data-magnetic]").forEach(function (el) {
+    // magnetic primary actions (not in the workspace theme: buttons that move away read as restless)
+    if (!terra) document.querySelectorAll(".btn--primary, .btn--gold, [data-magnetic]").forEach(function (el) {
       el.addEventListener("pointermove", function (e) {
         var r = el.getBoundingClientRect();
         el.style.transform = "translate(" + ((e.clientX - r.left - r.width / 2) * 0.18).toFixed(1) + "px," + ((e.clientY - r.top - r.height / 2) * 0.28).toFixed(1) + "px)";

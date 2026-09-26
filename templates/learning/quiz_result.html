@@ -4,7 +4,7 @@
 {% block content %}
 {% set right = attempt.answers | selectattr('correct') | list | length %}
 <section class="quizshell">
-  <section class="resulthero {{ 'is-pass' if attempt.passed else 'is-fail' }} rise">
+  <section class="resulthero {{ 'is-pass' if attempt.passed else 'is-fail' }} rise"{% if attempt.passed %} data-celebrate="quiz-{{ attempt.id }}"{% endif %}>
     <div class="resulthero__ring" style="--v: {{ attempt.score }}"><div><b><span data-count="{{ attempt.score }}">{{ attempt.score }}</span>%</b><span>{{ right }} of {{ questions|length }} correct</span></div></div>
     <div class="resulthero__text">
       <p class="heroband__kicker">{{ m.title|module_title }}</p>

@@ -44,11 +44,11 @@
   <div class="nextstep__text"><strong>Next: check {{ rs.open }} item{{ 's' if rs.open != 1 }} the app could not confirm</strong><span>Go through them one by one. When none are left, you can give the plan to {{ first }}.</span></div>
   <a class="btn btn--primary btn--lg" href="{{ url_for('review.detail', pk=waiting[0].id, plan=plan.id) }}">{{ icon('arrow', 16) }}Start checking</a></div>
 {% elif assigned %}
-<div class="nextstep pnext"><span class="nextstep__icon">{{ icon('check', 20) }}</span>
+<div class="nextstep pnext" data-celebrate="plan-given-{{ plan.id }}"><span class="nextstep__icon">{{ icon('check', 20) }}</span>
   <div class="nextstep__text"><strong>{{ first }} has this plan since {{ plan.approved_at.strftime('%d %b %Y') }}</strong><span>Follow the progress, quizzes and sign-offs from here.</span></div>
   <a class="btn btn--primary" href="{{ url_for('learning.team_member', code=plan.employee.employee_code) }}">See {{ first }}'s progress</a></div>
 {% elif rs.assignable %}
-<div class="nextstep pnext pnext--go"><span class="nextstep__icon">{{ icon('check', 20) }}</span>
+<div class="nextstep pnext pnext--go" data-celebrate="plan-ready-{{ plan.id }}"><span class="nextstep__icon">{{ icon('check', 20) }}</span>
   <div class="nextstep__text"><strong>Ready: nothing is waiting</strong><span>Give the plan to {{ first }}. Their home page shows it straight away.</span></div>
   {% if can('plans.assign') %}<form method="post" action="{{ url_for('plans.assign', pk=plan.id) }}" style="margin: 0"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button class="btn btn--primary btn--lg" type="submit">{{ icon('trophy', 16) }}Give the plan to {{ first }}</button></form>{% endif %}</div>

@@ -1,5 +1,5 @@
 /* Aurelle workspace theme "Terracotta & Olive": warm paper, terracotta for actions, olive for progress and
-   "done", charcoal ink. Flat colour, thin rules, small radii; motion only where something changes.
+   "done", charcoal ink. Thin rules, small radii; a slow warm aurora behind, soft glass cards and gentle motion in front.
    Loaded after tokens/app/portal/aurelle for roles moved to this theme (body.theme-terra). */
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
@@ -137,7 +137,6 @@
 
 /* ---------- calmer motion ---------- */
 .theme-terra .spot::after { display: none; }
-.theme-terra .rise { transform: none; transition: opacity 450ms ease; }
 .theme-terra .cursor__dot { background: var(--primary); box-shadow: none; }
 .theme-terra .cursor__ring { width: 30px; height: 30px; margin: -15px 0 0 -15px; border: 1px solid color-mix(in srgb, var(--ink) 45%, transparent); }
 .theme-terra .cursor.is-hover .cursor__ring { width: 44px; height: 44px; margin: -22px 0 0 -22px; background: color-mix(in srgb, var(--primary) 10%, transparent); border-color: var(--primary); }
@@ -506,3 +505,157 @@
 .userform label { display: grid; gap: 4px; }
 .useradd { display: grid; gap: 12px; padding: 18px 20px; }
 @media (max-width: 900px) { .userscols { grid-template-columns: 1fr; } }
+
+/* =================================================================== motion and depth
+   Aurora and floating shapes sit behind everything; cards are soft glass; actions glow. Calm mode
+   (html[data-calm="on"]) and prefers-reduced-motion stop the movement; a hidden tab pauses it. */
+body.theme-terra { isolation: isolate; background: linear-gradient(160deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, var(--accent)) 100%) fixed; }
+
+/* motion tokens: a terracotta gradient for the main action, a warm glow and soft depth */
+.theme-terra {
+  --grad: linear-gradient(120deg, #B5532A 0%, #D4743C 50%, #C4622D 100%);
+  --glow: 0 10px 26px -12px rgba(196, 98, 45, .55);
+  --accent-soft: var(--olive-soft);
+  --shadow-md: 0 1px 2px rgba(34, 33, 31, .05), 0 10px 26px -16px rgba(120, 72, 40, .28);
+}
+:root[data-theme="dark"] .theme-terra {
+  --grad: linear-gradient(120deg, #D96F3F 0%, #EA9A62 50%, #E07A4A 100%);
+  --glow: 0 10px 26px -12px rgba(224, 122, 74, .45);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 28px -16px rgba(0, 0, 0, .7);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-terra {
+    --grad: linear-gradient(120deg, #D96F3F 0%, #EA9A62 50%, #E07A4A 100%);
+    --glow: 0 10px 26px -12px rgba(224, 122, 74, .45);
+    --shadow-md: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 28px -16px rgba(0, 0, 0, .7);
+  }
+}
+
+/* ---------- aurora ---------- */
+.aurora { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; --px: 0; --py: 0; }
+.blobwrap { position: absolute; transition: transform 1.2s cubic-bezier(.22, 1, .36, 1); }
+.blobwrap--1 { top: -18vh; left: -10vw; transform: translate3d(calc(var(--px) * -40px), calc(var(--py) * -30px), 0); }
+.blobwrap--2 { top: 30vh; right: -14vw; transform: translate3d(calc(var(--px) * 50px), calc(var(--py) * 40px), 0); }
+.blobwrap--3 { bottom: -24vh; left: 22vw; transform: translate3d(calc(var(--px) * -30px), calc(var(--py) * 45px), 0); }
+.blobwrap--4 { top: 8vh; left: 46vw; transform: translate3d(calc(var(--px) * 35px), calc(var(--py) * -35px), 0); }
+.blob { display: block; border-radius: 50%; filter: blur(70px); opacity: .5; will-change: transform;
+  animation: blob-drift 26s ease-in-out infinite alternate, blob-hue 38s ease-in-out infinite alternate; }
+.blob--1 { width: 52vw; height: 52vw; max-width: 760px; max-height: 760px; background: radial-gradient(circle at 35% 35%, #F2C9A8, #E08A57 45%, transparent 70%); }
+.blob--2 { width: 46vw; height: 46vw; max-width: 680px; max-height: 680px; background: radial-gradient(circle at 60% 40%, #F7DDB9, #E8B04A 40%, transparent 70%); animation-duration: 32s, 44s; animation-delay: -6s, -12s; }
+.blob--3 { width: 50vw; height: 50vw; max-width: 720px; max-height: 720px; background: radial-gradient(circle at 50% 50%, #E1E6C9, #A3B476 45%, transparent 72%); animation-duration: 36s, 40s; animation-delay: -14s, -4s; }
+.blob--4 { width: 30vw; height: 30vw; max-width: 460px; max-height: 460px; background: radial-gradient(circle at 50% 50%, #F5E3D6, #D98A5F 45%, transparent 72%); opacity: .4; animation-duration: 30s, 50s; animation-delay: -20s, -25s; }
+@keyframes blob-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6vw, 4vh, 0) scale(1.08); }
+  100% { transform: translate3d(-4vw, 7vh, 0) scale(.95); }
+}
+@keyframes blob-hue { from { filter: blur(70px) hue-rotate(0deg); } to { filter: blur(70px) hue-rotate(10deg); } }
+:root[data-theme="dark"] .blob { opacity: .32; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .blob { opacity: .32; } }
+
+/* ---------- floating shapes ---------- */
+.floats { position: absolute; inset: 0; }
+.fl { position: absolute; bottom: -60px; left: var(--x); width: var(--s); height: var(--s); opacity: 0;
+  animation: fl-rise var(--d) linear infinite; animation-delay: var(--dl); }
+.fl--dot { border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #F2C9A8 60%, #E08A57); }
+.fl--ring { border-radius: 50%; border: 2px solid color-mix(in srgb, var(--primary) 45%, transparent); }
+.fl--star { background: var(--accent); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
+.fl--petal { border-radius: 70% 0 70% 0; background: linear-gradient(135deg, #E1E6C9, #A3B476); }
+@keyframes fl-rise {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  12% { opacity: .5; }
+  50% { transform: translate3d(30px, -55vh, 0) rotate(180deg); }
+  85% { opacity: .35; }
+  100% { transform: translate3d(-20px, -112vh, 0) rotate(360deg); opacity: 0; }
+}
+
+/* ---------- calm, reduced motion, hidden tab ---------- */
+:root[data-calm="on"] .blob, :root[data-calm="on"] .blobwrap { animation: none; transition: none; transform: none; }
+:root[data-calm="on"] .floats { display: none; }
+:root.is-tab-hidden .blob, :root.is-tab-hidden .fl { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .blob, .blobwrap { animation: none; transition: none; } .floats { display: none; } }
+.theme-terra .calmbtn[aria-pressed="true"] { background: var(--primary-soft); color: var(--primary); border-color: color-mix(in srgb, var(--primary) 40%, var(--line)); }
+
+/* ---------- glass shell ---------- */
+.theme-terra .sidebar { background: color-mix(in srgb, var(--side) 80%, transparent); backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border-right: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+.theme-terra .topbar { background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%); border-bottom-color: color-mix(in srgb, var(--line) 70%, transparent); }
+.theme-terra .navlink.is-active { background: var(--surface); box-shadow: 0 6px 18px -10px rgba(196, 98, 45, .45), inset 0 0 0 1px var(--line); }
+.theme-terra .navlink.is-active::before { background: var(--grad); width: 4px; }
+.theme-terra .navlink.is-active .icon { color: var(--primary); }
+.theme-terra .navlink .icon { transition: transform 200ms cubic-bezier(.34, 1.56, .64, 1), color 150ms; }
+.theme-terra .navlink:hover .icon { transform: translateY(-1px) scale(1.08); }
+
+/* ---------- glass cards ---------- */
+.theme-terra :is(.panel, .acard, .libstat, .libcard, .personcard, .teamcard, .rolecard, .repcard, .chgcard, .polcard, .clash, .rulecard,
+  .appgroup, .safecard, .fstep, .mprog, .msteps, .kpi, .rcard, .mtile, .course, .pjourney, .preport, .rvprog, .justin, .mxstatus__nums > div,
+  .mxstatus__main, .rulefacts > div, .tmkind, .stagestrip li, .expert, .signoff, .eglance__ring, .tmglance__ring, .dropzone) {
+  background-color: color-mix(in srgb, var(--surface) 82%, transparent);
+  border-color: color-mix(in srgb, var(--line) 80%, rgba(255, 255, 255, .6));
+  box-shadow: var(--shadow-md);
+}
+:root[data-theme="dark"] .theme-terra :is(.panel, .acard, .libstat, .libcard, .personcard, .teamcard, .rolecard, .repcard, .chgcard, .polcard,
+  .clash, .rulecard, .appgroup, .safecard, .fstep, .mprog, .msteps, .kpi, .rcard, .mtile, .course, .preport, .expert, .signoff) {
+  border-color: color-mix(in srgb, var(--line) 85%, rgba(255, 255, 255, .06)); }
+
+/* ---------- headings ---------- */
+.theme-terra .page h1 { background: linear-gradient(100deg, var(--ink) 0%, var(--ink) 45%, var(--primary) 80%, var(--accent) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+.theme-terra .page h1 .helpdot { -webkit-text-fill-color: initial; }
+.theme-terra .lphero h1, .theme-terra .lslide__title, .theme-terra .heroband h1 { background: none; color: inherit; }
+
+/* ---------- buttons ---------- */
+.theme-terra .btn { position: relative; overflow: hidden; border-radius: 10px; transition: transform 160ms, box-shadow 200ms, background-position 500ms, border-color 150ms; }
+.theme-terra .btn:active { transform: scale(.97); }
+.theme-terra .btn--primary, .theme-terra .btn--gold, :root[data-theme="dark"] .theme-terra .btn--primary {
+  background: var(--grad); background-size: 180% 180%; background-position: 0% 50%; border: 0; color: var(--on-primary); border-radius: 10px; box-shadow: var(--glow); }
+:root[data-theme="dark"] .theme-terra .btn--primary { color: var(--on-primary); }
+.theme-terra .btn--primary:hover, .theme-terra .btn--gold:hover, :root[data-theme="dark"] .theme-terra .btn--primary:hover {
+  background: var(--grad); background-size: 180% 180%; background-position: 100% 50%; color: var(--on-primary); transform: translateY(-1px);
+  box-shadow: 0 14px 34px -12px rgba(196, 98, 45, .5); }
+:root[data-theme="dark"] .theme-terra .btn--primary:hover { color: var(--on-primary); }
+.theme-terra .btn--primary::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent); transform: skewX(-20deg); }
+.theme-terra .btn--primary:hover::after { animation: shine .75s ease-out; }
+@keyframes shine { to { left: 130%; } }
+.theme-terra .hubtab.is-on { background: var(--grad); color: var(--on-primary); box-shadow: var(--glow); }
+:root[data-theme="dark"] .theme-terra .hubtab.is-on { color: var(--on-primary); }
+.theme-terra :is(.topicchip, .jobpick__item).is-on { background: var(--grad); border-color: transparent; color: var(--on-primary); }
+.ripple { position: absolute; border-radius: 50%; pointer-events: none; background: currentColor; opacity: .22; transform: scale(0);
+  animation: ripple .65s ease-out forwards; }
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+/* ---------- cards tilt towards the pointer and catch the light ---------- */
+.theme-terra .tilt { position: relative; animation-fill-mode: backwards !important;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 260ms cubic-bezier(.22, 1, .36, 1), box-shadow 260ms, border-color 200ms; }
+.theme-terra .tilt:hover { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-4px);
+  box-shadow: var(--shadow-pop); border-color: color-mix(in srgb, var(--primary) 35%, var(--line)); }
+.theme-terra .tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, .5), transparent 45%); transition: opacity 250ms; }
+.theme-terra .tilt:hover::after { opacity: 1; }
+:root[data-theme="dark"] .theme-terra .tilt::after { background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(242, 201, 168, .10), transparent 45%); }
+:root[data-calm="on"] .theme-terra .tilt, :root[data-calm="on"] .theme-terra .tilt:hover { transform: none; }
+
+/* ---------- icon tiles get a soft gradient ---------- */
+.theme-terra :is(.libstat__icon, .libcard__icon, .repcard__icon, .polcard__icon, .msteps__icon, .tmkind__icon, .personcard__avatar) {
+  background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft)); color: var(--primary); }
+.theme-terra .libstat--ok .libstat__icon { background: var(--ok-bg); color: var(--ok); }
+.theme-terra .libstat--warn .libstat__icon { background: var(--warn-bg); color: var(--warn); }
+.theme-terra a.libstat:hover .libstat__icon, .theme-terra .tilt:hover :is(.libcard__icon, .repcard__icon, .polcard__icon) { transform: rotate(-6deg) scale(1.08); }
+
+/* ---------- confetti ---------- */
+.confetti { position: fixed; inset: 0; z-index: 120; pointer-events: none; overflow: hidden; }
+.confetti i { position: absolute; top: -20px; left: var(--x); width: 9px; height: 14px; border-radius: 2px; opacity: .95;
+  animation: confetti-fall var(--d) cubic-bezier(.25, .6, .4, 1) var(--dl) forwards; }
+.confetti i.is-round { width: 10px; height: 10px; border-radius: 50%; }
+@keyframes confetti-fall { to { transform: translate3d(var(--dx), 105vh, 0) rotate(var(--r)); opacity: .9; } }
+
+/* ---------- pages arrive gently ---------- */
+.theme-terra .page { animation: page-in .5s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }      /* opacity only: a transform would move fixed toasts */
+@media (prefers-reduced-motion: reduce) {
+  .theme-terra .page, .theme-terra .btn--primary:hover::after, .ripple { animation: none; }
+  .theme-terra .tilt, .theme-terra .tilt:hover { transform: none; }
+}

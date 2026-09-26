@@ -19,6 +19,7 @@
       var t = localStorage.getItem("skillsprint-theme"); if (t) document.documentElement.dataset.theme = t;
       var nav = localStorage.getItem("skillsprint-nav") || document.documentElement.dataset.navDefault;
       if (nav === "expanded") document.documentElement.dataset.nav = "expanded";
+      if (localStorage.getItem("skillsprint-calm") === "on") document.documentElement.dataset.calm = "on";
     } catch (e) {}
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
@@ -43,6 +44,13 @@
 </head>
 <body class="{{ 'has-shell' if current_user.is_authenticated }}{{ ' is-learner' if learner }}{{ ' theme-terra' if terra }} {% block body_class %}{% endblock %}" data-ref-docs='{{ ref_documents()|tojson }}'>
 <a class="skip" href="#main">Skip to content</a>
+{% if terra %}<div class="aurora" aria-hidden="true">
+  <span class="blobwrap blobwrap--1"><span class="blob blob--1"></span></span>
+  <span class="blobwrap blobwrap--2"><span class="blob blob--2"></span></span>
+  <span class="blobwrap blobwrap--3"><span class="blob blob--3"></span></span>
+  <span class="blobwrap blobwrap--4"><span class="blob blob--4"></span></span>
+  <span class="floats"><i class="fl fl--dot" style="--x: 6%; --s: 12px; --d: 26s; --dl: -0s"></i><i class="fl fl--star" style="--x: 14%; --s: 14px; --d: 34s; --dl: -6s"></i><i class="fl fl--ring" style="--x: 22%; --s: 26px; --d: 30s; --dl: -12s"></i><i class="fl fl--petal" style="--x: 31%; --s: 16px; --d: 38s; --dl: -3s"></i><i class="fl fl--dot" style="--x: 40%; --s: 10px; --d: 24s; --dl: -17s"></i><i class="fl fl--star" style="--x: 48%; --s: 12px; --d: 32s; --dl: -9s"></i><i class="fl fl--ring" style="--x: 57%; --s: 20px; --d: 36s; --dl: -21s"></i><i class="fl fl--petal" style="--x: 65%; --s: 14px; --d: 30s; --dl: -14s"></i><i class="fl fl--dot" style="--x: 73%; --s: 8px; --d: 28s; --dl: -5s"></i><i class="fl fl--star" style="--x: 81%; --s: 16px; --d: 40s; --dl: -19s"></i><i class="fl fl--ring" style="--x: 88%; --s: 24px; --d: 33s; --dl: -1s"></i><i class="fl fl--petal" style="--x: 95%; --s: 12px; --d: 36s; --dl: -25s"></i></span>
+</div>{% endif %}
 {% if current_user.is_authenticated %}<div class="cursor is-hidden" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>{% endif %}
 {% if current_user.is_authenticated %}
 {% set ep = request.endpoint or '' %}
@@ -81,6 +89,7 @@
   {% endif %}
   <div class="topbar__right">
     <button type="button" class="iconbtn helpbtn" data-tour-start aria-label="Take the tour of this workspace" data-tip="Take the tour">?</button>
+    {% if terra %}<button type="button" class="iconbtn calmbtn" data-calm-toggle aria-pressed="false" aria-label="Calm mode: pause the moving background" data-tip="Calm mode: pause the moving background">{{ icon('spark') }}</button>{% endif %}
     <button type="button" class="iconbtn themetoggle" data-theme-toggle aria-label="Switch to dark theme" title="Switch theme">
       <span class="themetoggle__sun">{{ icon('sun') }}</span><span class="themetoggle__moon">{{ icon('moon') }}</span>
     </button>
@@ -171,7 +180,8 @@
 {% if current_user.is_authenticated %}<script src="{{ url_for('static', filename='js/portal.js') }}"></script>{% endif %}
 {% if learner %}<script src="{{ url_for('static', filename='js/learner.js') }}"></script>{% endif %}
 {% if terra %}<script src="{{ url_for('static', filename='js/workspace.js') }}"></script>
-<script src="{{ url_for('static', filename='js/charts.js') }}"></script>{% endif %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/motion.js') }}"></script>{% endif %}
 {% block scripts %}{% endblock %}
 </body>
 </html>
