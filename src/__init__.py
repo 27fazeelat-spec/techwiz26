@@ -135,9 +135,9 @@ def create_app(overrides=None):
         from src.services import workspace
         if not request.endpoint or request.endpoint == "static" or not current_user.is_authenticated:
             return None
-        blueprint = request.blueprint or ""
+        from src.navigation import is_active
         for match in workspace.hidden_matches(current_user.app_role):
-            if (match.endswith(".") and blueprint + "." == match) or (not match.endswith(".") and request.endpoint.startswith(match)):
+            if is_active(match, request.endpoint, request.blueprint):     # same rule the sidebar uses to highlight
                 abort(403)
         return None
 

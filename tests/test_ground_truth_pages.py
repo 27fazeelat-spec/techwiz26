@@ -121,3 +121,27 @@ def test_rules_page_filters_by_topic_and_speaks_plainly(loaded):
     topic, n = chips[0]
     narrowed = client.get("/requirements", query_string={"topic": topic}).get_data(as_text=True)
     assert f"{n} rule" in narrowed and narrowed.count('class="rulecard"') == min(int(n), 50)
+
+
+def test_a_rule_page_leads_with_the_rule_itself(loaded):
+    client = loaded.test_client()
+    login(client, "training@aurelle.example")
+    with loaded.app_context():
+        req = db.session.scalar(select(Requirement).where(Requirement.text.like("%paper copies are prohibited%")))
+        pk, text = req.id, req.text
+    page = client.get(f"/requirements/{pk}").get_data(as_text=True)
+    assert f'<h1 class="rulehead__text">{text}</h1>' in page.replace("&#39;", "'")
+    assert "Who must learn it" in page and "Due by" in page and '<details class="expert">' in page
+
+
+def test_a_document_added_after_the_list_asks_for_a_new_list(loaded):
+    from src.services.ingestion import ingest_document
+    client = loaded.test_client()
+    login(client, "training@aurelle.example")
+    client.post("/matrix/build")
+    assert "arrived after this list was built" not in client.get("/matrix").get_data(as_text=True)
+    with loaded.app_context():
+        name = "HSP-01_v2.0.docx"
+        assert ingest_document((SAMPLES / name).read_bytes(), name, today=TODAY).ok
+    page = client.get("/matrix").get_data(as_text=True)
+    assert "1 document arrived after this list was built" in page and "Build a new list now" in page

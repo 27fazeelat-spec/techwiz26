@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, item_state %}
 {% from "learning/_ui.html" import pagehero, mtile, kind_icon %}
-{% block title %}{{ m.title }}{% endblock %}
+{% block title %}{{ m.title|module_title }}{% endblock %}
 {% block content %}
 {% set quiz = items | selectattr('item_type', 'equalto', 'quiz_question') | list %}
 {% set ns = namespace(t=0, d=0, first=none) %}

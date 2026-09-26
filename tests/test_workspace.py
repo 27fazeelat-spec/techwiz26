@@ -65,7 +65,9 @@ def test_training_manager_gets_the_theme_but_not_other_peoples_decisions(corpus)
     assert client.get("/conflicts").status_code == 200                        # but the trainer may read them
     client.post("/logout")
     login(client, "omar.siddiqui@aurelle.example")                            # Leila's manager
-    assert 'value="approve"' in client.get("/team/E001").get_data(as_text=True)
+    team = client.get("/team/E001").get_data(as_text=True)
+    assert 'value="approve"' in team and "Waiting for your sign-off" in team
+    assert team.index("Waiting for your sign-off") < team.index("All tasks, situations and assessments")   # what needs Omar comes first
 
 
 def test_reviewer_decides_conflicts_but_does_not_rerun_detection(corpus):

@@ -51,6 +51,7 @@ def test_people_pages_and_permissions(corpus):
     client = current_app.test_client()
     login(client, "training@aurelle.example")
     assert client.get("/roles").status_code == 200
+    assert 'class="rolecard"' in client.get("/roles").get_data(as_text=True)
     response = client.post("/roles", data={"code": "PAT", "name": "Pool Attendant", "department": "Recreation",
                                            "aliases": "pool attendant, lifeguard"})
     assert response.status_code == 302

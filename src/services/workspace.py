@@ -163,7 +163,8 @@ def hidden_matches(role):
     if role == "admin" or role not in ROLES:
         return []
     _, hide = _choice(role)
-    return [match for endpoint, _, _, match, _ in catalog() if endpoint in hide and endpoint not in LOCKED[role]]
+    # Only the first prefix blocks: extra "|" prefixes just keep the sidebar highlighted on related pages.
+    return [match.split("|")[0] for endpoint, _, _, match, _ in catalog() if endpoint in hide and endpoint not in LOCKED[role]]
 
 
 # ---------------------------------------------------------------------------- saving

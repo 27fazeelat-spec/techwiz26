@@ -16,7 +16,7 @@
       <div class="course__img"><img src="{{ url_for('static', filename=category_photo(m.category)) }}" alt="" loading="lazy">
         <span class="course__state {{ 'course__state--done' if q.passed }}">{{ 'Passed' if q.passed else ('Not passed yet' if q.attempts else 'Not started') }}</span></div>
       <div class="course__body">
-        <h3>{{ m.title }} quiz</h3>
+        <h3>{{ m.title|module_title }} quiz</h3>
         <p>{{ q.questions }} questions · {{ q.attempts|length }} of {{ cfg.max_quiz_attempts }} attempts used{% if q.best is not none %} · best {{ q.best }}%{% endif %}</p>
         <div class="course__foot"><span>{{ icon('clock', 14)|replace('class="icon"', 'class="icon" style="display:inline;vertical-align:-2px"') }} ~{{ (q.questions * 1.5)|round|int }} min</span>
           <span class="btn btn--primary">{{ 'Review' if q.passed else ('Try again' if q.attempts else 'Start quiz') }} {{ icon('arrow', 13) }}</span></div>
@@ -31,7 +31,7 @@
   {% if graded %}<ul class="tasks">{% for g in graded %}
     <li><a href="{{ url_for('learning.module', module_key=g.module.module_key) }}#{{ g.item.item_key }}">
       <span class="tasks__check {{ 'is-done' if g.row.status == 'completed' }}">{{ icon('trophy', 15) }}</span>
-      <span class="tasks__text"><strong>{{ g.item.content.topic }}</strong><span>{{ g.module.title }}{% if g.row.score is not none %} · score {{ g.row.score }}{% endif %}</span></span>
+      <span class="tasks__text"><strong>{{ g.item.content.topic }}</strong><span>{{ g.module.title|module_title }}{% if g.row.score is not none %} · score {{ g.row.score }}{% endif %}</span></span>
       {{ item_state(g.row) }}</a></li>{% endfor %}</ul>
   {% else %}<p class="muted small">No assessments in your plan.</p>{% endif %}
 </section>

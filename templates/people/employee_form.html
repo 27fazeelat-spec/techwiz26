@@ -1,39 +1,57 @@
 {% extends "base.html" %}
 {% block title %}{{ 'Edit ' ~ employee.name if employee else 'Add employee' }}{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow"><a href="{{ url_for('plans.employees') }}">Employees &amp; plans</a></p>
-  <h1>{{ employee.name if employee else 'Add employee' }}{% if employee and employee.has_left %} <span class="badge badge--neutral badge--lg">Left {{ employee.left_on.strftime('%d %b %Y') }}</span>{% endif %}</h1>
-  <p class="pagehead__meta">Only what onboarding needs. No national ID, salary or health information is collected.</p></div></div>
+<div class="pagehead"><div><p class="eyebrow"><a href="{{ url_for('plans.employees') }}">← Employees</a></p>
+  <h1>{{ employee.name if employee else 'Add a new hire' }}{% if employee and employee.has_left %} <span class="badge badge--neutral badge--lg">Left {{ employee.left_on.strftime('%d %b %Y') }}</span>{% endif %}</h1>
+  <p class="pagehead__meta">Only what their training needs. No national ID, salary or health information is collected.</p></div></div>
 
-<form method="post" class="panel">
+<div class="empform">
+<form method="post" class="empform__main">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <div class="formgrid" style="margin-top: 0">
-    {% if not employee %}<div class="field"><label for="employee_code">Employee code</label><input id="employee_code" name="employee_code" type="text" placeholder="E013" value="{{ form.get('employee_code', '') }}"></div>{% endif %}
-    <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" value="{{ form.get('name', '') }}"></div>
-    <div class="field"><label for="role_code">Job role</label><select id="role_code" name="role_code"><option value="">Choose…</option>
-      {% for r in roles %}<option value="{{ r.code }}" {{ 'selected' if form.get('role_code') == r.code }}>{{ r.name }}</option>{% endfor %}</select></div>
-    <div class="field"><label for="property_code">Property</label><select id="property_code" name="property_code"><option value="">Choose…</option>
-      {% for p in properties %}<option value="{{ p.code }}" {{ 'selected' if form.get('property_code') == p.code }}>{{ p.name }}</option>{% endfor %}</select></div>
-    <div class="field"><label for="department">Department <span class="muted">(defaults to the role)</span></label><input id="department" name="department" type="text" value="{{ form.get('department', '') }}"></div>
-    <div class="field"><label for="experience_level">Experience level</label><select id="experience_level" name="experience_level">
-      {% for l in levels %}<option value="{{ l }}" {{ 'selected' if form.get('experience_level') == l }}>{{ l }}</option>{% endfor %}</select></div>
-    <div class="field"><label for="experience_years">Years of experience</label><input id="experience_years" name="experience_years" type="text" inputmode="numeric" value="{{ form.get('experience_years', '0') }}"></div>
-    <div class="field"><label for="joining_date">Joining date</label><input id="joining_date" name="joining_date" type="date" value="{{ form.get('joining_date', '') }}"></div>
-    {% set current = form.get('reporting_manager_code', '') %}
-    <div class="field"><label for="reporting_manager_code">Line manager</label><select id="reporting_manager_code" name="reporting_manager_code">
-      <option value="">No line manager yet</option>
-      {% for code, name in managers %}<option value="{{ code }}" {{ 'selected' if code == current }}>{{ name }} · {{ code }}</option>{% endfor %}
-      {% if current and current not in managers|map(attribute=0)|list %}<option value="{{ current }}" selected>{{ current }} (no active login)</option>{% endif %}
-    </select></div>
-    <div class="field"><label for="shift_pattern">Shift pattern</label><select id="shift_pattern" name="shift_pattern">
-      {% for s in shifts %}<option value="{{ s }}" {{ 'selected' if form.get('shift_pattern', 'day') == s }}>{{ s|capitalize }}</option>{% endfor %}</select></div>
-  </div>
-  <div class="field" style="margin-top: var(--space-4)"><label for="previous_experience">Previous experience</label><input id="previous_experience" name="previous_experience" type="text" value="{{ form.get('previous_experience', '') }}"></div>
-  <div class="field" style="margin-top: var(--space-4)"><label for="certifications">Certifications <span class="muted">(comma separated)</span></label><input id="certifications" name="certifications" type="text" value="{{ form.get('certifications', '') }}"></div>
-  <fieldset class="loginbox">
-    <legend>Sign-in</legend>
+
+  <section class="fstep">
+    <header><span class="fstep__n">1</span><div><h2>Who they are</h2><p>Their name, and a short code to tell them apart.</p></div></header>
+    <div class="formgrid">
+      {% if not employee %}<div class="field"><label for="employee_code">Employee code</label><input id="employee_code" name="employee_code" type="text" placeholder="E013" value="{{ form.get('employee_code', '') }}"></div>{% endif %}
+      <div class="field"><label for="name">Full name</label><input id="name" name="name" type="text" value="{{ form.get('name', '') }}"></div>
+    </div>
+  </section>
+
+  <section class="fstep">
+    <header><span class="fstep__n">2</span><div><h2>Their job</h2><p>The job decides which rules go into their training plan. The joining date sets every due date.</p></div></header>
+    <div class="formgrid">
+      <div class="field"><label for="role_code">Job</label><select id="role_code" name="role_code"><option value="">Choose…</option>
+        {% for r in roles %}<option value="{{ r.code }}" {{ 'selected' if form.get('role_code') == r.code }}>{{ r.name }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="property_code">Hotel</label><select id="property_code" name="property_code"><option value="">Choose…</option>
+        {% for p in properties %}<option value="{{ p.code }}" {{ 'selected' if form.get('property_code') == p.code }}>{{ p.name }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="joining_date">Joining date</label><input id="joining_date" name="joining_date" type="date" value="{{ form.get('joining_date', '') }}"></div>
+      {% set current = form.get('reporting_manager_code', '') %}
+      <div class="field"><label for="reporting_manager_code">Line manager <span class="muted">(signs off their tasks)</span></label><select id="reporting_manager_code" name="reporting_manager_code">
+        <option value="">No line manager yet</option>
+        {% for code, name in managers %}<option value="{{ code }}" {{ 'selected' if code == current }}>{{ name }} · {{ code }}</option>{% endfor %}
+        {% if current and current not in managers|map(attribute=0)|list %}<option value="{{ current }}" selected>{{ current }} (no active login)</option>{% endif %}
+      </select></div>
+      <div class="field"><label for="department">Department <span class="muted">(leave empty to use the job's)</span></label><input id="department" name="department" type="text" value="{{ form.get('department', '') }}"></div>
+      <div class="field"><label for="shift_pattern">Shift</label><select id="shift_pattern" name="shift_pattern">
+        {% for s in shifts %}<option value="{{ s }}" {{ 'selected' if form.get('shift_pattern', 'day') == s }}>{{ s|capitalize }}</option>{% endfor %}</select></div>
+    </div>
+  </section>
+
+  <section class="fstep">
+    <header><span class="fstep__n">3</span><div><h2>Their background <span class="muted small">optional</span></h2><p>Experienced people get fewer basics in their plan.</p></div></header>
+    <div class="formgrid">
+      <div class="field"><label for="experience_level">Experience level</label><select id="experience_level" name="experience_level">
+        {% for l in levels %}<option value="{{ l }}" {{ 'selected' if form.get('experience_level') == l }}>{{ l }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="experience_years">Years of experience</label><input id="experience_years" name="experience_years" type="text" inputmode="numeric" value="{{ form.get('experience_years', '0') }}"></div>
+    </div>
+    <div class="field" style="margin-top: var(--space-4)"><label for="previous_experience">Previous experience</label><input id="previous_experience" name="previous_experience" type="text" placeholder="e.g. Two years at a city hotel front desk" value="{{ form.get('previous_experience', '') }}"></div>
+    <div class="field" style="margin-top: var(--space-4)"><label for="certifications">Certificates <span class="muted">(separate with commas)</span></label><input id="certifications" name="certifications" type="text" placeholder="e.g. First Aid, Food Hygiene Level 2" value="{{ form.get('certifications', '') }}"></div>
+  </section>
+
+  <section class="fstep">
+    <header><span class="fstep__n">4</span><div><h2>Sign-in</h2><p>How they log in to see their plan.</p></div></header>
     {% if can('accounts.manage') %}
-    <p class="small muted">{% if login %}This employee signs in with the email below. Type a new password only to replace the current one; employees cannot change it themselves.{% else %}Give the employee a sign-in email and password. Leave both empty to add the profile without a login. Employees cannot change the password themselves.{% endif %}</p>
+    <p class="small muted">{% if login %}This employee signs in with the email below. Type a new password only to replace the current one; employees cannot change it themselves.{% else %}Give them a sign-in email and password, or leave both empty to add them without a login for now.{% endif %}</p>
     <div class="formgrid">
       <div class="field"><label for="login_email">Sign-in email</label><input id="login_email" name="login_email" type="email" autocomplete="off" placeholder="name@aurelle.example" value="{{ form.get('login_email', '') }}"></div>
       <div class="field"><label for="login_password">{{ 'New password' if login else 'Password' }} <span class="muted">(at least 10 characters{{ '; leave empty to keep' if login }})</span></label>
@@ -41,9 +59,21 @@
     </div>
     {% elif login %}<p class="small muted">Signs in as <strong>{{ login.email }}</strong>. The administrator manages logins.</p>
     {% else %}<p class="small muted">No login yet. The administrator sets up the employee's sign-in email and password.</p>{% endif %}
-  </fieldset>
-  <div class="actions" style="margin-top: var(--space-5)"><button class="btn btn--primary" type="submit">Save</button><a class="btn btn--ghost" href="{{ url_for('plans.employees') }}">Cancel</a></div>
+  </section>
+
+  <div class="actions empform__save"><button class="btn btn--primary btn--lg" type="submit">{{ 'Save changes' if employee else 'Add this new hire' }}</button><a class="btn btn--ghost" href="{{ url_for('plans.employees') }}">Cancel</a></div>
 </form>
+
+<aside class="empform__side acard">
+  <div class="acard__head"><h3>What happens next</h3></div>
+  <ol class="nexts">
+    <li><b>You save</b><span>They appear on the plans board under “Needs a plan”.</span></li>
+    <li><b>The AI writes their plan</b><span>From the rules their job must learn, checked part by part.</span></li>
+    <li><b>A person checks it</b><span>Anything the app could not confirm goes to Approvals.</span></li>
+    <li><b>They start learning</b><span>They log in and see their plan, due dates and quizzes.</span></li>
+  </ol>
+</aside>
+</div>
 
 {% if employee %}
 <section class="panel" style="margin-top: var(--space-5)">

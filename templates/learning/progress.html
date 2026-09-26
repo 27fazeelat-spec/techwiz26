@@ -23,7 +23,7 @@
     </section>
     <section class="rcard rise">
       <div class="rhead"><h2>Modules</h2></div>
-      <div class="hbars">{% for x in summary.modules %}<div class="hbar"><span>{{ x.module.title }}</span><span class="hbar__track"><i data-w="{{ x.pct }}%"></i></span><b>{{ x.pct }}%</b></div>{% endfor %}</div>
+      <div class="hbars">{% for x in summary.modules %}<div class="hbar"><span>{{ x.module.title|module_title }}</span><span class="hbar__track"><i data-w="{{ x.pct }}%"></i></span><b>{{ x.pct }}%</b></div>{% endfor %}</div>
     </section>
   </div>
   <aside class="learner__side">
@@ -35,7 +35,7 @@
     <section class="rcard rise">
       <div class="rhead"><h2>Your quiz tries</h2></div>
       {% if attempts %}<ul class="agenda">{% for a in attempts[:8] %}<li><a href="{{ url_for('learning.module', module_key=a.module_key) }}">
-        <span class="agenda__icon">{{ icon('spark', 16) }}</span><span class="agenda__text"><strong>{{ titles.get(a.module_key, a.module_key) }} · try {{ a.attempt_no }}</strong><span>{{ a.submitted_at.strftime('%d %b %H:%M') }}</span></span>
+        <span class="agenda__icon">{{ icon('spark', 16) }}</span><span class="agenda__text"><strong>{{ titles.get(a.module_key, a.module_key)|module_title }} · try {{ a.attempt_no }}</strong><span>{{ a.submitted_at.strftime('%d %b %H:%M') }}</span></span>
         <span class="badge badge--{{ 'ok' if a.passed else 'bad' }}" style="margin-left: auto">{{ a.score }}%</span></a></li>{% endfor %}</ul>
       {% else %}<p class="small muted">No quiz attempts yet.</p>{% endif %}
     </section>

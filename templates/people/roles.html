@@ -2,42 +2,42 @@
 {% from "_macros.html" import icon, empty %}
 {% block title %}Job roles{% endblock %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">Onboarding</p><h1>Job roles</h1>
-  <p class="pagehead__meta">What each role must learn (mandatory / all rules in the approved matrix) and how far its new hires have got. A new role picks up existing requirements through its name, aliases and department; nothing changes until you activate it and approve a new matrix.</p></div></div>
+<div class="pagehead"><div><p class="eyebrow">Employees</p><h1>Job roles</h1>
+  <p class="pagehead__meta">What each job must learn, and how far its new hires have got. A new job picks up the existing rules through its name, other names and department; nothing changes until you switch it on and approve a new list of who learns what.</p></div></div>
 
-<section class="panel panel--flush">
-  <div class="tablewrap">
-    <table class="table">
-      <thead><tr><th>Role</th><th>Department</th><th class="num">Required rules</th><th class="num">Employees</th><th class="num">Plans</th>
-        <th class="num">Avg. coverage</th><th>Onboarding progress</th><th>Status</th></tr></thead>
-      <tbody>
-      {% for r in rows %}
-        <tr><td><a href="{{ url_for('people.role_detail', code=r.code) }}"><span class="mono">{{ r.code }}</span> {{ r.name }}</a></td>
-          {% set st = stats.get(r.id, {}) %}
-          <td class="small">{{ r.department }}{% if r.aliases %}<div class="muted">{{ r.aliases|join(', ')|truncate(40) }}</div>{% endif %}</td>
-          <td class="num">{% if st.rules %}{{ st.mandatory }}<span class="muted"> / {{ st.rules }}</span>{% else %}–{% endif %}</td>
-          <td class="num">{{ counts.get(r.id, 0) }}</td>
-          <td class="num">{{ st.plans or 0 }}{% if st.assigned %}<div class="small muted">{{ st.assigned }} assigned</div>{% endif %}</td>
-          <td class="num">{{ '%.1f%%'|format(st.coverage) if st.get('coverage') is not none else '–' }}</td>
-          <td style="min-width: 150px">{% if st.get('progress') is not none %}<span class="hbar__track" style="display: block"><i style="width: {{ st.progress }}%"></i></span>
-            <span class="small muted">{{ st.progress }}% on average{% if st.completed %} · {{ st.completed }} completed{% endif %}</span>{% else %}<span class="small muted">No plan assigned yet</span>{% endif %}</td>
-          <td>{% if r.status == 'active' %}<span class="badge badge--ok">Active</span>{% else %}<span class="badge badge--warn">Needs mapping review</span>{% endif %}</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</section>
+<div class="rolegrid">
+  {% for r in rows %}{% set st = stats.get(r.id, {}) %}
+  <a class="rolecard" href="{{ url_for('people.role_detail', code=r.code) }}" style="--i: {{ [loop.index0, 12]|min }}">
+    <span class="rolecard__top">
+      <span class="libcard__icon">{{ icon(category_icon(r.department ~ ' ' ~ r.name), 20) }}</span>
+      {% if r.status == 'active' %}<span class="libcard__status"><i class="swatch swatch--active"></i>In use</span>
+      {% else %}<span class="libcard__status"><i class="swatch swatch--draft"></i>Needs checking</span>{% endif %}
+    </span>
+    <b class="rolecard__name">{{ r.name }}</b>
+    <span class="rolecard__dept">{{ r.department }}{% if r.aliases %} · also “{{ r.aliases[0] }}”{% endif %}</span>
+    <span class="rolecard__facts">
+      <span><b>{{ st.mandatory if st.rules else 0 }}</b> must-learn rules{% if st.rules %} <em>of {{ st.rules }}</em>{% endif %}</span>
+      <span><b>{{ counts.get(r.id, 0) }}</b> {{ 'person' if counts.get(r.id, 0) == 1 else 'people' }} · <b>{{ st.plans or 0 }}</b> plan{{ 's' if (st.plans or 0) != 1 }}</span>
+    </span>
+    <span class="rolecard__bar" data-tip="Plans cover this share of the must-learn rules, on average"><span>Rules covered by the plans</span>
+      <b>{{ (st.coverage|round|int ~ '%') if st.get('coverage') is not none else '–' }}</b><i><em data-w="{{ st.coverage or 0 }}%"></em></i></span>
+    <span class="rolecard__bar" data-tip="How much of their training the new hires have done, on average"><span>Training done</span>
+      <b>{{ (st.progress ~ '%') if st.get('progress') is not none else 'not started' }}</b><i><em data-w="{{ st.progress or 0 }}%" class="is-progress"></em></i></span>
+    <span class="libcard__code mono">{{ r.code }}</span>
+  </a>
+  {% endfor %}
+</div>
 
 {% if can('roles.create') %}
 <section class="panel">
-  <h2 class="panel__title">Add a role</h2>
+  <h2 class="panel__title">Add a job</h2>
   <form method="post" class="formgrid" style="margin-top: 0; align-items: end">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="field"><label for="code">Code</label><input id="code" name="code" type="text" placeholder="NAU" value="{{ form.get('code', '') }}"></div>
     <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" placeholder="Night Auditor" value="{{ form.get('name', '') }}"></div>
     <div class="field"><label for="department">Department</label><input id="department" name="department" type="text" placeholder="Front Office" value="{{ form.get('department', '') }}"></div>
     <div class="field"><label for="aliases">Also known as <span class="muted">(comma separated)</span></label><input id="aliases" name="aliases" type="text" placeholder="night auditor, auditor" value="{{ form.get('aliases', '') }}"></div>
-    <div><button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Create role</button></div>
+    <div><button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Add this job</button></div>
   </form>
 </section>
 {% endif %}

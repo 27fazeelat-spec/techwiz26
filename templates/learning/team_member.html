@@ -1,37 +1,95 @@
 {% extends "base.html" %}
-{% from "_macros.html" import initials, meter, progress_badge, item_state, empty %}
+{% from "_macros.html" import initials, meter, progress_badge, item_state, empty, icon %}
 {% block title %}{{ employee.name }}{% endblock %}
+{% macro decide(row, item) -%}
+  {% if not can_sign %}
+    {% if row.verified_by %}<span class="small muted">{{ row.verified_by }}</span>
+    {% elif row.status == 'submitted' or (item.item_type == 'assessment' and row.status != 'completed') %}<span class="small muted">Waiting for {{ line_manager or 'the line manager' }}</span>{% endif %}
+  {% elif item.item_type == 'assessment' and row.status not in ['completed'] %}
+  <form method="post" action="{{ url_for('learning.sign_off', pk=row.id) }}" class="actions">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="score" type="text" inputmode="numeric" placeholder="Score 0-100" aria-label="Score" style="width: 110px">
+    <input name="note" type="text" placeholder="Note" aria-label="Note" style="width: 160px">
+    <button class="btn btn--sm btn--primary" name="decision" value="approve" type="submit">Passed</button>
+    <button class="btn btn--sm" name="decision" value="fail" type="submit">Not passed</button>
+  </form>
+  {% elif row.status == 'submitted' %}
+  <form method="post" action="{{ url_for('learning.sign_off', pk=row.id) }}" class="actions">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="note" type="text" placeholder="Feedback (optional)" aria-label="Feedback" style="width: 180px">
+    <button class="btn btn--sm btn--primary" name="decision" value="approve" type="submit">Sign off</button>
+    <button class="btn btn--sm" name="decision" value="return" type="submit">Return</button>
+  </form>
+  {% elif row.verified_by %}<span class="small muted">{{ row.verified_by }}</span>{% endif %}
+{%- endmacro %}
 {% block content %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow"><a href="{{ url_for('main.team_dashboard') if can('dashboard.team') else url_for('plans.employees') }}">{{ 'My team' if can('dashboard.team') else 'Employees & plans' }}</a><span class="mono">{{ employee.employee_code }}</span></p>
+    <p class="eyebrow"><a href="{{ url_for('main.team_dashboard') if can('dashboard.team') else url_for('plans.employees') }}">← {{ 'My team' if can('dashboard.team') else 'Employees' }}</a></p>
     <div class="person"><span class="avatar avatar--lg" aria-hidden="true">{{ initials(employee.name) }}</span>
       <div><h1>{{ employee.name }}</h1><p class="pagehead__meta" style="margin-top: 2px">{{ employee.job_role.name }} <span class="sep">·</span> {{ employee.property.name }} <span class="sep">·</span> joined {{ employee.joining_date.strftime('%d %b %Y') }}</p></div></div>
   </div>
 </div>
 
 {% if not plan %}
-<section class="panel">{{ empty('No plan assigned yet', 'Progress appears once a verified plan is assigned.', 'list') }}</section>
+<section class="panel">{{ empty('No training plan yet', 'Progress appears here once their plan is checked and given to them.', 'list') }}</section>
 {% else %}
-<section class="kpis" aria-label="Progress">
-  <div class="kpi"><span class="kpi__label">Overall</span><span class="kpi__value">{{ summary.pct }}<small>%</small></span>{{ meter(summary.pct) }}<span class="kpi__note">{{ summary.done }} of {{ summary.total }} items</span></div>
-  <div class="kpi"><span class="kpi__label">Status</span><span class="kpi__value" style="font-size: var(--text-lg)">{{ progress_badge(summary.status) }}</span><span class="kpi__note">{{ summary.overdue }} overdue · {{ summary.submitted }} waiting for sign-off</span></div>
-  {% for t, label in [('checklist', 'Checklist'), ('quiz_question', 'Quiz questions'), ('task', 'Tasks'), ('assessment', 'Assessments')] %}{% set x = summary.by_type.get(t) %}
-  {% if x %}<div class="kpi"><span class="kpi__label">{{ label }}</span><span class="kpi__value">{{ x.done }}<small>/{{ x.total }}</small></span>{{ meter(100 * x.done / x.total) }}</div>{% endif %}{% endfor %}
+{% set first = employee.name.split(' ')[0] %}
+<section class="tmglance rise" aria-label="Progress">
+  <div class="tmglance__ring acard">
+    <div class="donut donut--progress" data-donut="{{ [{'key': 'active', 'label': 'Done', 'value': summary.done}]|tojson|forceescape }}" data-donut-total="{{ summary.total }}" data-donut-unit="step|steps">
+      <div class="donut__center"><b><em data-count="{{ summary.pct }}">{{ summary.pct }}</em>%</b><span>done</span></div>
+    </div>
+    <div>
+      <p class="eglance__big">{{ summary.done }} of {{ summary.total }} steps done</p>
+      <p>{{ progress_badge(summary.status) }}</p>
+      <p class="small muted">{% if summary.overdue %}<b class="is-late">{{ summary.overdue }} late</b> · {% endif %}{{ summary.submitted }} waiting for a sign-off</p>
+    </div>
+  </div>
+  <div class="tmglance__kinds">
+    {% for t, label, ic in [('checklist', 'Things to do', 'check'), ('quiz_question', 'Quiz questions', 'spark'), ('task', 'Tasks', 'wrench'), ('assessment', 'Assessments', 'trophy')] %}{% set x = summary.by_type.get(t) %}
+    {% if x %}<div class="tmkind"><span class="tmkind__icon">{{ icon(ic, 16) }}</span><span class="tmkind__label">{{ label }}</span>
+      <b>{{ x.done }}<small>/{{ x.total }}</small></b><i><em data-w="{{ (100 * x.done / x.total)|round(1) }}%"></em></i></div>{% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+{# Sent for sign-off, or an assessment due within a week (or late). Later assessments stay in the full list below. #}
+{% set soon = today + timedelta(days=7) %}
+{% set waiting = [] %}{% for row, item in rows %}{% if row.status == 'submitted' or (item.item_type == 'assessment' and row.status != 'completed' and (not row.due_date or row.due_date <= soon)) %}{% set _ = waiting.append((row, item)) %}{% endif %}{% endfor %}
+{% set later = rows|selectattr('1.item_type', 'equalto', 'assessment')|rejectattr('0.status', 'equalto', 'completed')|list|length - waiting|selectattr('1.item_type', 'equalto', 'assessment')|list|length %}
+<section class="acard signoff rise">
+  <div class="acard__head"><h3>{{ icon('check', 18) }} {{ 'Waiting for your sign-off' if can_sign else 'Waiting for a sign-off' }}</h3><span>{{ waiting|length }} item{{ 's' if waiting|length != 1 }}</span></div>
+  {% if waiting %}
+  <ul class="signoff__list">
+    {% for row, item in waiting %}{% set c = item.content %}
+    <li class="signoff__item" id="wait-{{ item.item_key }}">
+      <div class="signoff__what">
+        <span class="tag">{{ {'task': 'Task', 'scenario': 'Situation', 'assessment': 'Assessment', 'checklist': 'Checklist'}.get(item.item_type, item.item_type) }}</span>
+        <p>{{ c.description or c.situation or c.topic }}</p>
+        {% if row.note %}<p class="small muted">{{ employee.name.split(' ')[0] }}'s note: {{ row.note }}</p>{% endif %}
+        {% if row.due_date %}<p class="small {{ 'is-late' if row.due_date < today }}">Due {{ row.due_date.strftime('%d %b %Y') }}</p>{% endif %}
+      </div>
+      <div class="signoff__act">{{ decide(row, item) }}</div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="signoff__none">{{ icon('check', 16) }}Nothing is waiting. {{ employee.name.split(' ')[0] }} will send tasks here as they finish them.</p>{% endif %}
+  {% if later > 0 %}<p class="signoff__later">{{ later }} more assessment{{ 's' if later != 1 }} later in the plan, in the full list below.</p>{% endif %}
 </section>
 
 <div class="grid-2">
   <section class="panel panel--flush">
     <div class="panel__bar"><h2 class="panel__title">Modules</h2>{% if can('plans.view') %}<a class="panel__aside mono" href="{{ url_for('plans.plan_detail', pk=plan.id) }}">{{ plan.plan_code }} v{{ plan.version }}</a>{% else %}<span class="panel__aside mono">{{ plan.plan_code }} v{{ plan.version }}</span>{% endif %}</div>
     <ul class="rows" style="padding: 0 var(--space-5)">{% for x in summary.modules %}
-      <li class="rows__item"><span><span class="tag mono">{{ x.module.module_key }}</span> {{ x.module.title }}</span>
+      <li class="rows__item"><span>{{ x.module.title|module_title }}</span>
         <span class="coverage" style="min-width: 160px">{{ meter(x.pct, 'ok' if x.pct == 100 else '') }}<b>{{ x.done }}/{{ x.total }}</b></span></li>{% endfor %}</ul>
   </section>
   <div class="stack">
   <section class="panel">
-    <h2 class="panel__title">Recommendations <span class="muted small">rules in config/progress.yaml</span></h2>
+    <h2 class="panel__title">Suggestions <span class="muted small">from how the training is going</span></h2>
     {% if recs %}<ul class="rows">{% for r in recs %}<li class="rows__item"><span>{{ r.text }}{% if r.module_key %} <span class="tag mono">{{ r.module_key }}</span>{% endif %}
-        <span class="small muted" style="display: block">{{ r.rule_id }} · {{ r.type|replace('_', ' ') }}</span></span>
+        <span class="small muted" style="display: block">{{ r.type|replace('_', ' ')|capitalize }}</span></span>
       {% if r.status == 'open' and r.type == 'manager_review' and not can_sign %}<span class="small muted">For {{ line_manager or 'the line manager' }} to decide</span>
       {% elif r.status == 'open' and r.type != 'manager_review' and not can_train %}<span class="small muted">For the training team to decide</span>
       {% elif r.status == 'open' %}<form method="post" action="{{ url_for('learning.recommendation', pk=r.id) }}" class="actions">
@@ -39,54 +97,34 @@
         <button class="btn btn--sm btn--primary" name="decision" value="accept" type="submit">Agree</button>
         <button class="btn btn--sm" name="decision" value="dismiss" type="submit">Dismiss</button></form>
       {% else %}<span class="badge badge--info">Agreed</span>{% endif %}</li>{% endfor %}</ul>
-    {% else %}<p class="muted small">No recommendations: nothing in the progress data calls for one.</p>{% endif %}
+    {% else %}<p class="muted small">Nothing to suggest right now: the training is going as planned.</p>{% endif %}
   </section>
   <section class="panel">
-    <h2 class="panel__title">Weak areas <span class="muted small">from quiz answers and returned tasks</span></h2>
+    <h2 class="panel__title">Worth going over together <span class="muted small">from wrong quiz answers and returned tasks</span></h2>
     {% if weak %}<ul class="rows">{% for w in weak[:8] %}<li class="rows__item"><span>{% if can('requirements.view') %}<span class="reqid">{{ w.requirement_id }}</span> {% endif %}<span class="small muted">{{ w.competency }}</span>
         <span class="reqtext" style="display: block">{{ w.text }}</span></span><span class="badge badge--warn">{{ w.wrong }} wrong</span></li>{% endfor %}</ul>
-    {% else %}<p class="muted small">No wrong quiz answers yet.</p>{% endif %}
+    {% else %}<p class="muted small">No wrong quiz answers so far.</p>{% endif %}
   </section>
   </div>
 </div>
 
-<section class="panel panel--flush">
-  <div class="panel__bar"><h2 class="panel__title">Tasks, scenarios and assessments</h2></div>
+<details class="expert" style="margin-top: 18px">
+  <summary>{{ icon('list', 16) }}<span>All tasks, situations and assessments</span><small>{{ rows|length }} in the plan, with their state</small></summary>
   <div class="tablewrap">
     <table class="table">
       <thead><tr><th>Item</th><th>Due</th><th>State</th><th>{{ 'Your decision' if can_sign else 'Sign-off' }}</th></tr></thead>
       <tbody>
       {% for row, item in rows %}{% set c = item.content %}
         <tr id="{{ item.item_key }}">
-          <td><span class="tag">{{ item.item_type }}</span> {{ c.description or c.situation or c.topic }}{% if row.note %}<div class="small muted">Note: {{ row.note }}</div>{% endif %}</td>
+          <td><span class="tag">{{ {'task': 'Task', 'scenario': 'Situation', 'assessment': 'Assessment', 'checklist': 'Checklist'}.get(item.item_type, item.item_type) }}</span> {{ c.description or c.situation or c.topic }}{% if row.note %}<div class="small muted">Note: {{ row.note }}</div>{% endif %}</td>
           <td class="small nowrap">{{ row.due_date.strftime('%d %b %Y') if row.due_date }}</td>
           <td>{{ item_state(row) }}</td>
-          <td>
-            {% if not can_sign %}
-              {% if row.verified_by %}<span class="small muted">{{ row.verified_by }}</span>
-              {% elif row.status == 'submitted' or (item.item_type == 'assessment' and row.status != 'completed') %}<span class="small muted">Waiting for {{ line_manager or 'the line manager' }}</span>{% endif %}
-            {% elif item.item_type == 'assessment' and row.status not in ['completed'] %}
-            <form method="post" action="{{ url_for('learning.sign_off', pk=row.id) }}" class="actions">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input name="score" type="text" inputmode="numeric" placeholder="Score 0-100" aria-label="Score" style="width: 110px">
-              <input name="note" type="text" placeholder="Note" aria-label="Note" style="width: 160px">
-              <button class="btn btn--sm btn--primary" name="decision" value="approve" type="submit">Passed</button>
-              <button class="btn btn--sm" name="decision" value="fail" type="submit">Not passed</button>
-            </form>
-            {% elif row.status == 'submitted' %}
-            <form method="post" action="{{ url_for('learning.sign_off', pk=row.id) }}" class="actions">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input name="note" type="text" placeholder="Feedback (optional)" aria-label="Feedback" style="width: 180px">
-              <button class="btn btn--sm btn--primary" name="decision" value="approve" type="submit">Sign off</button>
-              <button class="btn btn--sm" name="decision" value="return" type="submit">Return</button>
-            </form>
-            {% elif row.verified_by %}<span class="small muted">{{ row.verified_by }}</span>{% endif %}
-          </td>
+          <td>{{ decide(row, item) }}</td>
         </tr>
       {% else %}<tr><td colspan="4" class="muted">No tasks or assessments in this plan.</td></tr>{% endfor %}
       </tbody>
     </table>
   </div>
-</section>
+</details>
 {% endif %}
 {% endblock %}

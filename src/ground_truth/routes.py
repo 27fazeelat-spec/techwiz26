@@ -69,14 +69,14 @@ def requirements():
 
 
 class RequirementForm(FlaskForm):
-    req_type = SelectField("Requirement type", choices=[(t, t) for t in REQ_TYPES])
-    roles = SelectMultipleField("Applies to roles")
-    due_stage = SelectField("Due stage")
+    req_type = SelectField("Kind of rule", choices=[(t, t) for t in REQ_TYPES])
+    roles = SelectMultipleField("Which jobs must learn it")
+    due_stage = SelectField("Due by")
     priority = SelectField("Priority", choices=[(p, p) for p in ("High", "Medium", "Low")])
-    competency = StringField("Competency", validators=[DataRequired()])
-    decision = SelectField("Review decision", choices=[("confirmed", "Confirm"), ("edited", "Save my changes"),
-                                                       ("rejected", "Reject: not a requirement")])
-    reason = StringField("Reason (recorded in the audit trail)", validators=[DataRequired()])
+    competency = StringField("Topic", validators=[DataRequired()])
+    decision = SelectField("Your decision", choices=[("confirmed", "It is right as it is"), ("edited", "Save my changes"),
+                                                     ("rejected", "This is not a rule")])
+    reason = StringField("Why? (kept on record)", validators=[DataRequired()])
 
 
 EDITABLE = ("req_type", "mandatory", "roles", "due_stage", "priority", "competency", "review_status")
@@ -88,7 +88,7 @@ def requirement_detail(pk):
     req = db.session.get(Requirement, pk) or abort(404)
     roles = db.session.scalars(select(JobRole).order_by(JobRole.code)).all()
     form = RequirementForm(obj=req)
-    form.roles.choices = [("ALL", "All roles")] + [(r.code, f"{r.code} · {r.name}") for r in roles]
+    form.roles.choices = [("ALL", "Everyone")] + [(r.code, r.name) for r in roles]
     form.due_stage.choices = _stage_choices()
     if request.method == "GET":
         form.roles.data = req.roles
@@ -123,7 +123,7 @@ def requirement_detail(pk):
     history = db.session.scalars(select(Requirement).where(Requirement.req_id == req.req_id)
                                  .order_by(Requirement.created_at)).all()
     return render_template("ground_truth/requirement_detail.html", req=req, form=form, prereqs=prereqs,
-                           history=history)
+                           history=history, stages=dict(_stage_choices()), role_names={r.code: r.name for r in roles})
 
 
 # --------------------------------------------------------------------------- matrix
@@ -136,8 +136,12 @@ def matrix_index():
     shown = current or (versions[0] if versions else None)
     draft = next((v for v in versions if v.status == "draft" and (not current or v.version_no > current.version_no)), None)
     roles = db.session.scalars(select(JobRole).order_by(JobRole.code)).all()
+    # Documents with rules that arrived after the newest list was built: their rules reach training only via a new list.
+    newest = versions[0] if versions else None
+    newer = db.session.scalars(select(Document).where(Document.tier > 0, Document.status.in_(["active", "scheduled"]),
+                                                      Document.uploaded_at > newest.created_at)).all() if newest else []
     return render_template("ground_truth/matrix_index.html", versions=versions, current=current, shown=shown,
-                           draft=draft, roles=roles, heat=_heatmap(shown, roles) if shown else None)
+                           draft=draft, roles=roles, heat=_heatmap(shown, roles) if shown else None, newer=newer)
 
 
 def _heatmap(version, roles):

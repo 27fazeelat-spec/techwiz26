@@ -42,7 +42,7 @@
       <li><a href="{{ url_for('learning.team_member', code=who.employee_code) }}#{{ item.item_key }}" data-cursor="Review">
         <span class="todo__kind {{ 'todo__kind--olive' if item.item_type == 'scenario' else '' }}">{{ item.item_type|capitalize }}</span>
         <span class="todo__text"><strong>{{ (item.content.description or item.content.situation or item.content.topic)[:110] }}</strong>
-          <span>{{ who.name }} · {{ module.title }}{% if row.submitted_at %} · sent {{ row.submitted_at.strftime('%d %b') }}{% endif %}</span></span>
+          <span>{{ who.name }} · {{ module.title|module_title }}{% if row.submitted_at %} · sent {{ row.submitted_at.strftime('%d %b') }}{% endif %}</span></span>
         <span class="todo__go">Review →</span></a></li>
       {% else %}<li class="todo__empty">Nothing to sign off right now.</li>{% endfor %}
     </ul>

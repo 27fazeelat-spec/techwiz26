@@ -33,14 +33,14 @@
         <h1 class="lslide__title"><span data-greeting>Welcome</span>, {{ first }}.</h1>
         <p class="lslide__lead">{% if employee.joining_date > today %}Your first day at {{ brand.name }} is in {{ (employee.joining_date - today).days }} days.{% else %}You are on day {{ day_no }} of your time with {{ brand.name }}.{% endif %} {{ home.welcome_line }}</p>
         <div class="lslide__ctas">
-          {% if nxt %}<a class="btn btn--primary" href="{{ url_for('learning.module', module_key=nxt.module.module_key) }}" data-cursor="Go">Continue with {{ nxt.module.title }} {{ icon('arrow', 15) }}</a>{% endif %}
+          {% if nxt %}<a class="btn btn--primary" href="{{ url_for('learning.module', module_key=nxt.module.module_key) }}" data-cursor="Go">Continue with {{ nxt.module.title|module_title }} {{ icon('arrow', 15) }}</a>{% endif %}
           <a class="btn btn--ghost" href="{{ url_for('learning.modules') }}">All modules</a>
         </div>
       {% elif key == 'next' %}
         {% if task %}{% set r, item, module = task %}{% set c = item.content %}
         <p class="eyebrow {{ 'is-late' if r.due_date and r.due_date < today }}">{% if r.due_date and r.due_date < today %}Overdue since {{ r.due_date.strftime('%d %B') }}{% elif r.due_date == today %}Due today{% else %}Up next · due {{ r.due_date.strftime('%d %B') if r.due_date }}{% endif %}</p>
         <h1 class="lslide__title lslide__title--sm">{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:110] }}</h1>
-        <p class="lslide__lead">A {{ item.item_type|replace('_', ' ') }} in <strong>{{ module.title }}</strong>. It can still be done late; your manager simply sees that it was.</p>
+        <p class="lslide__lead">A {{ item.item_type|replace('_', ' ') }} in <strong>{{ module.title|module_title }}</strong>. It can still be done late; your manager simply sees that it was.</p>
         <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">Open this step {{ icon('arrow', 15) }}</a>
           {% if page_on('learning.calendar') %}<a class="btn btn--ghost" href="{{ url_for('learning.calendar') }}">My calendar</a>{% endif %}</div>
         {% else %}
@@ -52,7 +52,7 @@
       {% elif key == 'quiz' %}
         {% if quiz_open %}{% set q = quiz_open[0] %}
         <p class="eyebrow">A quick knowledge check</p>
-        <h1 class="lslide__title">{{ q.module.title }}, <em>in a few questions</em>.</h1>
+        <h1 class="lslide__title">{{ q.module.title|module_title }}, <em>in a few questions</em>.</h1>
         <p class="lslide__lead">One question at a time, marked straight away. You need {{ cfg.pass_mark_percent }}% to pass, and afterwards you see the policy line behind every answer.</p>
         <div class="lslide__ctas"><a class="btn btn--primary" href="{{ url_for('learning.quiz', module_key=q.module.module_key) }}" data-cursor="Quiz">Start the quiz {{ icon('arrow', 15) }}</a>
           {% if page_on('learning.assessments') %}<a class="btn btn--ghost" href="{{ url_for('learning.assessments') }}">All assessments</a>{% endif %}</div>
@@ -115,7 +115,7 @@
     {% if task %}{% set r, item, module = task %}{% set c = item.content %}
     <p class="enext__label">{{ icon('arrow', 14) }}Your next step{% if r.due_date %} · {% if r.due_date < today %}<em>late since {{ r.due_date.strftime('%d %b') }}</em>{% elif r.due_date == today %}due today{% else %}due {{ r.due_date.strftime('%d %b') }}{% endif %}{% endif %}</p>
     <p class="enext__text">{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:140] }}</p>
-    <p class="enext__where">{{ icon(kind_icon(item.item_type), 14) }}{{ item.item_type|replace('_', ' ')|capitalize }} in {{ module.title }}</p>
+    <p class="enext__where">{{ icon(kind_icon(item.item_type), 14) }}{{ item.item_type|replace('_', ' ')|capitalize }} in {{ module.title|module_title }}</p>
     <a class="btn btn--primary" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Go">Do it now {{ icon('arrow', 15) }}</a>
     {% else %}
     <p class="enext__label">{{ icon('check', 14) }}All caught up</p>
@@ -149,7 +149,7 @@
       <li><a href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Open">
         <span class="ltasks__date {{ 'is-late' if late else ('is-today' if r.due_date == today) }}">{% if r.due_date %}<b>{{ r.due_date.strftime('%d') }}</b>{{ r.due_date.strftime('%b') }}{% else %}<b>–</b>{% endif %}</span>
         <span class="ltasks__text"><strong>{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:90] }}</strong>
-          <span>{{ item.item_type|replace('_', ' ')|capitalize }} · {{ module.title }}{% if late %} · <em>overdue</em>{% endif %}</span></span>
+          <span>{{ item.item_type|replace('_', ' ')|capitalize }} · {{ module.title|module_title }}{% if late %} · <em>overdue</em>{% endif %}</span></span>
         <span class="ltasks__go">→</span></a></li>
       {% endfor %}
     </ul>{% else %}<p class="todo__empty">Nothing due. Enjoy your day.</p>{% endif %}
@@ -158,7 +158,7 @@
     {% for x in quiz_open[:2] %}{% set m = x.module %}
     <a class="course course--wide" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">
       <div class="course__img"><img src="{{ url_for('static', filename=category_photo(m.category)) }}" alt="" loading="lazy"></div>
-      <div class="course__body"><span class="course__kicker">{{ 'Try again' if x.quiz_failed else 'Quiz' }}</span><h3>{{ m.title }}</h3>
+      <div class="course__body"><span class="course__kicker">{{ 'Try again' if x.quiz_failed else 'Quiz' }}</span><h3>{{ m.title|module_title }}</h3>
         <p>A few questions on what you have read, marked straight away.</p>
         <span class="course__go">Start →</span></div>
     </a>

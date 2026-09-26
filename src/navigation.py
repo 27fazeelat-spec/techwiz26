@@ -8,16 +8,16 @@ NAV = {
     "admin": [
         ("Home", [("Home", "main.admin_dashboard", "home", "main.admin_dashboard")]),
         ("Onboarding", [("Plans board", "main.trainer_dashboard", "grid", "main.trainer_dashboard"),
-                        ("Employees", "plans.employees", "users", "plans."),
+                        ("Employees", "plans.employees", "users", "plans.|people.employee"),
                         ("Approvals", "review.queue", "inbox", "review.")]),
-        ("Knowledge", [("All documents", "documents.index", "file", "documents."),
+        ("Documents", [("All documents", "documents.index", "file", "documents."),
                        ("What changed", "changes.index", "split", "changes."),
                        ("Safety check", "ground_truth.security", "shield", "ground_truth.security")]),
-        ("Ground truth", [("All rules", "ground_truth.requirements", "list", "ground_truth.requirement"),
+        ("Rules", [("All rules", "ground_truth.requirements", "list", "ground_truth.requirement"),
                           ("Clashing policies", "ground_truth.conflicts", "split", "ground_truth.conflict"),
                           ("Who learns what", "ground_truth.matrix_index", "grid", "ground_truth.matrix"),
                           ("Is it covered?", "ground_truth.topic_check", "search", "ground_truth.topic_check")]),
-        ("Organisation", [("Job roles", "people.roles", "users", "people."),
+        ("Organisation", [("Job roles", "people.roles", "users", "people.role"),
                           ("Reports", "reports.index", "file", "reports.")]),
         ("Settings", [("Employee home", "settings.employee_home", "home", "settings.employee_home"),
                       ("Roles & access", "settings.pages", "lock", "settings.pages"),
@@ -25,9 +25,9 @@ NAV = {
     ],
     "training_manager": [
         ("Home", [("Plans board", "main.trainer_dashboard", "home", "main.trainer_dashboard")]),
-        ("Onboarding", [("Employees", "plans.employees", "users", "plans."),
-                        ("Job roles", "people.roles", "grid", "people.")]),
-        ("Knowledge", [("All documents", "documents.index", "file", "documents."),
+        ("Onboarding", [("Employees", "plans.employees", "users", "plans.|people.employee"),
+                        ("Job roles", "people.roles", "grid", "people.role")]),
+        ("Documents & rules", [("All documents", "documents.index", "file", "documents."),
                        ("What changed", "changes.index", "split", "changes."),
                        ("All rules", "ground_truth.requirements", "list", "ground_truth.requirement"),
                        ("Who learns what", "ground_truth.matrix_index", "grid", "ground_truth.matrix"),
@@ -130,6 +130,8 @@ def sidebar_for(role, endpoint, blueprint):
 
 
 def is_active(match, endpoint, blueprint):
+    if "|" in match:                                            # several prefixes: active when any one matches
+        return any(is_active(m, endpoint, blueprint) for m in match.split("|"))
     if match.endswith("."):
         return (blueprint or "") + "." == match
     return (endpoint or "").startswith(match)

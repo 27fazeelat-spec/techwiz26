@@ -11,10 +11,10 @@
     <p class="ahead__lead">
       {% set parts = [] %}
       {% if n_plan %}{% set parts = parts + [n_plan ~ ' new hire' ~ ('s' if n_plan != 1) ~ ' need' ~ ('s' if n_plan == 1) ~ ' a plan'] %}{% endif %}
-      {% if n_assign %}{% set parts = parts + [n_assign ~ ' plan' ~ ('s are' if n_assign != 1 else ' is') ~ ' ready to assign'] %}{% endif %}
-      {% if n_review %}{% set parts = parts + [n_review ~ ' ' ~ ('are' if n_review != 1 else 'is') ~ ' with the reviewer'] %}{% endif %}
+      {% if n_assign %}{% set parts = parts + [n_assign ~ ' plan' ~ ('s are' if n_assign != 1 else ' is') ~ ' ready to give out'] %}{% endif %}
+      {% if n_review %}{% set parts = parts + [n_review ~ ' ' ~ ('are' if n_review != 1 else 'is') ~ ' being checked'] %}{% endif %}
       {% if parts %}{{ parts | join(', ') }}.{% else %}Every new hire has a plan and every plan is assigned.{% endif %}
-      {% if not stats.matrix %}<br><a href="{{ url_for('ground_truth.matrix_index') }}">Approve a role matrix first</a>: plans can only be checked against an approved one.{% endif %}
+      {% if not stats.matrix %}<br><a href="{{ url_for('ground_truth.matrix_index') }}">Approve the list of who learns what first</a>: plans can only be checked against an approved one.{% endif %}
     </p>
     <div class="ahead__actions">
       {% if can('employees.create') %}<a class="btn btn--primary" href="{{ url_for('people.employee_new') }}" data-cursor="Add">{{ icon('user', 15) }}Add a new hire</a>{% endif %}
@@ -30,23 +30,24 @@
   </figure>
 </header>
 
-<section class="asec">
-  <dl class="tstats">
-    <div><dt>New hires</dt><dd>{{ stats.people }}</dd></div>
-    <div><dt>Items with the reviewer</dt><dd>{{ stats.waiting }}</dd></div>
-    <div><dt>Plans assigned</dt><dd>{{ stats.assigned }}</dd></div>
-    <div><dt>Average coverage</dt><dd>{% if stats.coverage is not none %}{{ stats.coverage }}<small>%</small>{% else %}–{% endif %}</dd></div>
-    <div><dt>Matrix</dt><dd>{% if stats.matrix %}v{{ stats.matrix.version_no }}{% else %}–{% endif %}</dd></div>
-  </dl>
+<section class="libstats homestats rise" aria-label="At a glance">
+  <a class="libstat" href="{{ url_for('plans.employees') }}"><span class="libstat__icon">{{ icon('users', 20) }}</span>
+    <b data-count="{{ stats.people }}">{{ stats.people }}</b><span>new hires</span></a>
+  <a class="libstat {{ 'libstat--warn' if stats.waiting }}" href="{{ url_for('review.queue') }}"><span class="libstat__icon">{{ icon('inbox', 20) }}</span>
+    <b data-count="{{ stats.waiting }}">{{ stats.waiting }}</b><span>parts of plans waiting for a reviewer</span></a>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('trophy', 20) }}</span>
+    <b data-count="{{ stats.assigned }}">{{ stats.assigned }}</b><span>plans given to new hires</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('chart', 20) }}</span>
+    <b>{% if stats.coverage is not none %}<em data-count="{{ stats.coverage|round|int }}">{{ stats.coverage|round|int }}</em>%{% else %}–{% endif %}</b><span>of must-learn rules covered, on average</span></div>
 </section>
 
 <section class="asec">
-  <div class="asec__head"><h2>Plans board</h2><p>Each person sits in the column of the next thing their plan needs. Left to right: plan, review, assign, learn.</p></div>
+  <div class="asec__head"><h2>Plans board</h2><p>Each person sits in the column of what their plan needs next. From left to right: write the plan, check it, give it to them, follow their learning.</p></div>
   {% set cols = [
-    ('plan', 'Needs a plan', 'var(--faint)', 'Write one with Gemini; Python checks every item straight away.'),
-    ('review', 'With the reviewer', 'var(--warn)', 'A reviewer decides the flagged items.' ~ ('' if can('review.decide') else ' Nothing for you to do yet.')),
-    ('assign', 'Ready to assign', 'var(--primary)', 'Every flagged item has a decision. Assign it to the new hire.'),
-    ('learning', 'Learning', 'var(--info)', 'Assigned. Follow progress; the line manager signs off tasks.'),
+    ('plan', 'Needs a plan', 'var(--faint)', 'The AI writes it and the app checks every part straight away.'),
+    ('review', 'Being checked', 'var(--warn)', 'A reviewer is deciding the parts the app could not confirm.' ~ ('' if can('review.decide') else ' Nothing for you to do yet.')),
+    ('assign', 'Ready to give', 'var(--primary)', 'Everything is decided. Give the plan to the new hire.'),
+    ('learning', 'Learning', 'var(--info)', 'They have the plan. Their line manager signs off their tasks.'),
     ('done', 'Completed', 'var(--ok)', 'Every step finished.')] %}
   <div class="board">
     {% for key, title, color, hint in cols %}
@@ -54,6 +55,7 @@
       <div class="col__head"><span class="col__title">{{ title }}</span><span class="col__count">{{ columns[key]|length }}</span></div>
       <p class="col__hint">{{ hint }}</p>
       {% for c in columns[key] %}{% set e = c.e %}{% set p = c.p %}
+        {% if loop.index == 5 %}<details class="col__more"><summary>Show {{ loop.length - 4 }} more</summary>{% endif %}
         {% if key == 'plan' %}
         {% set days = (e.joining_date - today).days %}
         <div class="pcard">
@@ -62,9 +64,9 @@
           {% if c.failed %}<a class="badge badge--bad" href="{{ url_for('plans.plan_detail', pk=c.failed.id) }}" data-tip="{{ c.failed.error }}">Last attempt failed</a>{% endif %}
           {% if can('plans.generate') and stats.matrix %}
           <form method="post" action="{{ url_for('plans.generate', code=e.employee_code) }}" style="margin: 0"
-                data-busy="Writing {{ e.name.split(' ')[0] }}'s plan" data-busy-steps="Finding the rules for {{ e.job_role.name }}|Gemini drafts the outline|Gemini writes each module|Python checks every item|Comparing with the approved matrix" data-busy-step-ms="7000">
+                data-busy="Writing {{ e.name.split(' ')[0] }}'s plan" data-busy-steps="Finding the rules for {{ e.job_role.name }}|The AI drafts an outline|The AI writes each module|The app checks every item against its policy|Comparing with the approved list" data-busy-step-ms="7000">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button class="btn btn--sm btn--primary" type="submit" style="width: 100%">{{ icon('spark', 14) }}Generate plan</button>
+            <button class="btn btn--sm btn--primary" type="submit" style="width: 100%">{{ icon('spark', 14) }}Make a plan</button>
           </form>{% endif %}
           <div class="pcard__foot"><span>{{ e.department }}</span><span class="mono">{{ e.employee_code }}</span></div>
         </div>
@@ -72,13 +74,14 @@
         <a class="pcard" href="{% if key in ['learning', 'done'] %}{{ url_for('learning.team_member', code=e.employee_code) }}{% else %}{{ url_for('plans.plan_detail', pk=p.id) }}{% endif %}"
            data-cursor="{{ {'review': 'Open', 'assign': 'Assign', 'learning': 'Progress', 'done': 'Progress'}[key] }}">
           <div class="pcard__top"><span class="avatar">{{ initials(e.name) }}</span><div class="pcard__who"><strong>{{ e.name }}</strong><span>{{ e.job_role.name }}</span></div></div>
-          {% if key == 'review' %}<span class="small muted">{{ c.open }} item{{ 's' if c.open != 1 }} with the reviewer</span>
+          {% if key == 'review' %}<span class="small muted">{{ c.open }} part{{ 's' if c.open != 1 }} waiting to be checked</span>
           {% elif key == 'assign' %}{{ plan_badge(p.status) }}
           {% else %}<div class="bar"><i style="width: {{ c.prog.pct or 0 }}%"></i></div>
             <span class="small muted">{{ c.prog.done or 0 }} of {{ c.prog.total or 0 }} steps{% if c.prog.overdue %} · <span style="color: var(--bad); font-weight: 600">{{ c.prog.overdue }} overdue</span>{% endif %}</span>{% endif %}
-          <div class="pcard__foot"><span class="mono">{{ p.plan_code }} v{{ p.version }}</span><span>{% if p.score_coverage is not none %}{{ p.score_coverage }}% coverage{% endif %}</span></div>
+          <div class="pcard__foot"><span class="mono">{{ p.plan_code }} v{{ p.version }}</span><span>{% if p.score_coverage is not none %}{{ p.score_coverage|round|int }}% of rules{% endif %}</span></div>
         </a>
         {% endif %}
+        {% if loop.last and loop.length > 4 %}</details>{% endif %}
       {% else %}<p class="col__empty">Nobody here.</p>{% endfor %}
     </section>
     {% endfor %}

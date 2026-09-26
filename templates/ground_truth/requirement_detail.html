@@ -1,48 +1,63 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon %}
 {% block title %}{{ req.req_id }}{% endblock %}
 {% block content %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow"><a href="{{ url_for('ground_truth.requirements') }}">Requirements</a></p>
-    <h1 class="mono">{{ req.req_id }}</h1>
-    <p class="pagehead__meta">
-      <a href="{{ url_for('documents.detail', doc_id=req.doc_id, version=req.version) }}#{{ req.chunk.chunk_id }}"><span class="mono">{{ req.doc_id }}</span> v{{ req.version }} §{{ req.section_id }}</a>
-      · {{ req.document.title }}
-      {% if req.chunk.location.page_start %}· page {{ req.chunk.location.page_start }}{% elif req.chunk.location.paragraph_start is defined %}· paragraph {{ req.chunk.location.paragraph_start + 1 }}{% endif %}
-    </p>
+    <p class="eyebrow"><a href="{{ url_for('ground_truth.requirements') }}">← All rules</a></p>
+    <p class="rulehead__kicker"><span class="rulelist__kind {{ 'is-must' if req.mandatory }}">{{ 'Must' if req.mandatory else 'Should' }}</span>
+      <span class="mono muted">{{ req.req_id }}</span></p>
+    <h1 class="rulehead__text">{{ req.text }}</h1>
   </div>
 </div>
 
-<section class="panel">
-  <blockquote class="clause">{{ req.text }}</blockquote>
+<section class="rulefacts rise">
+  <div><span>{{ icon('users', 16) }}Who must learn it</span>
+    <b>{% if req.roles == ['ALL'] %}Everyone{% else %}{% for c in req.roles %}{{ role_names.get(c, c) }}{{ ', ' if not loop.last }}{% endfor %}{% endif %}</b></div>
+  <div><span>{{ icon('clock', 16) }}Due by</span><b>{{ stages.get(req.due_stage, req.due_stage) }}</b>
+    <small>{{ 'the document says so' if req.stage_source == 'text' else 'the usual time for this kind of rule' }}</small></div>
+  <div><span>{{ icon('book', 16) }}Topic</span><b>{{ req.competency }}</b></div>
+  <div><span>{{ icon('file', 16) }}Comes from</span>
+    <b><a href="{{ url_for('documents.detail', doc_id=req.doc_id, version=req.version) }}#{{ req.chunk.chunk_id }}">{{ req.document.title }}</a></b>
+    <small>section {{ req.section_id }}{% if req.chunk.location.page_start %}, page {{ req.chunk.location.page_start }}{% endif %} · v{{ req.version }}</small></div>
+</section>
+
+{% if req.condition %}
+<div class="notice notice--info">{{ icon('alert', 16) }} Only applies when {{ req.condition.text or (req.condition.field ~ ' ' ~ req.condition.op ~ ' ' ~ req.condition.value) }}.</div>
+{% endif %}
+
+<details class="expert">
+  <summary>{{ icon('search', 16) }}<span>Expert details</span><small>how the app read this rule, linked rules and its version history</small></summary>
   <dl class="deflist">
-    <dt>Obligation</dt><dd>{{ 'Mandatory' if req.mandatory else 'Not mandatory' }} · decided by the phrase <span class="mono">"{{ req.modality }}"</span></dd>
+    <dt>Must or should</dt><dd>{{ 'Mandatory' if req.mandatory else 'Not mandatory' }} · decided by the phrase <span class="mono">"{{ req.modality }}"</span> · kind: {{ req.req_type }}</dd>
     <dt>Subject</dt><dd>{{ req.subject or '—' }}</dd>
-    <dt>Stage</dt><dd class="mono">{{ req.due_stage }} <span class="muted small">({{ 'stated in the text' if req.stage_source == 'text' else 'default for this type' }})</span></dd>
+    <dt>Stage code</dt><dd class="mono">{{ req.due_stage }}</dd>
     <dt>Condition</dt><dd>{% if req.condition %}Only when <span class="mono">{{ req.condition.field }} {{ req.condition.op }} {{ req.condition.value }}</span> <span class="muted small">(from "{{ req.condition.text }}")</span>{% else %}Applies in every case{% endif %}</dd>
     <dt>Facts</dt><dd>{% for f in req.facts %}<span class="chip">{{ f.span }}</span> {% else %}—{% endfor %}</dd>
     <dt>References</dt><dd>{% for r in req.cross_refs %}<span class="chip {{ 'chip--guess' if r.resolved is sameas false }}">{{ r.text }}{% if r.resolved is sameas false %} · not found{% endif %}</span> {% else %}—{% endfor %}</dd>
-    <dt>Prerequisites</dt><dd>{% for p, source in prereqs %}<a class="mono" href="{{ url_for('ground_truth.requirement_detail', pk=p.id) }}">{{ p.req_id }}</a> <span class="muted small">({{ source|replace('_', ' ') }})</span> {% else %}—{% endfor %}</dd>
+    <dt>Learn first</dt><dd>{% for p, source in prereqs %}<a class="mono" href="{{ url_for('ground_truth.requirement_detail', pk=p.id) }}">{{ p.req_id }}</a> <span class="muted small">({{ source|replace('_', ' ') }})</span> {% else %}—{% endfor %}</dd>
     <dt>Version history</dt><dd>{% for h in history %}<a class="mono" href="{{ url_for('ground_truth.requirement_detail', pk=h.id) }}">v{{ h.version }}</a> <span class="muted small">{{ h.lineage_change }}</span>{% if not loop.last %} → {% endif %}{% endfor %}</dd>
   </dl>
-</section>
+</details>
 
-<section class="panel">
-  <h2 class="panel__title">Review <span class="muted small">currently {{ req.review_status }}{% if req.reviewed_by %} by {{ req.reviewed_by }}{% endif %}</span></h2>
+<section class="panel rulecheck">
+  <h2 class="panel__title">Check this rule
+    <span class="rulecard__check rulecard__check--{{ req.review_status }}">{{ {'pending': 'Not checked yet', 'confirmed': '✓ Checked', 'edited': '✓ Edited by a person', 'rejected': 'Rejected'}[req.review_status] }}{% if req.reviewed_by %} · {{ req.reviewed_by }}{% endif %}</span></h2>
   {% if can('requirements.edit') %}
+  <p class="small muted" style="margin-bottom: 12px">The app read this rule from the document by itself. If something below is wrong, correct it and save; your change is kept on record.</p>
   <form method="post" novalidate>
     {{ form.hidden_tag() }}
     <div class="formgrid">
-      <div class="field"><label for="req_type">{{ form.req_type.label.text }}</label>{{ form.req_type(id="req_type") }}</div>
-      <div class="field"><label for="due_stage">{{ form.due_stage.label.text }}</label>{{ form.due_stage(id="due_stage") }}</div>
-      <div class="field"><label for="priority">{{ form.priority.label.text }}</label>{{ form.priority(id="priority") }}</div>
-      <div class="field"><label for="competency">{{ form.competency.label.text }}</label>{{ form.competency(id="competency") }}</div>
-      <div class="field"><label for="roles">{{ form.roles.label.text }}</label>{{ form.roles(id="roles", size=6) }}</div>
       <div class="field"><label for="decision">{{ form.decision.label.text }}</label>{{ form.decision(id="decision") }}</div>
+      <div class="field"><label for="due_stage">{{ form.due_stage.label.text }}</label>{{ form.due_stage(id="due_stage") }}</div>
+      <div class="field"><label for="competency">{{ form.competency.label.text }}</label>{{ form.competency(id="competency") }}</div>
+      <div class="field"><label for="req_type">{{ form.req_type.label.text }}</label>{{ form.req_type(id="req_type") }}</div>
+      <div class="field"><label for="priority">{{ form.priority.label.text }}</label>{{ form.priority(id="priority") }}</div>
+      <div class="field"><label for="roles">{{ form.roles.label.text }} <span class="muted">(hold Ctrl to pick several)</span></label>{{ form.roles(id="roles", size=6) }}</div>
     </div>
-    <div class="field" style="margin-top: var(--space-4)"><label for="reason">{{ form.reason.label.text }}</label>{{ form.reason(id="reason", placeholder="e.g. Applies only to roles that scan passports") }}</div>
-    <div class="actions" style="margin-top: var(--space-4)"><button class="btn btn--primary" type="submit">Save review</button></div>
+    <div class="field" style="margin-top: var(--space-4)"><label for="reason">{{ form.reason.label.text }}</label>{{ form.reason(id="reason", placeholder="e.g. Applies only to jobs that scan passports") }}</div>
+    <div class="actions" style="margin-top: var(--space-4)"><button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Save</button></div>
   </form>
-  {% else %}<p class="muted">You can view this requirement but not change it.</p>{% endif %}
+  {% else %}<p class="muted">You can read this rule but not change it.</p>{% endif %}
 </section>
 {% endblock %}

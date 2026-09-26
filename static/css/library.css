@@ -52,7 +52,7 @@
 
 /* The older portal styles put every span in a ring's centre on its own line in capitals: keep ours plain. */
 .theme-terra .donut__center span { display: block; text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 12.5px; color: var(--muted); }
-.donut__center b em { font-style: normal; }
+.donut__center b em, .libstat b em { font-style: normal; }
 .donut--progress .donut__seg { stroke-linecap: round; stroke-width: 8; }
 .donut--progress .donut__seg:hover { stroke-width: 10; }
 .donut--progress .donut__track { stroke: var(--surface-sunk); stroke-width: 8; }
@@ -222,6 +222,11 @@
 .justin__tick { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--ok); color: var(--surface); }
 .justin__steps li.is-warn .justin__tick { background: var(--warn); }
 .justin__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.justin__next { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; background: var(--surface);
+  border: 1px dashed color-mix(in srgb, var(--primary) 45%, var(--line)); animation: libpop .4s ease-out 1.5s both; }
+.justin__next > div { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; }
+.justin__next span { color: var(--muted); }
+.justin__next > svg { color: var(--primary); flex: none; }
 @keyframes justin-pop { from { transform: scale(0); } to { transform: scale(1); } }
 @keyframes justin-ring { from { transform: scale(.8); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
 
@@ -750,6 +755,111 @@ a.heat__cell:hover, .heat__cell.is-on { transform: scale(1.14); box-shadow: 0 0 
 @keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 @media (prefers-reduced-motion: reduce) { .theme-terra .flash, .theme-terra .flash--success .flash__icon, .theme-terra .flash--success::after { animation: none; } }
 
+/* ---------------------------------------------------------------- plans board: long columns fold */
+.col__more > summary { display: block; margin: 4px 0 8px; padding: 9px 12px; border-radius: 10px; cursor: pointer; list-style: none; text-align: center;
+  font-size: 13px; font-weight: 700; color: var(--ink-soft); background: color-mix(in srgb, var(--c, var(--line)) 12%, var(--surface)); border: 1px dashed var(--line-strong); }
+.col__more > summary::-webkit-details-marker { display: none; }
+.col__more > summary:hover { color: var(--primary); }
+.col__more[open] > summary { display: none; }
+.col__more[open] { display: flex; flex-direction: column; gap: 10px; }
+.col__more > .pcard { animation: libpop .3s ease-out both; }
+
+/* ---------------------------------------------------------------- adding a new hire: numbered steps */
+.empform { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.empform__main { display: flex; flex-direction: column; gap: 16px; }
+.fstep { padding: 18px 20px 20px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.fstep > header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.fstep h2 { font-family: var(--font-display); font-weight: 500; font-size: 19px; }
+.fstep header p { color: var(--muted); font-size: 13.5px; }
+.fstep__n { display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: 50%; background: var(--primary); color: var(--on-primary); font-weight: 700; }
+.fstep .formgrid { margin-top: 0; }
+.fstep:focus-within { border-color: color-mix(in srgb, var(--primary) 45%, var(--line)); box-shadow: 0 0 0 3px var(--primary-soft); }
+.empform__save { position: sticky; bottom: 0; padding: 12px 0; background: linear-gradient(transparent, var(--bg) 35%); }
+.empform__side { position: sticky; top: 76px; border-radius: 14px; }
+.nexts { list-style: none; margin: 0; padding: 0 20px 18px; counter-reset: nx; display: grid; gap: 14px; }
+.nexts li { counter-increment: nx; display: grid; grid-template-columns: 26px 1fr; gap: 2px 10px; font-size: 13.5px; }
+.nexts li::before { content: counter(nx); grid-row: span 2; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface-sunk); color: var(--ink-soft); font-weight: 700; font-size: 12px; }
+.nexts span { color: var(--muted); }
+@media (max-width: 960px) { .empform { grid-template-columns: 1fr; } .empform__side { position: static; } }
+
+/* ---------------------------------------------------------------- one rule */
+.rulehead__kicker { display: flex; align-items: center; gap: 10px; margin: 8px 0 6px; }
+.rulehead__text { font-size: clamp(22px, 2.4vw, 30px) !important; line-height: 1.3 !important; max-width: 60ch; }
+.rulefacts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.rulefacts > div { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.rulefacts span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.rulefacts b { font-size: 15px; line-height: 1.35; }
+.rulefacts b a { color: inherit; }
+.rulefacts small { font-size: 12px; color: var(--muted); }
+.rulecheck { margin-top: 18px; }
+.rulecheck .panel__title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 900px) { .rulefacts { grid-template-columns: 1fr 1fr; } }
+
+/* ---------------------------------------------------------------- job roles */
+.rolegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; margin-bottom: 22px; }
+.rolecard { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line);
+  color: inherit; text-decoration: none; animation: libpop .4s ease-out both; animation-delay: calc(var(--i) * 35ms); transition: transform 180ms, box-shadow 180ms; }
+.rolecard:hover { transform: translateY(-3px); box-shadow: 0 10px 28px -16px rgba(60, 40, 20, .4); }
+.rolecard__top { display: flex; align-items: center; justify-content: space-between; }
+.rolecard__name { font-family: var(--font-display); font-weight: 500; font-size: 19px; line-height: 1.25; }
+.rolecard__dept { font-size: 13px; color: var(--muted); }
+.rolecard__facts { display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; color: var(--ink-soft); padding: 8px 0; border-top: 1px solid var(--line); }
+.rolecard__facts em { font-style: normal; color: var(--muted); }
+.rolecard__bar { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 12.5px; color: var(--muted); }
+.rolecard__bar b { color: var(--ink); font-size: 13px; }
+.rolecard__bar i { grid-column: 1 / -1; height: 7px; border-radius: 999px; background: var(--surface-sunk); overflow: hidden; }
+.rolecard__bar em { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--ok); transition: width 1s cubic-bezier(.22, 1, .36, 1); }
+.rolecard__bar em.is-progress { background: var(--primary); }
+
+/* ---------------------------------------------------------------- manager: sign-offs first */
+.signoff { border-radius: 14px; margin: 4px 0 18px; border-color: color-mix(in srgb, var(--primary) 30%, var(--line)); }
+.signoff h3 { display: flex; align-items: center; gap: 8px; }
+.signoff__list { list-style: none; margin: 0; padding: 0; }
+.signoff__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px 20px; border-top: 1px solid var(--line); }
+.signoff__what p { margin-top: 6px; font-size: 15px; line-height: 1.45; }
+.signoff__what p.small { font-size: 12.5px; margin-top: 4px; }
+.signoff__what .is-late { color: var(--bad); font-weight: 600; }
+.signoff__act .actions { flex-wrap: nowrap; }
+.signoff__later { margin: 0 20px 14px; font-size: 13px; color: var(--muted); }
+.signoff__none { display: flex; align-items: center; gap: 8px; margin: 0 20px 16px; padding: 12px 14px; border-radius: 10px; background: var(--ok-bg); color: var(--ok); font-weight: 600; }
+@media (max-width: 860px) { .signoff__item { grid-template-columns: 1fr; } .signoff__act .actions { flex-wrap: wrap; } }
+
+.tmglance { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 16px; margin-bottom: 18px; }
+.tmglance__ring { display: flex; align-items: center; gap: 20px; padding: 18px 20px; border-radius: 14px; }
+.tmglance__ring .donut { width: 130px; height: 130px; }
+.tmglance__ring .donut__center b { font-size: 30px; }
+.tmglance__ring .is-late { color: var(--bad); }
+.tmglance__kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tmkind { display: grid; grid-template-columns: auto 1fr auto; gap: 6px 10px; align-items: center; padding: 12px 14px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--line); }
+.tmkind__icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--primary-soft); color: var(--primary); }
+.tmkind__label { font-size: 13.5px; color: var(--ink-soft); }
+.tmkind b { font-family: var(--font-display); font-weight: 500; font-size: 20px; }
+.tmkind b small { font-size: 13px; color: var(--muted); }
+.tmkind i { grid-column: 1 / -1; height: 6px; border-radius: 999px; background: var(--surface-sunk); overflow: hidden; }
+.tmkind em { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--ok); transition: width 1s cubic-bezier(.22, 1, .36, 1); }
+@media (max-width: 900px) { .tmglance { grid-template-columns: 1fr; } }
+
+/* ---------------------------------------------------------------- phone widths */
+.cal > *, .eglance > *, .docgrid > *, .acols > * { min-width: 0; }
+@media (max-width: 700px) {
+  .topicchips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; margin-right: -16px; scrollbar-width: thin; }
+  .topicchip { flex: none; }
+  .appgroup__head { flex-wrap: wrap; }
+  .appgroup__head > div { flex-basis: calc(100% - 60px); }
+  .rvprog { grid-template-columns: 1fr auto; }
+  .rvprog__bar { grid-column: 1 / -1; grid-row: 2; }
+  .mxstatus__main { flex-wrap: wrap; }
+  .mxstatus__nums { grid-template-columns: repeat(2, 1fr); }
+  .cal__month { padding: 14px 12px; }
+  .cal__grid { gap: 3px; }
+  .cal__day { font-size: 13px; }
+  .cal__mark { min-width: 16px; height: 15px; font-size: 10px; padding: 0 4px; }
+  .cal__daylist .agenda li a { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px 10px; }
+  .cal__daylist .agenda li a > span:last-child { grid-column: 2; margin-left: 0 !important; }
+}
+
 @media (max-width: 1000px) { .mxstatus { grid-template-columns: 1fr; } .stagestrip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 @media (max-width: 1280px) { .homecharts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .homecharts > :last-child { grid-column: 1 / -1; } }
@@ -763,7 +873,7 @@ a.heat__cell:hover, .heat__cell.is-on { transform: scale(1.14); box-shadow: 0 0 
 @media (prefers-reduced-motion: reduce) {
   .libcard, .libchip, .vline::before, .vline__item, .dropzone__icon, .dropzone__file, .justin, .justin__badge,
   .justin__badge::after, .justin__steps li, .theme-terra .busy-steps li, .theme-terra .busy-card::after,
-  .heat tbody tr, .stagestrip li, .rulecard, .clash, .clash__verdict--won, .personcard, .appgroup, .mstep:target .mstep__dot, .mstep__body, .polcard, .polcard__rules ol, .pjourney::after, .pjourney li.is-now .pjourney__dot, .safeflow li, .safecard, .repcard, .chgcard { animation: none; }
+  .heat tbody tr, .stagestrip li, .rulecard, .clash, .clash__verdict--won, .personcard, .appgroup, .mstep:target .mstep__dot, .mstep__body, .polcard, .polcard__rules ol, .pjourney::after, .pjourney li.is-now .pjourney__dot, .safeflow li, .safecard, .repcard, .chgcard, .rolecard { animation: none; }
   .libcard:hover { transform: none; }
   .donut__seg, .dbar__track i, .cols__col i { transition: none; }
 }

@@ -36,6 +36,16 @@
   </div>
 </section>
 
+{% if newer %}
+<div class="notice notice--warn mxdraft">
+  <span>{{ icon('file', 16) }} {{ newer|length }} document{{ 's' if newer|length != 1 }} arrived after this list was built
+    ({{ newer|map(attribute='title')|join(', ')|truncate(90) }}). Their rules reach training only after you build and approve a new list.</span>
+  {% if can('matrix.build') %}<form method="post" action="{{ url_for('ground_truth.matrix_build') }}" data-busy="Building a new list…">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn--primary" type="submit">{{ icon('grid', 16) }}Build a new list now</button></form>{% endif %}
+</div>
+{% endif %}
+
 {% if draft %}
 <div class="notice notice--info mxdraft">
   <span>A newer list (version {{ draft.version_no }}) was built from the latest documents and is waiting for approval.</span>

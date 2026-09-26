@@ -75,3 +75,14 @@ def test_employee_sidebar_has_four_plain_entries(client):
     sidebar = html[html.index('<aside class="sidebar"'):html.index("</aside>")]
     assert re.findall(r'class="navlink[^"]*"[^>]*>.*?<span>(.*?)</span>', sidebar) == [
         "Home", "My learning", "My progress", "Ask a question"]
+
+
+def test_employee_form_highlights_employees_and_hidden_pages_still_block(client):
+    import re
+    login(client, "admin@aurelle.example")
+    page = client.get("/employees/new").data.decode()
+    tabs = page[page.index('class="hubtabs"'):]
+    assert re.findall(r'class="hubtab is-on"[^>]*>([^<]+)', tabs[:tabs.index("</nav>")]) == ["Employees"]
+    from src.navigation import is_active
+    assert is_active("plans.|people.employee", "people.employee_new", "people")
+    assert not is_active("people.role", "people.employee_new", "people")

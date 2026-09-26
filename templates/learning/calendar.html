@@ -5,7 +5,7 @@
 {% macro step(r, i) -%}{% set c = i.content %}
   <li><a href="{{ url_for('learning.module', module_key=i.module.module_key) }}#{{ i.item_key }}">
     <span class="agenda__icon">{{ icon(kind_icon(i.item_type), 16) }}</span>
-    <span class="agenda__text"><strong>{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:100] }}</strong><span>{{ i.item_type|replace('_', ' ')|capitalize }} · {{ i.module.title }}</span></span>
+    <span class="agenda__text"><strong>{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:100] }}</strong><span>{{ i.item_type|replace('_', ' ')|capitalize }} · {{ i.module.title|module_title }}</span></span>
     <span style="margin-left: auto">{{ item_state(r) }}</span></a></li>
 {%- endmacro %}
 {% block content %}

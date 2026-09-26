@@ -32,8 +32,13 @@
     <li style="--i: 3"><span class="justin__tick">{{ icon('check', 14) }}</span><b>Added to the library</b>
       <span>{{ plain_status.get(doc.status, doc.status|capitalize) }}{% if replaced %}, replaces v{{ replaced[0].version }}{% endif %}{% if doc.status == 'scheduled' and doc.effective_date %}, starts {{ doc.effective_date.strftime('%d %b %Y') }}{% endif %}{% if doc.warnings %} · {{ doc.warnings|length }} note{{ 's' if doc.warnings|length != 1 }} in Expert details{% endif %}</span></li>
   </ol>
+  {% if rules and doc.tier and doc.status in ['active', 'scheduled'] %}
+  <div class="justin__next">{{ icon('arrow', 16) }}<div><b>One more step so training uses these rules</b>
+    <span>New plans follow the approved list of who learns what. Build a new list from the latest documents and approve it.{% if replaced %} Plans already given out are updated from What changed.{% endif %}</span></div>
+    {% if can('matrix.build') %}<a class="btn btn--primary" href="{{ url_for('ground_truth.matrix_index') }}">Go to Who learns what</a>{% endif %}</div>
+  {% endif %}
   <div class="justin__actions">
-    {% if rules %}<a class="btn btn--primary" href="#rules">See the rules</a>{% endif %}
+    {% if rules %}<a class="btn {{ 'btn--primary' if not (doc.tier and can('matrix.build')) }}" href="#rules">See the rules</a>{% endif %}
     {% if replaced %}<a class="btn" href="{{ url_for('changes.index') }}">What changed</a>{% endif %}
     {% if can('documents.upload') %}<a class="btn btn--ghost" href="{{ url_for('documents.upload') }}">Upload another</a>{% endif %}
   </div>

@@ -25,7 +25,7 @@
     <span class="mtile__state">{{ {'done': 'Completed', 'progress': 'In progress', 'new': 'Not started'}[state] }}</span>
   </div>
   {% if feature %}<p class="mtile__eyebrow">Up next for you</p>{% endif %}
-  <h3>{{ m.title }}</h3>
+  <h3>{{ m.title|module_title }}</h3>
   <p class="mtile__text">{{ m.purpose or ('The ' ~ m.category|lower ~ ' rules for your role.') }}</p>
   <div class="mtile__foot">
     <span class="mring" style="--v: {{ x.pct }}"><b>{{ x.pct }}<small>%</small></b></span>

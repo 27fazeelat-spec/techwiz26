@@ -148,8 +148,12 @@ def compose_modules(requirements, max_modules, min_size):
         stage = min((r["due_stage"] for r in reqs), key=lambda s: order.get(s, 99))
         size = {c: sum(1 for r in reqs if r["category"] == c) for c in cats}
         main = max(cats, key=lambda c: (size[c], -cats.index(c)))
-        others = len(cats) - 1
-        title = main if not others else f"{main} and {others} related area{'s' if others > 1 else ''}"
+        # Name the topics a merged module covers: "A & B", "A, B & C", then "A, B and 3 more".
+        others = sorted((c for c in cats if c != main), key=lambda c: (-size[c], cats.index(c)))
+        if len(others) <= 2:
+            title = " & ".join([", ".join([main] + others[:-1])] + others[-1:]) if others else main
+        else:
+            title = f"{main}, {others[0]} and {len(others) - 1} more"
         modules.append({"module_key": key, "title": title, "category": main, "categories": cats, "stage": stage})
         assigned += [{**r, "module_key": key} for r in reqs]
     return modules, assigned

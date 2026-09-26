@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon %}
-{% block title %}Quiz · {{ m.title }}{% endblock %}
+{% block title %}Quiz · {{ m.title|module_title }}{% endblock %}
 {% block content %}
 <section class="quizshell">
   <header class="quizhead">
     <a class="quizhead__back" href="{{ url_for('learning.module', module_key=m.module_key) }}" data-cursor="Back">{{ icon('arrow', 16) }}</a>
-    <div class="quizhead__title"><span>{{ m.title }}</span><strong>Knowledge check</strong></div>
+    <div class="quizhead__title"><span>{{ m.title|module_title }}</span><strong>Knowledge check</strong></div>
     <div class="quizhead__meta"><span>{{ questions|length }} questions</span><span>Pass mark {{ cfg.pass_mark_percent }}%</span><span>Attempt {{ used + 1 }} of {{ cfg.max_quiz_attempts }}</span></div>
   </header>
 

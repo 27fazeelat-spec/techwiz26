@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon %}
-{% block title %}Quiz result · {{ m.title }}{% endblock %}
+{% block title %}Quiz result · {{ m.title|module_title }}{% endblock %}
 {% block content %}
 {% set right = attempt.answers | selectattr('correct') | list | length %}
 <section class="quizshell">
   <section class="resulthero {{ 'is-pass' if attempt.passed else 'is-fail' }} rise">
     <div class="resulthero__ring" style="--v: {{ attempt.score }}"><div><b><span data-count="{{ attempt.score }}">{{ attempt.score }}</span>%</b><span>{{ right }} of {{ questions|length }} correct</span></div></div>
     <div class="resulthero__text">
-      <p class="heroband__kicker">{{ m.title }}</p>
+      <p class="heroband__kicker">{{ m.title|module_title }}</p>
       <h1>{{ 'You passed!' if attempt.passed else 'Not quite yet' }}</h1>
       <p>{% if attempt.passed %}Great work. This module's quiz is complete and your progress has been updated.{% else %}You need {{ cfg.pass_mark_percent }}% to pass. Read the explanations below and try again: {{ cfg.max_quiz_attempts - used }} attempt{{ 's' if cfg.max_quiz_attempts - used != 1 }} left.{% endif %}</p>
       <div class="heroband__actions">

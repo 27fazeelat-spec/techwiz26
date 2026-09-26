@@ -138,7 +138,7 @@ def team_member(code):
     return render_template("learning/team_member.html", employee=employee, plan=plan, summary=summary, rows=rows,
                            weak=progress.weak_areas(employee, plan) if plan else [], recs=recs,
                            can_sign=_can_sign_off(employee), can_train=has_permission(current_user, "plans.view"),
-                           line_manager=line_manager)
+                           line_manager=line_manager, today=today(current_app.config), timedelta=timedelta)
 
 
 @bp.route("/team/recommendation/<int:pk>", methods=["POST"])

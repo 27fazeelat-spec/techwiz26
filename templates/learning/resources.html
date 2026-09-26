@@ -23,10 +23,10 @@
       </div>
     </header>
     {% if used_in.get(doc_id) %}
-    <p class="polcard__used">{{ icon('book', 13) }}Used in: {{ used_in[doc_id]|join(', ') }}</p>
+    <p class="polcard__used">{{ icon('book', 13) }}Used in: {{ used_in[doc_id]|map('module_title')|join(', ') }}</p>
     {% endif %}
     <details class="polcard__rules">
-      <summary><span class="polcard__show">Show</span><span class="polcard__hide">Hide</span> the rules <span aria-hidden="true">{{ icon('arrow', 14) }}</span></summary>
+      <summary><span><span class="polcard__show">Show</span><span class="polcard__hide">Hide</span> the rules</span> <span aria-hidden="true">{{ icon('arrow', 14) }}</span></summary>
       <ol>
         {% for section, chunks in sections %}{% for c in chunks[:1] %}
         <li><span>{{ c.source_text }}</span><small>section {{ section }}{% if c.location.page_start %}, page {{ c.location.page_start }}{% endif %}</small></li>
