@@ -109,6 +109,7 @@ class Settings:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     PERMANENT_SESSION_LIFETIME = 8 * 60 * 60  # one working shift
+    WTF_CSRF_TIME_LIMIT = PERMANENT_SESSION_LIFETIME  # a form left open for an hour still sends (default is 1 hour)
 
 
 def today(app_config=None):

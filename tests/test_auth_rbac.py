@@ -49,5 +49,20 @@ def test_logout_requires_post(client):
     assert client.post("/logout").status_code == 302
 
 
+def test_an_expired_form_token_still_signs_out(app, client):
+    login(client, "admin@aurelle.example")
+    app.config["WTF_CSRF_ENABLED"] = True
+    try:
+        # no token, as when a page sat open too long: the form goes back to its page to try again
+        stale = client.post("/documents/upload", headers={"Referer": "http://localhost/documents"})
+        assert stale.status_code == 302 and stale.headers["Location"].endswith("/documents")
+        assert client.post("/documents/upload", headers={"Referer": "https://evil.example/x"}).headers["Location"] == "/app"
+        out = client.post("/logout")                      # signing out works even without a token
+        assert out.status_code == 302 and "/login" in out.headers["Location"]
+    finally:
+        app.config["WTF_CSRF_ENABLED"] = False
+    assert client.get("/app").status_code == 302              # really signed out
+
+
 def test_healthz(client):
     assert client.get("/healthz").get_json()["database"] is True

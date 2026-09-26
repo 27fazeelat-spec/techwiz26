@@ -3,7 +3,9 @@ from pathlib import Path
 
 from urllib.parse import urlsplit
 
-from flask import Flask, render_template
+from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_login import logout_user
+from flask_wtf.csrf import CSRFError
 from sqlalchemy.exc import InterfaceError, OperationalError
 
 from config.loader import load_config, validate_all
@@ -208,6 +210,19 @@ def create_app(overrides=None):
     @app.errorhandler(404)
     def not_found(_):
         return render_template("errors/404.html"), 404
+
+    @app.errorhandler(CSRFError)
+    def form_expired(_):
+        """An expired or missing form token: sign out anyway, otherwise send the person back to try again."""
+        if request.endpoint == "auth.logout":
+            logout_user()
+            flash("You have been signed out.", "info")
+            return redirect(url_for("auth.login"))
+        flash("This page was open for a long time, so it was not saved. Please try again.", "error")
+        back = request.referrer or ""
+        if urlsplit(back).netloc != request.host:
+            back = url_for("main.home")
+        return redirect(back)
 
     @app.errorhandler(413)
     def too_large(_):
