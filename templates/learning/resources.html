@@ -1,19 +1,54 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, empty %}
-{% from "learning/_ui.html" import pagehero, mtile %}
+{% from "learning/_ui.html" import pagehero %}
 {% block title %}Resources{% endblock %}
 {% block content %}
-{% call pagehero('img/aurelle/photos/interior.jpg', 'Resources', 'The policies behind your plan', 'Every lesson you are given comes from one of these sections. Nothing is taught that is not written here.') %}
-  <label class="lsearch">{{ icon('search', 16) }}<input type="search" placeholder="Search the policies" aria-label="Search the policies" data-search="#policies"></label>
+{% call pagehero('img/aurelle/photos/interior.jpg', 'Resources', 'The policies behind your plan', 'Everything you learn comes from these company policies. Open one to read the exact rules.') %}
+  <span class="lchip"><b>{{ by_doc|length }}</b> policies</span><span class="lchip"><b>{{ rules }}</b> rules you learn from them</span>
 {% endcall %}
-<div class="stack" id="policies">
-  {% for doc_id, sections in by_doc.items() %}
-  <section class="rcard rise" data-filter-item>
-    <div class="rhead"><h2>{{ icon('file', 18) }} {{ titles.get(doc_id, doc_id) }}</h2><span class="tag mono">{{ doc_id }}</span></div>
-    {% for section, chunks in sections %}{% for c in chunks[:1] %}
-      <blockquote class="quote" style="margin-top: 10px">{{ c.source_text }}<span class="quote__src">Section {{ section }} · version {{ c.version }}{% if c.location.page_start %} · page {{ c.location.page_start }}{% endif %}</span></blockquote>
-    {% endfor %}{% endfor %}
-  </section>
-  {% else %}<section class="panel">{{ empty('No policies yet', 'Your plan has not been assigned.', 'file') }}</section>{% endfor %}
+
+{% if by_doc %}
+<div class="libtools">
+  <label class="libsearch">{{ icon('search', 16) }}<input type="search" placeholder="Search the policies, e.g. passport or fire" aria-label="Search the policies" data-search="#policies"></label>
 </div>
+
+<div class="polgrid" id="policies">
+  {% for doc_id, sections in by_doc.items() %}
+  <article class="polcard" data-filter-item style="--i: {{ [loop.index0, 12]|min }}">
+    <header class="polcard__head">
+      <span class="polcard__icon">{{ icon(category_icon(titles.get(doc_id, '') ~ ' ' ~ categories.get(doc_id, '')), 20) }}</span>
+      <div>
+        <h2>{{ titles.get(doc_id, doc_id) }}</h2>
+        <p>{{ sections|length }} rule{{ 's' if sections|length != 1 }} you learn from it</p>
+      </div>
+    </header>
+    {% if used_in.get(doc_id) %}
+    <p class="polcard__used">{{ icon('book', 13) }}Used in: {{ used_in[doc_id]|join(', ') }}</p>
+    {% endif %}
+    <details class="polcard__rules">
+      <summary><span class="polcard__show">Show</span><span class="polcard__hide">Hide</span> the rules <span aria-hidden="true">{{ icon('arrow', 14) }}</span></summary>
+      <ol>
+        {% for section, chunks in sections %}{% for c in chunks[:1] %}
+        <li><span>{{ c.source_text }}</span><small>section {{ section }}{% if c.location.page_start %}, page {{ c.location.page_start }}{% endif %}</small></li>
+        {% endfor %}{% endfor %}
+      </ol>
+    </details>
+    <footer class="polcard__code mono">{{ doc_id }} · version {{ sections[0][1][0].version if sections and sections[0][1] else '' }}</footer>
+  </article>
+  {% endfor %}
+</div>
+{% else %}<section class="panel">{{ empty('No policies yet', 'They appear here once your training plan is given to you.', 'file') }}</section>{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+  // Searching opens the policies that match, so the matching rule is in view.
+  (function () {
+    var input = document.querySelector("[data-search='#policies']");
+    if (!input) return;
+    input.addEventListener("input", function () {
+      var q = input.value.trim();
+      document.querySelectorAll("#policies .polcard__rules").forEach(function (d) { d.open = q.length > 2 && !d.closest(".is-hidden"); });
+    });
+  })();
+</script>
 {% endblock %}

@@ -338,14 +338,14 @@ def suggestion(r):
                 "reason": f"{doc_title or 'The document'} has expired with no replacement yet; the rule is still in force. "
                           f"Keep it and ask the document owner to renew it."}
     if s == "Requirement Missing":
-        return {"meaning": f"The approved matrix says {who} ({role}) must learn {subject}, but the generated plan does not "
-                           f"include it.",
+        return {"meaning": f"The approved list of who learns what says {who} ({role}) must learn {subject}, but the plan the AI "
+                           f"wrote does not include it.",
                 "action": "regenerate", "button": "Add it to the plan",
                 "reason": f"Required for {role} by the approved matrix; add it to the plan.",
                 "fallback": {"action": "approve", "button": "Cover it outside the plan",
                              "reason": f"Not in the generated plan; the trainer will cover it with {who} directly."}}
     if s == "Unsupported Requirement" and r.target_type == "requirement":
-        return {"meaning": f"The plan teaches {subject}, but the approved matrix does not assign it to a {role} "
+        return {"meaning": f"The plan teaches {subject}, but the approved list of who learns what does not give it to a {role} "
                            f"(or to {who}'s situation).",
                 "action": "regenerate", "button": "Remove it from the plan",
                 "reason": f"Not required for {role}; remove it to keep the plan focused.",
@@ -353,7 +353,7 @@ def suggestion(r):
                              "reason": f"Not required for {role}, but harmless awareness content; keeping it."}}
     if s == "Contradiction Detected" and r.target_type == "requirement":
         return {"meaning": f"The plan teaches {subject}, but a reviewer or the precedence rules decided that another "
-                           f"document's rule applies instead (see Conflicts). Teaching it would give {who} the overridden version.",
+                           f"document's rule applies instead (see Clashing policies). Teaching it would give {who} the overridden version.",
                 "action": "regenerate", "button": "Remove it from the plan",
                 "reason": "Overridden by the winning rule in a resolved conflict; remove it from the plan.",
                 "fallback": {"action": "approve", "button": "Keep it for now",
@@ -371,7 +371,7 @@ def suggestion(r):
                 "reason": "The item follows an overridden rule; regenerate the module from the winning policy.",
                 "fallback": {"action": "reject", "button": "Remove this item",
                              "reason": "Contradicts a higher-precedence policy; removed from the plan."}}
-    return {"meaning": "Python could not decide this item on its own. Read the source below and decide.",
+    return {"meaning": "The app could not decide this item on its own. Read the policy below and decide.",
             "action": "approve", "button": "Approve after checking",
             "reason": "Checked against the cited source; the content is accurate."}
 

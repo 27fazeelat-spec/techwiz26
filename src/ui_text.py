@@ -96,7 +96,7 @@ def plain_step(text):
 
 
 def register(app):
-    from src.navigation import is_active, items_for
-    app.jinja_env.globals.update(status_label=label, glossary=GLOSSARY, nav_items=items_for, nav_active=is_active,
+    from src.navigation import is_active, items_for, sidebar_for
+    app.jinja_env.globals.update(status_label=label, glossary=GLOSSARY, nav_items=items_for, nav_sidebar=sidebar_for, nav_active=is_active,
                                  category_icon=category_icon, category_photo=category_photo)
     app.jinja_env.filters["plain_step"] = plain_step

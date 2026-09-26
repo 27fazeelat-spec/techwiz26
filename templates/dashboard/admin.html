@@ -1,22 +1,23 @@
 {% extends "base.html" %}
-{% from "_macros.html" import icon, help %}
-{% block title %}Overview{% endblock %}
+{% from "_macros.html" import icon %}
+{% block title %}Home{% endblock %}
 {% block content %}
 {% set m = stats.matrix %}
 {% set draft_waiting = stats.matrix_draft and (not m or stats.matrix_draft.version_no > m.version_no) %}
 {% set todo_count = stats.conflicts_open + (1 if draft_waiting else 0) + (1 if stats.review_open else 0) + attention|length %}
+{% set ready = (charts.plans|selectattr('key', 'equalto', 'active')|map(attribute='value')|first) or 0 %}
 
 <header class="ahead">
   <div class="ahead__text">
     <p class="eyebrow">{{ today.strftime('%A, %d %B %Y') }}</p>
     <h1><span data-greeting>Welcome</span>, {{ current_user.name.split(' ')[0] }}.</h1>
     <p class="ahead__lead">
-      {% if todo_count %}{{ todo_count }} thing{{ 's' if todo_count != 1 }} need{{ 's' if todo_count == 1 }} you today. <a href="#todo">See the list</a>, or carry on where you left off.
-      {% else %}Everything is up to date. Policies are current, conflicts are settled and no plan is waiting for a decision.{% endif %}
+      {% if todo_count %}<b>{{ todo_count }} thing{{ 's' if todo_count != 1 }}</b> need{{ 's' if todo_count == 1 }} you today. <a href="#todo">See the list</a>.
+      {% else %}Everything is up to date. Nothing is waiting for you.{% endif %}
     </p>
     <div class="ahead__actions">
       {% if can('documents.upload') %}<a class="btn btn--primary" href="{{ url_for('documents.upload') }}" data-cursor="Upload">{{ icon('upload', 15) }}Upload a policy</a>{% endif %}
-      <a class="btn" href="{{ url_for('plans.employees') }}">{{ icon('users', 15) }}Employees &amp; plans</a>
+      <a class="btn" href="{{ url_for('plans.employees') }}">{{ icon('users', 15) }}Employees</a>
       <a class="btn btn--ghost" href="{{ url_for('reports.index') }}">{{ icon('file', 15) }}Reports</a>
     </div>
   </div>
@@ -28,124 +29,126 @@
   </figure>
 </header>
 
-<!-- ============ the pipeline ============ -->
-<section class="asec">
-  <div class="asec__head"><h2>From policy to plan</h2><p>Six stages, each feeding the next. Open any stage to see the rows behind its number.</p></div>
-  <ol class="pipe">
-    <li class="pstep is-ok"><a href="{{ url_for('documents.index') }}">
-      <span class="pstep__n">01</span><span class="pstep__name">Ingest</span>
-      <span class="pstep__value">{{ stats.lineages }}</span><span class="pstep__label">documents</span>
-      <span class="pstep__note">{{ counts.active }} active, {{ stats.chunks }} passages read</span>
-      <span class="pstep__state">Up to date</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
-    <li class="pstep {{ 'is-todo' if stats.quarantined else 'is-ok' }}"><a href="{{ url_for('ground_truth.security') }}">
-      <span class="pstep__n">02</span><span class="pstep__name">Scan</span>
-      <span class="pstep__value">{{ stats.findings }}</span><span class="pstep__label">security findings</span>
-      <span class="pstep__note">{{ stats.quarantined }} passage{{ 's' if stats.quarantined != 1 }} held back from the AI</span>
-      <span class="pstep__state">{{ 'Worth a look' if stats.quarantined else 'Clean' }}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
-    <li class="pstep is-ok"><a href="{{ url_for('ground_truth.requirements') }}">
-      <span class="pstep__n">03</span><span class="pstep__name">Extract</span>
-      <span class="pstep__value">{{ stats.requirements }}</span><span class="pstep__label">requirements</span>
-      <span class="pstep__note">found by rules, each traced to its clause</span>
-      <span class="pstep__state">Up to date</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
-    <li class="pstep {{ 'is-todo' if stats.conflicts_open else 'is-ok' }}"><a href="{{ url_for('ground_truth.conflicts') }}">
-      <span class="pstep__n">04</span><span class="pstep__name">Resolve</span>
-      <span class="pstep__value">{{ stats.conflicts }}</span><span class="pstep__label">conflicts</span>
-      <span class="pstep__note">between policies that disagree</span>
-      <span class="pstep__state">{% if stats.conflicts_open %}{{ stats.conflicts_open }} to decide{% else %}All settled{% endif %}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
-    <li class="pstep {{ 'is-todo' if draft_waiting else ('is-ok' if m else 'is-idle') }}"><a href="{{ url_for('ground_truth.matrix_index') }}">
-      <span class="pstep__n">05</span><span class="pstep__name">Approve</span>
-      <span class="pstep__value">{% if m %}v{{ m.version_no }}{% elif stats.matrix_draft %}Draft{% else %}–{% endif %}</span><span class="pstep__label">role matrix</span>
-      <span class="pstep__note">which rules each role must learn</span>
-      <span class="pstep__state">{% if draft_waiting %}v{{ stats.matrix_draft.version_no }} waiting{% elif m %}Approved{% else %}Not built yet{% endif %}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
-    <li class="pstep {{ 'is-todo' if stats.review_open else ('is-ok' if stats.plans else 'is-idle') }}"><a href="{{ url_for('plans.employees') }}">
-      <span class="pstep__n">06</span><span class="pstep__name">Generate</span>
-      <span class="pstep__value">{{ stats.plans }}</span><span class="pstep__label">plans</span>
-      <span class="pstep__note">{{ stats.plans_verified }} verified, for {{ stats.employees }} employees</span>
-      <span class="pstep__state">{% if stats.review_open %}{{ stats.review_open }} items in review{% elif stats.plans %}Up to date{% else %}None yet{% endif %}</span><span class="pstep__go">{{ icon('arrow', 16) }}</span></a></li>
-  </ol>
+<!-- ============ the four numbers ============ -->
+<section class="libstats homestats rise" aria-label="At a glance">
+  <a class="libstat" href="{{ url_for('plans.employees') }}"><span class="libstat__icon">{{ icon('users', 20) }}</span>
+    <b data-count="{{ stats.employees }}">{{ stats.employees }}</b><span>employees</span></a>
+  <a class="libstat libstat--ok" href="{{ url_for('main.trainer_dashboard') }}"><span class="libstat__icon">{{ icon('check', 20) }}</span>
+    <b data-count="{{ ready }}">{{ ready }}</b><span>of {{ charts.plans_total }} training plans ready</span></a>
+  <a class="libstat" href="{{ url_for('main.trainer_dashboard') }}"><span class="libstat__icon">{{ icon('chart', 20) }}</span>
+    <b><span data-count="{{ charts.tasks_done }}">{{ charts.tasks_done }}</span>%</b><span>of training tasks done</span></a>
+  <a class="libstat {{ 'libstat--warn' if todo_count }}" href="#todo"><span class="libstat__icon">{{ icon('bell', 20) }}</span>
+    <b data-count="{{ todo_count }}">{{ todo_count }}</b><span>waiting for you</span></a>
 </section>
 
-<!-- ============ today ============ -->
+<!-- ============ to do + training progress ============ -->
 <section class="asec acols" id="todo">
   <div class="acard">
     <div class="acard__head"><h3>Needs you</h3><span>{{ todo_count or 'Nothing' }} waiting</span></div>
     <ul class="todo">
       {% if draft_waiting %}
       <li><a href="{{ url_for('ground_truth.matrix_view', number=stats.matrix_draft.version_no) }}">
-        <span class="todo__kind">Matrix</span>
-        <span class="todo__text"><strong>Role matrix v{{ stats.matrix_draft.version_no }} is waiting for approval</strong><span>Plans are only verified against an approved matrix.</span></span>
+        <span class="todo__kind">Approve</span>
+        <span class="todo__text"><strong>A new list of who learns what is ready for your approval</strong><span>Training plans are only checked against an approved list.</span></span>
         <span class="todo__go">Review →</span></a></li>
       {% endif %}
       {% if stats.conflicts_open %}
       <li><a href="{{ url_for('ground_truth.conflicts') }}">
-        <span class="todo__kind">Conflict</span>
-        <span class="todo__text"><strong>{{ stats.conflicts_open }} policy conflict{{ 's' if stats.conflicts_open != 1 }} need{{ 's' if stats.conflicts_open == 1 }} a decision</strong><span>Two sources with the same authority say different things.</span></span>
+        <span class="todo__kind">Decide</span>
+        <span class="todo__text"><strong>{{ stats.conflicts_open }} pair{{ 's' if stats.conflicts_open != 1 }} of policies say{{ 's' if stats.conflicts_open == 1 }} different things</strong><span>Choose which one applies.</span></span>
         <span class="todo__go">Decide →</span></a></li>
       {% endif %}
       {% if stats.review_open %}
       <li><a href="{{ url_for('review.queue') }}">
-        <span class="todo__kind todo__kind--olive">Review</span>
-        <span class="todo__text"><strong>{{ stats.review_open }} plan item{{ 's' if stats.review_open != 1 }} wait{{ 's' if stats.review_open == 1 }} for a reviewer</strong><span>A plan can be assigned once nothing is waiting.</span></span>
-        <span class="todo__go">Open queue →</span></a></li>
+        <span class="todo__kind todo__kind--olive">Approve</span>
+        <span class="todo__text"><strong>{{ stats.review_open }} part{{ 's' if stats.review_open != 1 }} of training plans need{{ 's' if stats.review_open == 1 }} a person to check</strong><span>A plan can be given to the employee once nothing is waiting.</span></span>
+        <span class="todo__go">Open →</span></a></li>
       {% endif %}
       {% for d in attention %}
       {% set hidden = d.parse and d.parse.hidden_blocks %}
       <li><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}" data-drawer>
-        <span class="todo__kind {{ 'todo__kind--bad' if hidden else 'todo__kind--ink' }}">{{ 'Hidden text' if hidden else d.status|capitalize }}</span>
-        <span class="todo__text"><strong>{{ d.title }}</strong><span class="mono">{{ d.doc_id }} v{{ d.version }}</span>{% if not hidden %}<span> · {{ 'no longer in force' if d.status == 'expired' else 'not approved yet' }}</span>{% endif %}</span>
+        <span class="todo__kind {{ 'todo__kind--bad' if hidden else 'todo__kind--ink' }}">{{ 'Suspicious' if hidden else ('Expired' if d.status == 'expired' else 'Draft') }}</span>
+        <span class="todo__text"><strong>{{ d.title }}</strong><span>{% if hidden %}Hidden text was found and blocked{% elif d.status == 'expired' %}No longer in force, and no new version yet{% else %}Not approved yet{% endif %}</span></span>
         <span class="todo__go">Look →</span></a></li>
       {% endfor %}
       {% if not todo_count %}<li class="todo__empty">Nothing is waiting for you. A quiet day.</li>{% endif %}
     </ul>
   </div>
 
-  <div style="display: flex; flex-direction: column; gap: 28px">
-    {% set mix_total = plan_mix.values()|sum %}
-    {% set palette = {'Verified': 'var(--ok)', 'Verified with Warning': '#9AAA6E', 'Incomplete': '#C4622D', 'Unsupported': '#D9A07B',
-                      'Contradictory': 'var(--bad)', 'Manual Review Required': 'var(--info)', 'Failed': 'var(--faint)', 'generating': 'var(--line-strong)'} %}
-    <div class="acard">
-      <div class="acard__head"><h3>Plans by result</h3><span><a href="{{ url_for('main.trainer_dashboard') }}" style="color: var(--primary); font-weight: 600">Plans board →</a></span></div>
-      <div class="acard__body">
-        {% if mix_total %}
-        <div class="bignum"><b>{{ mix_total }}</b><span>current plan{{ 's' if mix_total != 1 }}</span></div>
-        <div class="mix" role="img" aria-label="Plans by result">{% for st, n in plan_mix.items() %}<span style="flex: {{ n }}; background: {{ palette.get(st, 'var(--faint)') }}" title="{{ status_label('plan', st)[0] }}: {{ n }}"></span>{% endfor %}</div>
-        <ul class="mixlist">{% for st, n in plan_mix.items() %}<li><i style="background: {{ palette.get(st, 'var(--faint)') }}"></i>{{ status_label('plan', st)[0] }}<b>{{ n }}</b></li>{% endfor %}</ul>
-        {% else %}<p class="muted small">No plans yet. Generate one from Employees &amp; plans.</p>{% endif %}
+  <div class="acard">
+    <div class="acard__head"><h3>Training progress</h3><span>{{ charts.tasks_total }} tasks in assigned plans</span></div>
+    <div class="acard__body donutwrap">
+      {% if charts.tasks_total %}
+      <div class="donut" data-donut="{{ charts.tasks|tojson|forceescape }}" data-donut-unit="task|tasks">
+        <div class="donut__center"><b>{{ charts.tasks_done }}%</b><span>done</span></div>
       </div>
+      <ul class="donutlegend">
+        {% for t in charts.tasks %}<li><span class="donutlegend__row"><i class="swatch swatch--{{ t.key }}"></i><span>{{ t.label }}</span><b>{{ t.value }}</b></span></li>{% endfor %}
+      </ul>
+      {% else %}<p class="muted">Progress appears here once a plan is given to an employee.</p>{% endif %}
     </div>
-    <div class="acard">
-      <div class="acard__head"><h3>Coverage by role {{ help('coverage') }}</h3><span>average of current plans</span></div>
-      <div class="acard__body">
-        {% if role_cov %}<div class="hbars">
-          {% for code, name, cov, n in role_cov %}<div class="hbar"><span>{{ name }}</span><span class="hbar__track"><i data-w="{{ (cov or 0)|round(1) }}%" style="width: {{ (cov or 0)|round(1) }}%"></i></span><b>{{ (cov or 0)|round(1) }}%</b></div>{% endfor %}
-        </div>{% else %}<p class="muted small">Coverage appears once plans are generated.</p>{% endif %}
+  </div>
+</section>
+
+<!-- ============ charts ============ -->
+<section class="asec homecharts rise">
+  <div class="acard">
+    <div class="acard__head"><h3>Training plans</h3><span><a href="{{ url_for('main.trainer_dashboard') }}">Plans board →</a></span></div>
+    <div class="acard__body donutwrap donutwrap--stack">
+      {% if charts.plans_total %}
+      <div class="donut donut--sm" data-donut="{{ charts.plans|tojson|forceescape }}" data-donut-unit="plan|plans">
+        <div class="donut__center"><b>{{ charts.plans_total }}</b><span>plans</span></div>
+      </div>
+      <ul class="donutlegend">
+        {% for p in charts.plans %}<li><span class="donutlegend__row"><i class="swatch swatch--{{ p.key }}"></i><span>{{ p.label }}</span><b>{{ p.value }}</b></span></li>{% endfor %}
+      </ul>
+      {% else %}<p class="muted">No plans yet. Make one from Employees.</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="acard">
+    <div class="acard__head"><h3>Progress by department</h3><span>share of tasks done</span></div>
+    <div class="acard__body">
+      {% if charts.departments %}
+      <div class="bars">
+        {% for dept, pct in charts.departments %}
+        <div class="dbar dbar--static" data-tip="{{ dept }}: {{ pct }}% of tasks done">
+          <span class="dbar__name">{{ dept }}</span>
+          <span class="dbar__track"><i data-w="{{ [pct, 1]|max }}%"></i></span>
+          <b class="dbar__n">{{ pct }}%</b>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}<p class="muted">Appears once employees have training tasks.</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="acard">
+    <div class="acard__head"><h3>Tasks finished</h3><span>last 14 days · {{ charts.days_total }} in all</span></div>
+    <div class="acard__body">
+      <div class="cols" role="img" aria-label="Training tasks finished each day for the last 14 days">
+        {% for d, n in charts.days %}
+        <div class="cols__col {{ 'is-today' if loop.last }}" data-tip="{{ d.strftime('%a %d %b') }}: {{ n }} task{{ 's' if n != 1 }} finished">
+          <span class="cols__n">{{ n if n else '' }}</span>
+          <i data-h="{{ (100 * n / charts.days_max)|round(1) if n else 2 }}%"></i>
+          <span class="cols__day">{{ d.strftime('%d') }}</span>
+        </div>
+        {% endfor %}
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ records ============ -->
-<section class="asec acols">
-  <div class="acard">
-    <div class="acard__head"><h3>Recent activity</h3><span>from the audit trail, newest first</span></div>
-    {% if recent %}<ul class="alog">
-      {% for g in recent %}{% set e = g.last %}
-      <li><time datetime="{{ e.ts.isoformat() }}">{{ e.ts.strftime('%d %b %H:%M') }}</time>
-        <div><b>{{ g.action|replace('.', ' ')|replace('_', ' ')|capitalize }}</b>{% if g.count > 1 %} <span>×{{ g.count }}</span>{% endif %} ·
-          {% if g.count > 1 %}{{ g.first.entity_id }} to {{ e.entity_id }}{% else %}{{ e.entity_id }}{% endif %}{% if e.entity_version %} <span>({{ e.entity_version if not e.entity_version[:1].isdigit() else 'v' ~ e.entity_version }})</span>{% endif %}<br>
-          <span>{{ g.who or 'system' }}</span></div></li>
-      {% endfor %}
-    </ul>{% else %}<p class="todo__empty">No activity yet.</p>{% endif %}
-  </div>
-  <div class="acard">
-    <div class="acard__head"><h3>Policy library</h3><span>{{ stats.documents }} files, all versions</span></div>
-    <div class="acard__body">
-      <div class="stackbar" role="img" aria-label="Document versions by status">
-        {% for s in statuses %}{% if counts[s] %}<span class="stackbar__seg stackbar__seg--{{ s }}" style="flex: {{ counts[s] }}" title="{{ s|capitalize }}: {{ counts[s] }}"></span>{% endif %}{% endfor %}
-      </div>
-      <ul class="mixlist">{% for s in statuses %}<li><i class="legend__dot--{{ s }}" style="border-radius: 2px"></i>{{ s|capitalize }}<b>{{ counts[s] }}</b></li>{% endfor %}</ul>
-      <p class="small muted" style="margin-top: 14px">Only active versions teach anything. Older, draft and future versions are kept so every change can be traced.</p>
-    </div>
-  </div>
-</section>
+<!-- ============ activity ============ -->
+<details class="expert">
+  <summary>{{ icon('clock', 16) }}<span>Recent activity</span><small>the last things people and the system did</small></summary>
+  {% if recent %}<ul class="alog">
+    {% for g in recent %}{% set e = g.last %}
+    <li><time datetime="{{ e.ts.isoformat() }}">{{ e.ts.strftime('%d %b %H:%M') }}</time>
+      <div><b>{{ g.action|replace('.', ' ')|replace('_', ' ')|capitalize }}</b>{% if g.count > 1 %} <span>×{{ g.count }}</span>{% endif %} ·
+        {% if g.count > 1 %}{{ g.first.entity_id }} to {{ e.entity_id }}{% else %}{{ e.entity_id }}{% endif %}{% if e.entity_version %} <span>({{ e.entity_version if not e.entity_version[:1].isdigit() else 'v' ~ e.entity_version }})</span>{% endif %}<br>
+        <span>{{ g.who or 'system' }}</span></div></li>
+    {% endfor %}
+  </ul>{% else %}<p class="todo__empty">No activity yet.</p>{% endif %}
+</details>
 {% endblock %}

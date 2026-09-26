@@ -46,14 +46,26 @@ def requirements():
     rows = db.session.execute(query.order_by(Requirement.doc_id, Requirement.position)).all()
     if args.get("role"):
         rows = [(r, d) for r, d in rows if r.roles == ["ALL"] or args["role"] in r.roles]
+    topics = Counter(r.competency for r, _ in rows)              # before the topic filter, so every chip keeps its count
+    if args.get("topic"):
+        rows = [(r, d) for r, d in rows if r.competency == args["topic"]]
     page = max(int(args.get("page", 1) or 1), 1)
     total = len(rows)
     docs = db.session.scalars(select(Document.doc_id).where(Document.status.in_(["active", "expired"]),
                                                             Document.tier > 0).distinct().order_by(Document.doc_id)).all()
     roles = db.session.scalars(select(JobRole).order_by(JobRole.code)).all()
+    # Headline numbers for every rule in force, whatever the filters.
+    in_force = db.session.execute(select(Requirement.mandatory, Requirement.roles, Requirement.review_status)
+                                  .join(Document).where(Document.status.in_(["active", "expired"]))).all()
+    summary = {"total": len(in_force), "must": sum(1 for m, _, _ in in_force if m),
+               "everyone": sum(1 for _, r, _ in in_force if r == ["ALL"]),
+               "unchecked": sum(1 for _, _, s in in_force if s == "pending")}
+    stages = {s["code"]: s["label"] for s in load_config("stages")["stages"]}
     return render_template("ground_truth/requirements.html", rows=rows[(page - 1) * PAGE_SIZE: page * PAGE_SIZE],
                            total=total, page=page, pages=max((total + PAGE_SIZE - 1) // PAGE_SIZE, 1), args=args,
-                           docs=docs, roles=roles, types=REQ_TYPES)
+                           docs=docs, roles=roles, types=REQ_TYPES, summary=summary, stages=stages,
+                           topics=sorted(topics.items(), key=lambda kv: (-kv[1], kv[0])),
+                           role_names={r.code: r.name for r in roles})
 
 
 class RequirementForm(FlaskForm):
@@ -120,7 +132,33 @@ def requirement_detail(pk):
 @require_permission("matrix.view")
 def matrix_index():
     versions = db.session.scalars(select(MatrixVersion).order_by(MatrixVersion.version_no.desc())).all()
-    return render_template("ground_truth/matrix_index.html", versions=versions)
+    current = next((v for v in versions if v.status == "approved"), None)
+    shown = current or (versions[0] if versions else None)
+    draft = next((v for v in versions if v.status == "draft" and (not current or v.version_no > current.version_no)), None)
+    roles = db.session.scalars(select(JobRole).order_by(JobRole.code)).all()
+    return render_template("ground_truth/matrix_index.html", versions=versions, current=current, shown=shown,
+                           draft=draft, roles=roles, heat=_heatmap(shown, roles) if shown else None)
+
+
+def _heatmap(version, roles):
+    """Topic x job grid for one matrix version: how many rules each job must learn on each topic."""
+    cells, must = Counter(), Counter()
+    for code, topic, mandatory in db.session.execute(
+            select(JobRole.code, MatrixRow.competency, MatrixRow.mandatory).join(JobRole)
+            .where(MatrixRow.matrix_version_id == version.id)):
+        cells[(topic, code)] += 1
+        must[(topic, code)] += bool(mandatory)
+    totals = Counter()
+    for (topic, _), n in cells.items():
+        totals[topic] += n
+    topics = sorted(totals, key=lambda t: (-totals[t], t))
+    top = max(cells.values(), default=1)
+    # Five steps of one colour, lightest to darkest; a cell's step follows its share of the busiest cell.
+    level = lambda n: 0 if not n else min(5, 1 + int(4 * n / top))
+    per_role = Counter()
+    for (_, code), n in cells.items():
+        per_role[code] += n
+    return {"topics": topics, "roles": roles, "cells": cells, "must": must, "level": level, "per_role": per_role}
 
 
 @bp.route("/matrix/build", methods=["POST"])
@@ -160,10 +198,18 @@ def matrix_view(number):
         select(MatrixRow, Requirement).join(Requirement, MatrixRow.requirement_id == Requirement.id)
         .where(MatrixRow.matrix_version_id == version.id, MatrixRow.job_role_id == (role.id if role else -1))
         .order_by(MatrixRow.mandatory.desc(), Requirement.doc_id, Requirement.position)).all()
-    stage_order = {s["code"]: i for i, s in enumerate(load_config("stages")["stages"])}
+    stages = load_config("stages")["stages"]
+    stage_order = {s["code"]: i for i, s in enumerate(stages)}
     rows.sort(key=lambda r: (not r[0].mandatory, stage_order.get(r[0].due_stage, 99)))
+    # When the chosen job learns what: rules due by each onboarding stage.
+    due = Counter(row.due_stage for row, _ in rows)
+    timeline = [(s["code"], s["label"], due.get(s["code"], 0)) for s in stages]
+    topic = request.args.get("topic", "")
+    if topic:
+        rows = [(row, req) for row, req in rows if row.competency == topic]
     return render_template("ground_truth/matrix_view.html", version=version, roles=roles, role=role,
-                           summary=summary, rows=rows)
+                           summary=summary, rows=rows, heat=_heatmap(version, roles), topic=topic,
+                           timeline=timeline, timeline_max=max([n for *_, n in timeline] + [1]))
 
 
 # --------------------------------------------------------------------------- conflicts
@@ -203,7 +249,7 @@ def conflict_resolve(pk):
         flash("Choose which rule applies and give a reason; both are recorded in the audit trail.", "error")
     else:
         resolve_by_reviewer(conflict, side, reason, audit.actor_from_user(current_user))
-        flash(f"{conflict.conflict_code} resolved. Build a new matrix draft to apply the decision.", "success")
+        flash("Decision saved. Build a new list on Who learns what so training follows it.", "success")
     return redirect(url_for("ground_truth.conflicts") + f"#{conflict.conflict_code}")
 
 

@@ -1,76 +1,99 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, item_state %}
-{% from "learning/_ui.html" import pagehero, mtile %}
+{% from "learning/_ui.html" import pagehero, mtile, kind_icon %}
 {% block title %}{{ m.title }}{% endblock %}
 {% block content %}
 {% set quiz = items | selectattr('item_type', 'equalto', 'quiz_question') | list %}
-{% set ns = namespace(t=0, d=0) %}{% for i in items %}{% set r = rows.get(i.id) %}{% if r %}{% set ns.t = ns.t + 1 %}{% if r.status in ['completed', 'waived'] %}{% set ns.d = ns.d + 1 %}{% endif %}{% endif %}{% endfor %}
-{% call pagehero(category_photo(m.category), m.module_key ~ ' · ' ~ m.estimated_minutes ~ ' min', m.title, m.purpose or '') %}
-  <span class="lchip"><b>{{ ns.d }}</b> of {{ ns.t }} steps done</span>
-  {% if quiz %}<a class="btn btn--gold" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">{{ icon('spark', 15) }}{{ 'Retake the quiz' if attempts else 'Take the quiz' }}</a>{% endif %}
+{% set ns = namespace(t=0, d=0, first=none) %}
+{% for i in items if i.item_type in ['checklist', 'task', 'scenario', 'assessment'] %}{% set r = rows.get(i.id) %}{% if r %}{% set ns.t = ns.t + 1 %}
+  {% if r.status in ['completed', 'waived'] %}{% set ns.d = ns.d + 1 %}{% elif ns.first is none and r.status in ['not_started', 'in_progress', 'failed'] %}{% set ns.first = i.id %}{% endif %}{% endif %}{% endfor %}
+{% set pct = (100 * ns.d / ns.t)|round|int if ns.t else 0 %}
+{% call pagehero(category_photo(m.category), m.category ~ ' · about ' ~ m.estimated_minutes ~ ' minutes', m.title, m.purpose or '') %}
+  {% if quiz %}<a class="btn btn--gold" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">{{ icon('spark', 15) }}{{ 'Take the quiz again' if attempts else 'Take the quiz' }}</a>{% endif %}
+  {% if page_on('bot.ask') and can('bot.ask') %}<a class="btn btn--glass" href="{{ url_for('bot.ask', module=m.module_key) }}">{{ icon('chat', 15) }}Ask a question about this</a>{% endif %}
   <a class="btn btn--glass" href="{{ url_for('learning.modules') }}">All modules</a>
-  {% if page_on('bot.ask') and can('bot.ask') %}<a class="btn btn--glass" href="{{ url_for('bot.ask', module=m.module_key) }}">{{ icon('chat', 15) }}Ask about this module</a>{% endif %}
 {% endcall %}
+
+<section class="mprog rise" aria-label="Your progress in this module">
+  <div class="mprog__text"><b>{{ ns.d }} of {{ ns.t }} steps done</b><span>{% if pct == 100 %}Module complete. Well done!{% elif ns.d %}Keep going, you are {{ pct }}% there.{% else %}Start with step 1 below.{% endif %}</span></div>
+  <span class="mprog__bar"><i data-w="{{ pct }}%"></i></span>
+  <b class="mprog__pct">{{ pct }}%</b>
+</section>
 
 {% set objectives = items | selectattr('item_type', 'equalto', 'objective') | list %}
 {% if objectives %}
-<section class="panel">
-  <h2 class="panel__title">What you will be able to do</h2>
-  <ul class="warnings">{% for o in objectives %}<li>{{ o.content.text }}</li>{% endfor %}</ul>
+<section class="acard mgoals rise">
+  <div class="acard__head"><h3>{{ icon('trophy', 18) }} After this module you will be able to</h3></div>
+  <ul class="mgoals__list">{% for o in objectives %}<li>{{ icon('check', 14) }}<span>{{ o.content.text }}</span></li>{% endfor %}</ul>
 </section>
 {% endif %}
 
-{% for type, title in [('checklist', 'Checklist'), ('task', 'Tasks'), ('scenario', 'Scenarios'), ('assessment', 'Assessment')] %}
+{% set counter = namespace(n=0) %}
+{% for type, title, how in [('checklist', 'Things to do', 'Tick each one off when it is done.'),
+                            ('task', 'Tasks', 'Do the task, then send it to your manager to sign off.'),
+                            ('scenario', 'Practise a situation', 'Think through what you would do, then send it to your manager to talk about.'),
+                            ('assessment', 'Assessment with your manager', 'Your manager checks you against these points.')] %}
 {% set group = items | selectattr('item_type', 'equalto', type) | list %}
 {% if group %}
-<section class="panel module">
-  <div class="module__head"><h2 class="module__title">{{ title }}</h2>
-    <p class="module__meta">{{ {'checklist': 'Tick each item off when it is done.', 'task': 'Do the task, then submit it; your manager signs it off.',
-      'scenario': 'Work through the situation, then submit; your manager discusses it with you.', 'assessment': 'Your manager assesses you against this rubric.'}[type] }}</p></div>
-  <ul class="items">
-  {% for i in group %}{% set c = i.content %}{% set row = rows.get(i.id) %}
-    <li class="item" id="{{ i.item_key }}">
-      <details {{ 'open' if row and row.status in ['not_started', 'in_progress'] and loop.first }}>
+<section class="msteps rise">
+  <header class="msteps__head"><span class="msteps__icon">{{ icon(kind_icon(type), 18) }}</span><div><h2>{{ title }}</h2><p>{{ how }}</p></div></header>
+  <ol class="msteps__list">
+  {% for i in group %}{% set c = i.content %}{% set row = rows.get(i.id) %}{% set counter.n = counter.n + 1 %}
+    {% set st = row.status if row else 'none' %}
+    <li class="mstep mstep--{{ st }}" id="{{ i.item_key }}">
+      <details {{ 'open' if i.id == ns.first }}>
         <summary>
-          <span class="item__type">{{ ('due ' ~ row.due_date.strftime('%d %b')) if row and row.due_date else '' }}</span>
-          <span class="item__text">{{ c.activity or c.description or c.situation or c.topic }}</span>
-          {{ item_state(row) }}
+          <span class="mstep__dot" aria-hidden="true">{% if st in ['completed', 'waived'] %}{{ icon('check', 15) }}{% elif st == 'submitted' %}{{ icon('clock', 14) }}{% elif st == 'failed' %}!{% else %}{{ counter.n }}{% endif %}</span>
+          <span class="mstep__text">{{ c.activity or c.description or c.situation or c.topic }}</span>
+          <span class="mstep__side">{% if row and row.due_date and st not in ['completed', 'waived'] %}<small class="{{ 'is-late' if row.due_date < today }}">{{ 'late since' if row.due_date < today else 'due' }} {{ row.due_date.strftime('%d %b') }}</small>{% endif %}{{ item_state(row) }}</span>
         </summary>
-        <div class="item__body">
-          {% if type == 'task' %}<dl class="deflist"><dt>Expected outcome</dt><dd>{{ c.expected_outcome }}</dd><dt>Done when</dt><dd>{{ c.completion_criteria }}</dd></dl>
-          {% elif type == 'scenario' %}<p class="label">What you should do</p><ul class="small" style="margin: 0; padding-left: 1.2em">{% for a in c.expected_actions %}<li>{{ a }}</li>{% endfor %}</ul>
-          {% elif type == 'checklist' %}<p class="small"><span class="tag">{{ 'Required' if c.required else 'Optional' }}</span> <span class="tag">with: {{ c.responsible }}</span></p>
-          {% elif type == 'assessment' %}<div class="tablewrap"><table class="table table--compact"><thead><tr><th>Criterion</th><th class="num">Weight</th><th>Pass condition</th></tr></thead>
+        <div class="mstep__body">
+          {% if type == 'task' %}<dl class="mstep__facts"><dt>What you should end up with</dt><dd>{{ c.expected_outcome }}</dd><dt>It is done when</dt><dd>{{ c.completion_criteria }}</dd></dl>
+          {% elif type == 'scenario' %}<p class="mstep__label">What you should do</p><ul class="mstep__todo">{% for a in c.expected_actions %}<li>{{ a }}</li>{% endfor %}</ul>
+          {% elif type == 'checklist' %}<p class="mstep__tags"><span>{{ 'Required' if c.required else 'Optional' }}</span><span>Do it with: {{ c.responsible }}</span></p>
+          {% elif type == 'assessment' %}<div class="tablewrap"><table class="table table--compact"><thead><tr><th>What is checked</th><th class="num">Weight</th><th>To pass</th></tr></thead>
             <tbody>{% for r in c.rubric %}<tr><td>{{ r.criterion }}</td><td class="num">{{ r.weight }}</td><td>{{ r.pass_condition }}</td></tr>{% endfor %}</tbody></table></div>
-            {% if row and row.score is not none %}<p class="small"><strong>Result:</strong> {{ row.score }} / 100 · {{ row.verified_by }}</p>{% endif %}{% endif %}
-          {% if row and row.note %}<p class="small"><strong>Note:</strong> {{ row.note }}</p>{% endif %}
+            {% if row and row.score is not none %}<p class="small"><strong>Your result:</strong> {{ row.score }} / 100 · marked by {{ row.verified_by }}</p>{% endif %}{% endif %}
+          {% if row and row.note %}<p class="mstep__note">{{ icon('chat', 14) }}{{ row.note }}</p>{% endif %}
           {% for chunk in sources.get((i.source_doc_id, i.source_section_id), [])[:1] %}
-            <blockquote class="quote">{{ chunk.source_text }}<span class="quote__src">{{ chunk.doc_id }} v{{ chunk.version }} · §{{ chunk.section_id }}</span></blockquote>
+            <details class="mstep__source"><summary>{{ icon('book', 14) }}Read what the policy says</summary>
+              <blockquote class="quote">{{ chunk.source_text }}<span class="quote__src">{{ chunk.doc_id }} v{{ chunk.version }} · section {{ chunk.section_id }}</span></blockquote></details>
           {% endfor %}
           {% if row and completion(i.item_type) == 'employee' and row.status not in ['completed', 'waived'] %}
             <form method="post" action="{{ url_for('learning.item_action', item_id=i.id, action='done') }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button class="btn btn--sm btn--primary" type="submit">{{ icon('check', 14) }}Mark as done</button></form>
+              <button class="btn btn--primary mstep__done" type="submit">{{ icon('check', 16) }}I have done this</button></form>
           {% elif row and type in ['task', 'scenario'] and row.status in ['not_started', 'in_progress', 'failed'] %}
-            <form method="post" action="{{ url_for('learning.item_action', item_id=i.id, action='submit') }}" class="actions">
+            <form method="post" action="{{ url_for('learning.item_action', item_id=i.id, action='submit') }}" class="mstep__send">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input name="note" type="text" placeholder="Optional note for your manager" aria-label="Note" style="flex: 1 1 220px">
-              <button class="btn btn--sm btn--primary" type="submit">Submit for sign-off</button></form>
+              <input name="note" type="text" placeholder="A note for your manager (optional)" aria-label="Note">
+              <button class="btn btn--primary" type="submit">{{ icon('arrow', 15) }}Send to my manager</button></form>
+          {% elif st == 'submitted' %}<p class="mstep__wait">{{ icon('clock', 14) }}Sent. Your manager will sign it off.</p>
           {% endif %}
         </div>
       </details>
     </li>
   {% endfor %}
-  </ul>
+  </ol>
 </section>
 {% endif %}
 {% endfor %}
 
+{% if quiz %}
+<a class="quizcta rise" href="{{ url_for('learning.quiz', module_key=m.module_key) }}" data-cursor="Quiz">
+  <span class="quizcta__icon">{{ icon('spark', 24) }}</span>
+  <span><b>{{ 'Take the quiz again' if attempts else 'Ready? Take the quiz' }}</b>
+    <small>{{ quiz|length }} questions · you need {{ cfg.pass_mark_percent }}% · {{ cfg.max_quiz_attempts - attempts|length }} of {{ cfg.max_quiz_attempts }} tries left</small></span>
+  <span class="quizcta__go">{{ icon('arrow', 18) }}</span>
+</a>
+{% endif %}
+
 {% if attempts %}
-<section class="panel">
-  <h2 class="panel__title">Quiz attempts <span class="muted small">pass mark {{ cfg.pass_mark_percent }}% · {{ attempts|length }} of {{ cfg.max_quiz_attempts }} used</span></h2>
-  <ul class="rows">{% for a in attempts %}<li class="rows__item"><span>Attempt {{ a.attempt_no }} · {{ a.submitted_at.strftime('%d %b %H:%M') }}</span>
-    <span class="badge badge--{{ 'ok' if a.passed else 'bad' }}">{{ a.score }}% {{ 'passed' if a.passed else 'not passed' }}</span></li>{% endfor %}</ul>
+<section class="acard rise">
+  <div class="acard__head"><h3>Your quiz tries</h3><span>pass mark {{ cfg.pass_mark_percent }}%</span></div>
+  <ul class="qtries">{% for a in attempts %}<li><span>Try {{ a.attempt_no }} · {{ a.submitted_at.strftime('%d %b %H:%M') }}</span>
+    <span class="qtries__bar"><i data-w="{{ a.score }}%" class="{{ 'is-pass' if a.passed }}"></i></span>
+    <b class="{{ 'is-pass' if a.passed else 'is-fail' }}">{{ a.score }}% {{ '✓' if a.passed else '' }}</b></li>{% endfor %}</ul>
 </section>
 {% endif %}
 {% endblock %}

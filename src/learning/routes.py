@@ -1,4 +1,6 @@
 """Employee learning (modules, checklist, tasks, quizzes) and manager sign-off (SRS Steps 50, 53)."""
+from datetime import date, timedelta
+
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from sqlalchemy import select
@@ -51,7 +53,8 @@ def module(module_key):
     attempts = db.session.scalars(select(QuizAttempt).where(QuizAttempt.employee_id == employee.id, QuizAttempt.plan_id == plan.id,
                                                             QuizAttempt.module_key == module_key).order_by(QuizAttempt.attempt_no)).all()
     return render_template("learning/module.html", plan=plan, m=m, items=items, rows=rows, attempts=attempts,
-                           sources=_sources(items), completion=progress.completion_type, cfg=progress.cfg())
+                           sources=_sources(items), completion=progress.completion_type, cfg=progress.cfg(),
+                           today=today(current_app.config))
 
 
 @bp.route("/learn/item/<int:item_id>/<action>", methods=["POST"])
@@ -226,15 +229,22 @@ def assessments():
 @require_permission("learning.view")
 def resources():
     employee, plan, day, summary = _learner_context()
-    items = [i for _, i in progress.visible_items(plan)]
-    cited = _sources(items)
+    pairs = progress.visible_items(plan)
+    cited = _sources([i for _, i in pairs])
     by_doc = {}
     for (doc_id, section), chunks in sorted(cited.items()):
         by_doc.setdefault(doc_id, []).append((section, chunks))
-    titles = dict(db.session.execute(select(Document.doc_id, Document.title).where(Document.doc_id.in_(list(by_doc)),
-                                                                                  Document.status.in_(["active", "expired"])))
-                  .all()) if by_doc else {}
-    return render_template("learning/resources.html", plan=plan, by_doc=by_doc, titles=titles, today=day)
+    used_in = {}                                                   # which of the employee's modules teach from each policy
+    for m, i in pairs:
+        if i.source_doc_id in by_doc and m.title not in used_in.setdefault(i.source_doc_id, []):
+            used_in[i.source_doc_id].append(m.title)
+    docs = {d: (t, c) for d, t, c in db.session.execute(
+        select(Document.doc_id, Document.title, Document.category)
+        .where(Document.doc_id.in_(list(by_doc)), Document.status.in_(["active", "expired"])))} if by_doc else {}
+    titles = {d: t for d, (t, _) in docs.items()}
+    return render_template("learning/resources.html", plan=plan, by_doc=by_doc, titles=titles, today=day,
+                           categories={d: c for d, (_, c) in docs.items()}, used_in=used_in,
+                           rules=sum(len(v) for v in by_doc.values()))
 
 
 @bp.route("/learn/calendar")
@@ -247,7 +257,25 @@ def calendar():
     days = {}
     for r, i in rows:
         days.setdefault(r.due_date, []).append((r, i))
-    return render_template("learning/calendar.html", plan=plan, days=days, today=day)
+    # A month grid for every month from the first to the last due date (and this month), weeks starting Monday.
+    import calendar as cal
+    dated = [d for d in days if d]
+    months = []
+    if dated:
+        first, last = min(dated + [day]), max(dated + [day])
+        y, m = first.year, first.month
+        while (y, m) <= (last.year, last.month):
+            weeks = [[date(y, m, n) if n else None for n in week] for week in cal.Calendar().monthdayscalendar(y, m)]
+            months.append({"key": f"{y}-{m:02d}", "label": date(y, m, 1).strftime("%B %Y"), "weeks": weeks})
+            y, m = (y + 1, 1) if m == 12 else (y, m + 1)
+    done = lambda rs: sum(1 for r, _ in rs if r.status in ("completed", "waived"))
+    state = {d: {"total": len(rs), "done": done(rs), "late": d < day and done(rs) < len(rs)} for d, rs in days.items() if d}
+    upcoming = sorted(d for d, st in state.items() if st["done"] < st["total"] and d >= day)
+    late = sorted(d for d, st in state.items() if st["late"])
+    pick = (late or upcoming or sorted(dated) or [day])[0]
+    return render_template("learning/calendar.html", plan=plan, days=days, today=day, months=months, state=state,
+                           pick=pick, late_days=len(late),
+                           week_left=sum(st["total"] - st["done"] for d, st in state.items() if day <= d < day + timedelta(days=7)))
 
 
 @bp.route("/learn/certificate", methods=["GET", "POST"])

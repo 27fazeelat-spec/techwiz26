@@ -90,7 +90,9 @@ def test_policy_change_pages(before_update):
     change = db.session.scalar(select(ChangeImpact).where(ChangeImpact.doc_id == "GDP-01"))
     client = app.test_client()
     login(client, "training@aurelle.example")
-    assert b"GDP-01" in client.get("/changes").data
+    listing = client.get("/changes").get_data(as_text=True)
+    card = listing[listing.index('class="chgcard'):]
+    assert "GDP-01" in card[:card.index("</a>")] and "employee" in card[:card.index("</a>")]   # who it affects, on the card
     page = client.get(f"/changes/{change.id}").data
     assert b"<del>" in page or b"<ins>" in page
     assert b"Build and approve a new Role Requirement Matrix" in page

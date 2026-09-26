@@ -25,6 +25,7 @@ def test_pages_render_for_training_manager(loaded):
         assert client.get(url).status_code == 200, url
     page = client.get("/security").data
     assert b"Fake authority" in page and b"MEM-01" in page
+    assert b"Pretended to be a manager or the CEO" in page and b"Blocked: kept away from the AI" in page
 
 
 def test_employee_cannot_see_ground_truth(loaded):
@@ -83,3 +84,40 @@ def test_matrix_build_and_approve_through_the_web(loaded):
     assert client.post(f"/matrix/{number}/approve").status_code == 302
     with loaded.app_context():
         assert db.session.scalar(select(MatrixVersion.status).where(MatrixVersion.version_no == number)) == "approved"
+
+
+def test_who_learns_what_shows_a_clickable_grid(loaded):
+    import re
+    client = loaded.test_client()
+    login(client, "training@aurelle.example")
+    assert "No list yet" in client.get("/matrix").get_data(as_text=True)
+    client.post("/matrix/build")
+    with loaded.app_context():
+        number = db.session.scalar(select(MatrixVersion.version_no).order_by(MatrixVersion.version_no.desc()))
+    index = client.get("/matrix").get_data(as_text=True)
+    assert "Nothing is approved yet" in index and 'class="heat"' in index
+    cells = re.findall(r'<a class="heat__cell heat--(\d) [^"]*"\s+href="([^"]+)"', index)
+    assert cells and all(1 <= int(level) <= 5 for level, _ in cells)
+    assert any(level == "5" for level, _ in cells)                        # the busiest square is darkest
+    href = cells[0][1].replace("&amp;", "&")
+    topic = re.search(r"topic=([^&#]+)", href).group(1)
+    page = client.get(href.split("#")[0]).get_data(as_text=True)
+    assert "when to learn what" in page and page.count('class="stagestrip__n"') == 6
+    assert "Topic: <b>" in page                                           # rows narrowed to the clicked square
+    shown = re.findall(r'<td class="small">([^<]+)</td>\s*<td><span class="rulelist__kind', page)
+    from urllib.parse import unquote_plus
+    assert shown and set(shown) == {unquote_plus(topic)}
+    client.post(f"/matrix/{number}/approve")
+    assert f"The approved list is version {number}" in client.get("/matrix").get_data(as_text=True)
+
+
+def test_rules_page_filters_by_topic_and_speaks_plainly(loaded):
+    import re
+    client = loaded.test_client()
+    login(client, "training@aurelle.example")
+    page = client.get("/requirements").get_data(as_text=True)
+    chips = re.findall(r'<a class="topicchip "[^>]*>([^<]+)<b>(\d+)</b>', page)
+    assert chips and 'class="rulecard"' in page and "Not checked yet" in page
+    topic, n = chips[0]
+    narrowed = client.get("/requirements", query_string={"topic": topic}).get_data(as_text=True)
+    assert f"{n} rule" in narrowed and narrowed.count('class="rulecard"') == min(int(n), 50)

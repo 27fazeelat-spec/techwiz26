@@ -1,24 +1,126 @@
 {% extends "base.html" %}
-{% from "_macros.html" import status_badge, source_chip, location %}
-{% block title %}{{ doc.doc_id }} v{{ doc.version }}{% endblock %}
+{% from "_macros.html" import status_badge, source_chip, location, icon %}
+{% block title %}{{ doc.title or doc.doc_id }}{% endblock %}
 {% block content %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow"><a href="{{ url_for('documents.index') }}">Documents</a></p>
-    <h1><span class="mono">{{ doc.doc_id }}</span> {{ doc.title }}</h1>
-    <p class="pagehead__meta">Version <span class="mono">{{ doc.version }}</span> · {{ status_badge(doc.status) }} · {{ doc.category }}{% if doc.tier %} · precedence tier {{ doc.tier }}{% else %} · never used as a source{% endif %}</p>
+    <p class="eyebrow"><a href="{{ url_for('documents.index') }}">← All documents</a></p>
+    <h1>{{ doc.title or doc.doc_id }}</h1>
+    <p class="docmeta">
+      <span class="libcard__status"><i class="swatch swatch--{{ doc.status }}"></i>{{ plain_status.get(doc.status, doc.status|capitalize) }}</span>
+      <span>{{ doc.owner_department or 'No department' }} · {{ doc.category }}</span>
+      <span class="mono muted">{{ doc.doc_id }} · v{{ doc.version }}</span>
+    </p>
   </div>
-  <a class="btn" href="{{ url_for('documents.download', doc_id=doc.doc_id, version=doc.version) }}">Download original</a>
+  <a class="btn" href="{{ url_for('documents.download', doc_id=doc.doc_id, version=doc.version) }}">{{ icon('file', 15) }}Download original</a>
 </div>
+
+{% if just_uploaded %}
+{% set replaced = lineage|selectattr('superseded_by', 'equalto', doc.version)|list %}
+<section class="justin" aria-live="polite">
+  <div class="justin__head">
+    <span class="justin__badge">{{ icon('check', 26) }}</span>
+    <div><h2>Your document was added</h2><p>Here is what the app did with it, step by step.</p></div>
+  </div>
+  <ol class="justin__steps">
+    <li style="--i: 0"><span class="justin__tick">{{ icon('check', 14) }}</span><b>Read the file</b>
+      <span>{{ chunks|length }} section{{ 's' if chunks|length != 1 }}{% if doc.parse.words %}, {{ doc.parse.words }} words{% endif %}{% if doc.parse.pages %}, {{ doc.parse.pages }} page{{ 's' if doc.parse.pages != 1 }}{% endif %}</span></li>
+    <li style="--i: 1" class="{{ 'is-warn' if findings }}"><span class="justin__tick">{{ icon('shield' if findings else 'check', 14) }}</span><b>Checked for anything suspicious</b>
+      <span>{% if findings %}{{ findings|length }} suspicious part{{ 's' if findings|length != 1 }} found and kept away from the AI{% else %}Nothing suspicious found{% endif %}</span></li>
+    <li style="--i: 2"><span class="justin__tick">{{ icon('check', 14) }}</span><b>Found the rules</b>
+      <span>{{ rules|length }} rule{{ 's' if rules|length != 1 }}{% if jobs == ['Everyone'] %} for everyone{% elif jobs %} for {{ jobs|length }} job{{ 's' if jobs|length != 1 }}{% endif %}</span></li>
+    <li style="--i: 3"><span class="justin__tick">{{ icon('check', 14) }}</span><b>Added to the library</b>
+      <span>{{ plain_status.get(doc.status, doc.status|capitalize) }}{% if replaced %}, replaces v{{ replaced[0].version }}{% endif %}{% if doc.status == 'scheduled' and doc.effective_date %}, starts {{ doc.effective_date.strftime('%d %b %Y') }}{% endif %}{% if doc.warnings %} · {{ doc.warnings|length }} note{{ 's' if doc.warnings|length != 1 }} in Expert details{% endif %}</span></li>
+  </ol>
+  <div class="justin__actions">
+    {% if rules %}<a class="btn btn--primary" href="#rules">See the rules</a>{% endif %}
+    {% if replaced %}<a class="btn" href="{{ url_for('changes.index') }}">What changed</a>{% endif %}
+    {% if can('documents.upload') %}<a class="btn btn--ghost" href="{{ url_for('documents.upload') }}">Upload another</a>{% endif %}
+  </div>
+</section>
+{% endif %}
 
 {% if doc.status in ['superseded', 'expired', 'draft', 'scheduled'] %}
 <div class="notice notice--{{ 'info' if doc.status == 'scheduled' else 'warn' }}">
-  {% if doc.status == 'superseded' %}This version has been replaced by version <a class="mono" href="{{ url_for('documents.detail', doc_id=doc.doc_id, version=doc.superseded_by) }}">{{ doc.superseded_by }}</a> and is not used as a source.
-  {% elif doc.status == 'expired' %}This document passed its review / expiry date and no replacement has been uploaded. Content that relies on it will be marked Outdated Source.
-  {% elif doc.status == 'draft' %}This is a draft that has not been approved. It is stored for reference but never used as a source.
-  {% else %}This version becomes effective on {{ doc.effective_date.strftime('%d %B %Y') }}. Until then the current version stays in force.{% endif %}
+  {% if doc.status == 'superseded' %}This is an older version. It was replaced by version <a class="mono" href="{{ url_for('documents.detail', doc_id=doc.doc_id, version=doc.superseded_by) }}">{{ doc.superseded_by }}</a>, so nothing is taught from it any more.
+  {% elif doc.status == 'expired' %}This document passed its review date and no new version has been uploaded. Training that relies on it is marked Outdated Source.
+  {% elif doc.status == 'draft' %}This is a draft that has not been approved. It is kept for reference, but nothing is taught from it.
+  {% else %}This version starts on {{ doc.effective_date.strftime('%d %B %Y') }}. Until then the current version stays in force.{% endif %}
 </div>
 {% endif %}
+
+<section class="libstats libstats--3 rise" aria-label="Summary">
+  <div class="libstat"><span class="libstat__icon">{{ icon('list', 20) }}</span><b data-count="{{ rules|length }}">{{ rules|length }}</b><span>rule{{ 's' if rules|length != 1 }} found in it</span></div>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('users', 20) }}</span>
+    <b {% if jobs != ['Everyone'] %}data-count="{{ jobs|length }}"{% endif %}>{{ 'All' if jobs == ['Everyone'] else jobs|length }}</b><span>{{ 'jobs must follow it' if jobs else 'no job named' }}</span></div>
+  <div class="libstat {{ 'libstat--warn' if findings }}"><span class="libstat__icon">{{ icon('shield', 20) }}</span>
+    <b data-count="{{ findings|length }}">{{ findings|length }}</b><span>suspicious part{{ 's' if findings|length != 1 }} blocked</span></div>
+</section>
+
+{% if timeline|length > 1 %}
+<section class="acard doccard rise">
+  <div class="acard__head"><h3>Versions over time</h3><span>click a version to open it</span></div>
+  <ol class="vline" style="--n: {{ timeline|length }}">
+    {% for t in timeline %}{% set v = t.doc %}
+    <li class="vline__item {{ 'is-current' if v.version == doc.version }}" style="--i: {{ loop.index0 }}">
+      <a href="{{ url_for('documents.detail', doc_id=v.doc_id, version=v.version) }}" {{ 'aria-current=page' if v.version == doc.version }}>
+        <span class="vline__dot"><i class="swatch swatch--{{ v.status }}"></i></span>
+        <b class="mono">v{{ v.version }}</b>
+        <span class="vline__status">{{ plain_status.get(v.status, v.status|capitalize) }}</span>
+        <span class="vline__date">{{ v.effective_date.strftime('%d %b %Y') if v.effective_date else 'No start date' }}</span>
+        <span class="vline__change">
+          {% if t.first %}<em>{{ t.total }} rule{{ 's' if t.total != 1 }}</em>
+          {% else %}
+            {% if t.added %}<em class="is-add">+{{ t.added }} new</em>{% endif %}
+            {% if t.changed %}<em class="is-change">{{ t.changed }} changed</em>{% endif %}
+            {% if t.removed %}<em class="is-remove">−{{ t.removed }} removed</em>{% endif %}
+            {% if not (t.added or t.changed or t.removed) %}<em>No rule changed</em>{% endif %}
+          {% endif %}
+        </span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+<div class="docgrid">
+  <section class="acard doccard rise" id="rules">
+    <div class="acard__head"><h3>What it asks people to do</h3>
+      {% if rules %}<span><a href="{{ url_for('ground_truth.requirements', doc=doc.doc_id) }}">All {{ rules|length }} rules →</a></span>{% endif %}</div>
+    {% if rules %}
+    <ol class="rulelist">
+      {% for r in rules[:6] %}
+      <li><span class="rulelist__kind {{ 'is-must' if r.mandatory }}">{{ 'Must' if r.mandatory else 'Should' }}</span><span>{{ r.text }}</span></li>
+      {% endfor %}
+    </ol>
+    {% else %}<p class="acard__body muted">No rules were found in this version. It may only give background information.</p>{% endif %}
+  </section>
+
+  <div class="stack">
+    <section class="acard doccard rise">
+      <div class="acard__head"><h3>Who must follow it</h3></div>
+      <div class="acard__body">
+        {% if jobs %}<ul class="jobchips">{% for j in jobs %}<li>{{ icon('user', 14) }}{{ j }}</li>{% endfor %}</ul>
+        {% else %}<p class="muted">No job is named in this version.</p>{% endif %}
+        {% if doc.applies_to_text %}<p class="small muted" style="margin-top: 12px">The document says: “{{ doc.applies_to_text }}”</p>{% endif %}
+      </div>
+    </section>
+
+    {% if findings %}
+    <section class="acard doccard doccard--alert rise">
+      <div class="acard__head"><h3>{{ icon('shield', 18) }} Suspicious text blocked</h3></div>
+      <div class="acard__body">
+        <p>This file contains {{ findings|length }} part{{ 's' if findings|length != 1 }} that tried to give orders to the AI or hide from readers. They were kept away from the AI, so they cannot change anyone's training.</p>
+        <p class="small"><a href="{{ url_for('ground_truth.security') }}">See every blocked part →</a></p>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</div>
+
+<details class="expert">
+  <summary>{{ icon('search', 16) }}<span>Expert details</span><small>metadata, how it was read, and the full text in {{ chunks|length }} sections</small></summary>
 
 <div class="grid-2">
   <section class="panel">
@@ -26,9 +128,9 @@
     <dl class="deflist">
       {% set src = doc.metadata_source %}
       <dt>Document ID</dt><dd class="mono">{{ doc.doc_id }} {{ source_chip(src.doc_id) }}</dd>
-      <dt>Version</dt><dd class="mono">{{ doc.version }} {{ source_chip(src.version) }}</dd>
+      <dt>Version</dt><dd class="mono">{{ doc.version }} {{ source_chip(src.version) }} {{ status_badge(doc.status) }}</dd>
       <dt>Title</dt><dd>{{ doc.title }} {{ source_chip(src.title) }}</dd>
-      <dt>Category</dt><dd>{{ doc.category }} {{ source_chip(src.category) }}</dd>
+      <dt>Category</dt><dd>{{ doc.category }} {{ source_chip(src.category) }}{% if doc.tier %} · precedence tier {{ doc.tier }}{% else %} · never used as a source{% endif %}</dd>
       <dt>Owner</dt><dd>{{ doc.owner_department or '—' }} {{ source_chip(src.owner_department) }}</dd>
       <dt>Applies to</dt><dd>{{ doc.applies_to_text or '—' }} {{ source_chip(src.applies_to) }}</dd>
       <dt>Effective</dt><dd>{{ doc.effective_date.strftime('%d %b %Y') if doc.effective_date else '—' }} {{ source_chip(src.effective_date) }}</dd>
@@ -39,38 +141,23 @@
     </dl>
   </section>
 
-  <div class="stack">
-    <section class="panel">
-      <h2 class="panel__title">Version history</h2>
-      <ol class="lineage">
-        {% for v in lineage %}
-        <li class="lineage__item {{ 'is-current' if v.version == doc.version }}">
-          <a class="mono" href="{{ url_for('documents.detail', doc_id=doc.doc_id, version=v.version) }}">v{{ v.version }}</a>
-          {{ status_badge(v.status) }}
-          <span class="muted small">{{ v.effective_date.strftime('%d %b %Y') if v.effective_date else 'no effective date' }}</span>
-        </li>
-        {% endfor %}
-      </ol>
-    </section>
-
-    <section class="panel">
-      <h2 class="panel__title">Parsing</h2>
-      <dl class="deflist deflist--compact">
-        {% if doc.parse.pages %}<dt>Pages</dt><dd>{{ doc.parse.pages }}</dd>{% endif %}
-        <dt>Words</dt><dd>{{ doc.parse.words }}</dd>
-        <dt>Headings</dt><dd>{{ doc.parse.headings }}</dd>
-        <dt>Table rows</dt><dd>{{ doc.parse.table_rows }}</dd>
-        <dt>Chunks</dt><dd>{{ chunks|length }}</dd>
-        <dt>Hidden text</dt><dd>{% if doc.parse.hidden_blocks %}<span class="badge badge--bad">{{ doc.parse.hidden_blocks }} block(s)</span>{% else %}None found{% endif %}</dd>
-        {% if doc.parse.watermark %}<dt>Watermark</dt><dd class="small">{{ doc.parse.watermark[:80] }}</dd>{% endif %}
-      </dl>
-    </section>
-  </div>
+  <section class="panel">
+    <h2 class="panel__title">Parsing</h2>
+    <dl class="deflist deflist--compact">
+      {% if doc.parse.pages %}<dt>Pages</dt><dd>{{ doc.parse.pages }}</dd>{% endif %}
+      <dt>Words</dt><dd>{{ doc.parse.words }}</dd>
+      <dt>Headings</dt><dd>{{ doc.parse.headings }}</dd>
+      <dt>Table rows</dt><dd>{{ doc.parse.table_rows }}</dd>
+      <dt>Chunks</dt><dd>{{ chunks|length }}</dd>
+      <dt>Hidden text</dt><dd>{% if doc.parse.hidden_blocks %}<span class="badge badge--bad">{{ doc.parse.hidden_blocks }} block(s)</span>{% else %}None found{% endif %}</dd>
+      {% if doc.parse.watermark %}<dt>Watermark</dt><dd class="small">{{ doc.parse.watermark[:80] }}</dd>{% endif %}
+    </dl>
+  </section>
 </div>
 
 {% if findings %}
 <section class="panel panel--alert">
-  <h2 class="panel__title">Security findings <span class="muted small">{{ findings|length }} · see the Security page for all documents</span></h2>
+  <h2 class="panel__title">Security findings <span class="muted small">{{ findings|length }} · see Safety check for all documents</span></h2>
   <ul class="warnings">{% for f in findings %}<li><strong>{{ f.technique|replace('_', ' ')|capitalize }}</strong>
     {% if f.chunk %}in § {{ f.chunk.section_id }}{% else %}(whole document){% endif %}: {{ f.action|replace('_', ' ') }}.
     <span class="evidence">{{ f.excerpt }}</span></li>{% endfor %}</ul>
@@ -104,4 +191,22 @@
     {% endfor %}
   </ol>
 </section>
+</details>
+{% endblock %}
+{% block scripts %}
+<script>
+  // A link to one section (#chunk-id) opens Expert details and shows that section.
+  (function () {
+    function reveal() {
+      var id = decodeURIComponent(location.hash.slice(1)), el = id && document.getElementById(id);
+      var box = el && el.closest("details");
+      if (!box) return;
+      box.open = true;
+      el.classList.add("is-target");
+      el.scrollIntoView({ block: "center" });
+    }
+    reveal();
+    window.addEventListener("hashchange", reveal);
+  })();
+</script>
 {% endblock %}

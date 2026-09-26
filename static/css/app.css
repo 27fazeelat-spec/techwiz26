@@ -662,6 +662,17 @@ details.more[open] > summary { margin-bottom: var(--space-4); }
 .nextstep__text { flex: 1 1 280px; }
 .nextstep__text strong { display: block; font-size: var(--text-md); }
 .nextstep__text span { font-size: var(--text-sm); color: var(--muted); }
+/* Hub tabs: the pages that share one sidebar entry (src/navigation.py HUBS) */
+.hubtabs { display: flex; gap: 6px; margin: 0 0 22px; padding: 5px; width: fit-content; max-width: 100%; overflow-x: auto;
+  background: var(--surface-sunk); border-radius: 999px; scrollbar-width: none; }
+.hubtabs::-webkit-scrollbar { display: none; }
+.hubtab { position: relative; padding: 9px 18px; border-radius: 999px; font-size: var(--text-sm); font-weight: 700; color: var(--muted);
+  text-decoration: none; white-space: nowrap; transition: color var(--fast), background var(--fast), box-shadow var(--fast), transform var(--fast); }
+.hubtab:hover { color: var(--ink); background: color-mix(in srgb, var(--surface) 60%, transparent); }
+.hubtab:active { transform: scale(.97); }
+.hubtab.is-on { color: var(--on-primary, #fff); background: var(--primary); box-shadow: var(--shadow-sm); animation: hubtab-in .28s ease-out; }
+@keyframes hubtab-in { from { transform: scale(.94); opacity: .6; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .hubtab, .hubtab.is-on { transition: none; animation: none; } }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
 .tabs button { font: inherit; font-size: var(--text-sm); font-weight: 700; color: var(--muted); background: none; border: 0; padding: 10px 14px; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; white-space: nowrap; transition: color var(--fast), border-color var(--fast); }
 .tabs button:hover { color: var(--ink); }

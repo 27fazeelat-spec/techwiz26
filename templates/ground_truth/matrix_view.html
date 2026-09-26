@@ -1,64 +1,79 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon %}
-{% block title %}Matrix v{{ version.version_no }}{% endblock %}
+{% from "ground_truth/_heatmap.html" import heatmap %}
+{% block title %}Who learns what · v{{ version.version_no }}{% endblock %}
 {% block content %}
+{% set state = {'draft': 'Waiting for approval', 'approved': 'Approved', 'retired': 'Replaced by a newer version'}[version.status] %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow"><a href="{{ url_for('ground_truth.matrix_index') }}">Role Requirement Matrix</a></p>
-    <h1>Matrix <span class="mono">v{{ version.version_no }}</span></h1>
-    <p class="pagehead__meta">
-      {% set tone = {'draft': 'info', 'approved': 'ok', 'retired': 'neutral'}[version.status] %}<span class="badge badge--{{ tone }}">{{ version.status|capitalize }}</span>
-      · {{ version.stats.requirements }} requirements from {{ version.source_documents|length }} active sources
-      · {{ version.stats.mandatory_requirements }} mandatory · {{ version.stats.role_specific_requirements }} role-specific
+    <p class="eyebrow"><a href="{{ url_for('ground_truth.matrix_index') }}">← Who learns what</a></p>
+    <h1>Version {{ version.version_no }}</h1>
+    <p class="docmeta">
+      {% set tone = {'draft': 'scheduled', 'approved': 'active', 'retired': 'superseded'}[version.status] %}
+      <span class="libcard__status"><i class="swatch swatch--{{ tone }}"></i>{{ state }}</span>
+      <span>{{ version.stats.requirements }} rules from {{ version.source_documents|length }} documents · {{ version.stats.mandatory_requirements }} are a must</span>
     </p>
   </div>
   {% if version.status == 'draft' and can('matrix.approve') %}
   <form method="post" action="{{ url_for('ground_truth.matrix_approve', number=version.version_no) }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button class="btn btn--primary" type="submit">{{ icon('check', 16) }}Approve as ground truth</button>
+    <button class="btn btn--primary btn--lg" type="submit">{{ icon('check', 16) }}Approve this list</button>
   </form>
   {% endif %}
 </div>
 
-{% if version.status == 'draft' %}<div class="notice notice--info">This is a draft. Check each role's rows below, correct requirements that apply to the wrong roles, then approve it. Plans are only verified against an approved matrix.</div>{% endif %}
+{% if version.status == 'draft' %}<div class="notice notice--info">This list is waiting for approval. Click through the jobs below and check their rules. Once you approve it, every training plan is checked against it.</div>{% endif %}
 
-<section class="panel panel--flush">
-  <div class="panel__bar"><h2 class="panel__title">Roles <span class="muted small">select a role to see its rows</span></h2></div>
-  <div class="tablewrap">
-    <table class="table">
-      <thead><tr><th>Role</th><th class="num">Requirements</th><th class="num">Mandatory</th><th class="num">Optional / recommended</th></tr></thead>
-      <tbody>
-      {% for r in roles %}{% set s = summary[r.code] %}
-        <tr class="{{ 'is-selected' if role and r.code == role.code }}">
-          <td><a href="{{ url_for('ground_truth.matrix_view', number=version.version_no, role=r.code) }}"><span class="mono">{{ r.code }}</span> {{ r.name }}</a></td>
-          <td class="num">{{ s.total or 0 }}</td><td class="num">{{ s.mandatory or 0 }}</td><td class="num">{{ s.optional or 0 }}</td>
-        </tr>
+<section class="acard mxcard rise">
+  <div class="acard__head"><h3>Rules per job and topic</h3><span>click a square, a job or a topic</span></div>
+  <div class="acard__body">{{ heatmap(heat, version, role, topic) }}</div>
+</section>
+
+<nav class="jobpick" aria-label="Choose a job">
+  {% for r in roles %}{% set s = summary[r.code] %}
+  <a class="jobpick__item {{ 'is-on' if role and r.code == role.code }}" href="{{ url_for('ground_truth.matrix_view', number=version.version_no, role=r.code) }}#rows"
+     {{ 'aria-current=page' if role and r.code == role.code }}>{{ r.name }}<b>{{ s.total or 0 }}</b></a>
+  {% endfor %}
+</nav>
+
+{% if role %}
+<section class="acard mxcard rise" id="rows">
+  <div class="acard__head"><h3>{{ role.name }}: when to learn what</h3><span>{{ summary[role.code].total or 0 }} rules, {{ summary[role.code].mandatory or 0 }} are a must</span></div>
+  <div class="acard__body">
+    <ol class="stagestrip">
+      {% for code, label, n in timeline %}
+      <li style="--i: {{ loop.index0 }}" data-tip="{{ label }}: {{ n }} rule{{ 's' if n != 1 }} due">
+        <span class="stagestrip__n">{{ n }}</span>
+        <span class="stagestrip__bar"><i data-w="{{ (100 * n / timeline_max)|round(1) if n else 0 }}%"></i></span>
+        <span class="stagestrip__label">{{ label }}</span>
+      </li>
       {% endfor %}
-      </tbody>
-    </table>
+    </ol>
   </div>
 </section>
 
-{% if role %}
 <section class="panel panel--flush">
-  <h2 class="panel__title panel__title--inset">{{ role.name }} <span class="muted small">{{ rows|length }} rows · ordered by obligation, then stage</span></h2>
+  <div class="panel__bar">
+    <h2 class="panel__title">{{ rows|length }} rule{{ 's' if rows|length != 1 }}{% if topic %} on <b>{{ topic }}</b>{% endif %} <span class="muted small">musts first, then by when they are due</span></h2>
+    {% if topic %}<a class="libchip" href="{{ url_for('ground_truth.matrix_view', number=version.version_no, role=role.code) }}#rows">Topic: <b>{{ topic }}</b>{{ icon('x', 13) }}</a>{% endif %}
+  </div>
   <div class="tablewrap">
     <table class="table">
-      <thead><tr><th>Requirement</th><th>Kind</th><th>Competency</th><th>Mandatory</th><th>Priority</th><th>Stage</th><th>Assessment</th><th>Source</th></tr></thead>
+      <thead><tr><th>Rule</th><th>Topic</th><th>Must?</th><th>Due by</th><th>How it is checked</th><th>Source</th></tr></thead>
       <tbody>
       {% for row, req in rows %}
         <tr>
-          <td><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=req.id) }}" data-ref="req:{{ req.req_id }}">{{ req.req_id }}</a>
-              <div class="reqtext">{{ req.text }}</div>
+          <td><div class="reqtext">{{ req.text }}</div>
+              <a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=req.id) }}" data-ref="req:{{ req.req_id }}">{{ req.req_id }}</a>
               {% if row.condition %}<span class="chip">only if: {{ row.condition.field }} {{ row.condition.op }} {{ row.condition.value }}</span>{% endif %}</td>
-          <td class="small">{{ row.requirement_kind|capitalize }}</td>
           <td class="small">{{ row.competency }}</td>
-          <td>{% if row.mandatory %}<span class="badge badge--info">Mandatory</span>{% else %}<span class="badge badge--neutral">Optional</span>{% endif %}</td>
-          <td class="small">{{ row.priority }}</td>
-          <td><span class="tag mono">{{ row.due_stage }}</span></td>
+          <td>{% if row.mandatory %}<span class="rulelist__kind is-must">Must</span>{% else %}<span class="rulelist__kind">Should</span>{% endif %}</td>
+          <td class="small nowrap">{{ (timeline|selectattr(0, 'equalto', row.due_stage)|map(attribute=1)|first) or row.due_stage }}</td>
           <td class="small">{{ row.assessment_requirement if row.assessment_requirement not in (none, '', 'None') else '–' }}</td>
           <td class="small nowrap"><span class="mono">{{ req.doc_id }}</span> §{{ req.section_id }}{% if row.source_status == 'expired' %} <span class="badge badge--warn">Outdated source</span>{% endif %}</td>
         </tr>
+      {% else %}
+        <tr><td colspan="6" class="muted">No rules for this job{% if topic %} on this topic{% endif %}.</td></tr>
       {% endfor %}
       </tbody>
     </table>

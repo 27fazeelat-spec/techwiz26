@@ -2,35 +2,61 @@
 {% from "_macros.html" import icon %}
 {% block title %}Reports{% endblock %}
 {% block content %}
+{# Each report: plain title, what it answers, icon, and the original technical name kept for the record. #}
 {% set about = {
-  'comparison': ('GenAI vs Python comparison', 'Every requirement of every current plan, field by field (the 100-row report).'),
-  'validation': ('Validation report', 'Status, scores and finding counts per plan.'),
-  'findings': ('Validation findings', 'Every finding raised by the Python rules.'),
-  'hallucination': ('Hallucination and unsupported content', 'Claims the cited source does not support, invalid or inapplicable sources.'),
-  'traceability': ('Source traceability', 'Every generated item with its requirements, cited source, model and prompt.'),
-  'mandatory_training': ('Mandatory training coverage', 'Each mandatory requirement per plan and whether it is covered.'),
-  'role_coverage': ('Role coverage', 'Matrix requirements, employees, plans and average coverage per role.'),
-  'policy_coverage': ('Policy coverage', 'Requirements per source document and how many reach plans.'),
-  'progress': ('Employee progress', 'Completion, status and overdue items per employee.'),
-  'assessment_results': ('Quiz and assessment results', 'Every quiz attempt and assessment result.'),
-  'security': ('Security findings', 'Prompt-injection and adversarial content caught at ingestion.'),
-  'bot_questions': ('Questions the documents did not answer', 'From Ask the bot: unanswered, held back, unhelpful and escalated questions, each a possible gap in the documents.'),
-  'audit': ('Audit trail', 'The most recent entries of the append-only audit log.')} %}
+  'progress': ('How is everyone doing?', 'Each employee’s progress, status and late steps.', 'users', 'Employee progress'),
+  'assessment_results': ('Quiz and assessment scores', 'Every quiz try and every manager assessment, with the score.', 'trophy', 'Quiz and assessment results'),
+  'bot_questions': ('Questions the policies could not answer', 'What employees asked that no document covers: a list of gaps to fill.', 'chat', 'Questions the documents did not answer'),
+  'role_coverage': ('Training by job', 'For each job: how many rules, people, plans, and how complete the plans are.', 'grid', 'Role coverage'),
+  'validation': ('Plan check results', 'For each plan: its result, scores and how many problems were found.', 'check', 'Validation report'),
+  'mandatory_training': ('Are the must-learn rules in every plan?', 'Every must-learn rule for every plan, and whether the plan covers it.', 'list', 'Mandatory training coverage'),
+  'comparison': ('AI vs the approved list', 'Every rule in every plan, compared field by field with the approved list.', 'split', 'GenAI vs Python comparison'),
+  'findings': ('Every problem the checks found', 'Each problem raised while checking the plans.', 'alert', 'Validation findings'),
+  'hallucination': ('Things the AI said that the policies do not', 'Claims with no support in the cited policy, or citing the wrong one.', 'spark', 'Hallucination and unsupported content'),
+  'traceability': ('Where every item comes from', 'Each plan item with its rule, its policy section, and the AI model and prompt used.', 'book', 'Source traceability'),
+  'policy_coverage': ('Which policies reach training', 'Rules per document, and how many of them end up in plans.', 'file', 'Policy coverage'),
+  'security': ('Tricks caught in uploaded files', 'Every suspicious part found in a document, and what was done about it.', 'shield', 'Security findings'),
+  'audit': ('Who did what, and when', 'The latest entries of the permanent activity record.', 'clock', 'Audit trail')} %}
+{% set groups = [
+  ('People and progress', 'How the new hires are getting on.', ['progress', 'assessment_results', 'bot_questions', 'role_coverage']),
+  ('Is the training right?', 'Proof that every plan follows the approved policies.', ['validation', 'mandatory_training', 'comparison', 'findings', 'hallucination', 'traceability', 'policy_coverage']),
+  ('Safety and records', 'What was blocked, and a record of every action.', ['security', 'audit'])] %}
+{% set known = groups|map(attribute=2)|sum(start=[]) %}
 <div class="pagehead"><div><p class="eyebrow">Reports</p><h1>Reports</h1>
-  <p class="pagehead__meta">Every report is computed from stored runs, findings, progress and audit records. Export as CSV, Excel or PDF.</p></div></div>
+  <p class="pagehead__meta">Every report is counted from what is stored in the app, never typed in by hand. Open one to look at it, or download it for Excel, as a CSV file or as a PDF.</p></div></div>
 
-<section class="panel panel--flush">
-  <div class="tablewrap">
-    <table class="table">
-      <thead><tr><th>Report</th><th>What it contains</th><th>Export</th></tr></thead>
-      <tbody>
-      {% for n in names %}
-        <tr><td class="middle"><a href="{{ url_for('reports.preview', name=n) }}"><strong>{{ about[n][0] }}</strong></a></td>
-          <td class="middle small muted">{{ about[n][1] }}</td>
-          <td class="middle nowrap">{% for f in ['csv', 'xlsx', 'pdf'] %}<a class="btn btn--sm" href="{{ url_for('reports.export', name=n, fmt=f) }}">{{ f|upper }}</a> {% endfor %}</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
+{% for title, lead, keys in groups %}{% set shown = keys|select('in', names)|list %}
+{% if shown %}
+<section class="repgroup rise">
+  <header class="repgroup__head"><h2>{{ title }}</h2><p>{{ lead }}</p></header>
+  <div class="repgrid">
+    {% for n in shown %}{% set t, text, ic, tech = about[n] %}
+    <article class="repcard" style="--i: {{ loop.index0 }}">
+      <a class="repcard__main" href="{{ url_for('reports.preview', name=n) }}">
+        <span class="repcard__icon">{{ icon(ic, 20) }}</span>
+        <span><b>{{ t }}</b><small>{{ text }}</small></span>
+      </a>
+      <footer class="repcard__foot">
+        <a class="btn btn--sm btn--primary" href="{{ url_for('reports.export', name=n, fmt='xlsx') }}">{{ icon('file', 13) }}Excel</a>
+        <a class="btn btn--sm btn--ghost" href="{{ url_for('reports.export', name=n, fmt='csv') }}">CSV</a>
+        <a class="btn btn--sm btn--ghost" href="{{ url_for('reports.export', name=n, fmt='pdf') }}">PDF</a>
+        <span class="repcard__tech" title="Technical name">{{ tech }}</span>
+      </footer>
+    </article>
+    {% endfor %}
   </div>
 </section>
+{% endif %}
+{% endfor %}
+
+{% set other = names|reject('in', known)|list %}
+{% if other %}
+<section class="repgroup">
+  <header class="repgroup__head"><h2>Other reports</h2></header>
+  <div class="repgrid">{% for n in other %}
+    <article class="repcard"><a class="repcard__main" href="{{ url_for('reports.preview', name=n) }}"><span class="repcard__icon">{{ icon('file', 20) }}</span><span><b>{{ n|replace('_', ' ')|capitalize }}</b></span></a>
+      <footer class="repcard__foot">{% for f in ['xlsx', 'csv', 'pdf'] %}<a class="btn btn--sm {{ 'btn--primary' if loop.first else 'btn--ghost' }}" href="{{ url_for('reports.export', name=n, fmt=f) }}">{{ {'xlsx': 'Excel'}.get(f, f|upper) }}</a>{% endfor %}</footer></article>
+  {% endfor %}</div>
+</section>
+{% endif %}
 {% endblock %}

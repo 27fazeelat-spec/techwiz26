@@ -47,6 +47,8 @@ def test_role_filter_and_manager_scope(corpus):
     client = current_app.test_client()
     login(client, "training@aurelle.example")
     assert client.get("/reports").status_code == 200
+    page = client.get("/reports").get_data(as_text=True)
+    assert "People and progress" in page and "Is the training right?" in page and "How is everyone doing?" in page
     assert client.get("/reports/comparison").status_code == 200
     response = client.get("/reports/validation.xlsx")
     assert response.status_code == 200 and response.data[:2] == b"PK"

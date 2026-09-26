@@ -3,34 +3,90 @@
 {% block title %}Documents{% endblock %}
 {% block content %}
 <div class="pagehead">
-  <div><p class="eyebrow">Knowledge base</p><h1>Documents</h1></div>
-  {% if can('documents.upload') %}<a class="btn btn--primary" href="{{ url_for('documents.upload') }}">{{ icon('upload', 16) }}Upload document</a>{% endif %}
+  <div><p class="eyebrow">Documents</p><h1>All documents</h1>
+    <p class="pagehead__meta">The company's policies and procedures. The app reads each one and turns it into rules people must learn.</p></div>
+  {% if can('documents.upload') %}<a class="btn btn--primary" href="{{ url_for('documents.upload') }}" data-cursor="Upload">{{ icon('upload', 16) }}Upload document</a>{% endif %}
 </div>
 
-<form class="filters" method="get" role="search">
-  <div class="field field--grow">
-    <label for="q">Search</label>
-    <input id="q" name="q" type="search" value="{{ q }}" placeholder="Document ID or title">
-  </div>
-  <div class="field">
-    <label for="status">Status</label>
-    <select id="status" name="status" data-autosubmit>
-      <option value="">All statuses</option>
-      {% for s in statuses %}<option value="{{ s }}" {{ 'selected' if s == status }}>{{ s|capitalize }}</option>{% endfor %}
-    </select>
-  </div>
-  <div class="field">
-    <label for="category">Category</label>
-    <select id="category" name="category" data-autosubmit>
-      <option value="">All categories</option>
-      {% for c in categories %}<option value="{{ c }}" {{ 'selected' if c == category }}>{{ c }}</option>{% endfor %}
-    </select>
-  </div>
-  <button type="submit" class="btn btn--primary">{{ icon('search', 15) }}Apply</button>
-  {% if q or status or category %}<a class="btn btn--ghost" href="{{ url_for('documents.index') }}">Clear</a>{% endif %}
-</form>
+{% set in_force = cards|selectattr('doc.status', 'equalto', 'active')|list|length %}
+<div data-filter-scope>
+<section class="libstats rise" aria-label="Summary">
+  <div class="libstat"><span class="libstat__icon">{{ icon('file', 20) }}</span><b data-count="{{ cards|length }}">{{ cards|length }}</b><span>documents</span></div>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('check', 20) }}</span><b data-count="{{ in_force }}">{{ in_force }}</b><span>in force today</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('list', 20) }}</span><b data-count="{{ total_rules }}">{{ total_rules }}</b><span>rules found</span></div>
+  <div class="libstat {{ 'libstat--warn' if need_look }}"><span class="libstat__icon">{{ icon('alert', 20) }}</span><b data-count="{{ need_look }}">{{ need_look }}</b><span>need a look</span></div>
+</section>
 
-<section class="panel panel--flush">
+{% if docs %}
+<section class="libcharts rise" aria-label="Charts">
+  <div class="acard">
+    <div class="acard__head"><h3>Where each file stands</h3><span>{{ docs|length }} files, all versions</span></div>
+    <div class="acard__body donutwrap">
+      <div class="donut" data-donut="{{ donut|tojson|forceescape }}" data-donut-filter>
+        <div class="donut__center"><b>{{ docs|length }}</b><span>files</span></div>
+      </div>
+      <ul class="donutlegend">
+        {% for key, label, n in by_status %}
+        <li><button type="button" data-set-filter="status:{{ key }}" data-filter-label="{{ label }}" aria-pressed="false">
+          <i class="swatch swatch--{{ key }}"></i><span>{{ label }}</span><b>{{ n }}</b></button></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="acard">
+    <div class="acard__head"><h3>Documents by department</h3><span>click a bar to filter</span></div>
+    <div class="acard__body">
+      {% set most = departments|map('last')|max %}
+      <div class="bars">
+        {% for dept, n in departments %}
+        <button type="button" class="dbar" data-set-filter="dept:{{ dept }}" data-filter-label="{{ dept }}" data-tip="{{ dept }}: {{ n }} document{{ 's' if n != 1 }}" aria-pressed="false">
+          <span class="dbar__name">{{ dept }}</span>
+          <span class="dbar__track"><i data-w="{{ (100 * n / most)|round(1) }}%"></i></span>
+          <b class="dbar__n">{{ n }}</b>
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<div class="libtools">
+  <label class="libsearch">{{ icon('search', 16) }}<input type="search" data-filter-search value="{{ q }}" placeholder="Search by name, department or code" aria-label="Search documents"></label>
+  <span class="libchip" data-filter-chip hidden>Showing: <b></b><button type="button" data-filter-clear aria-label="Clear filter">{{ icon('x', 13) }}</button></span>
+  <div class="segmented libview" role="group" aria-label="View">
+    <button type="button" class="is-on" data-libview="cards">Cards</button>
+    <button type="button" data-libview="table">List</button>
+  </div>
+</div>
+
+<div class="libgrid" data-filter-list data-libpane="cards">
+  {% for c in cards %}{% set d = c.doc %}
+  <a class="libcard" href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}" data-card
+     data-text="{{ (d.doc_id ~ ' ' ~ (d.title or '') ~ ' ' ~ c.department ~ ' ' ~ d.category)|lower }}"
+     data-dept="{{ c.department }}" data-status="{{ c.versions|map(attribute='status')|unique|join('|') }}" style="--i: {{ [loop.index0, 12]|min }}">
+    <span class="libcard__top">
+      <span class="libcard__icon">{{ icon(category_icon(c.department ~ ' ' ~ d.category), 20) }}</span>
+      <span class="libcard__status"><i class="swatch swatch--{{ d.status }}"></i>{{ plain_status.get(d.status, d.status|capitalize) }}</span>
+    </span>
+    <span class="libcard__title">{{ d.title or d.doc_id }}</span>
+    <span class="libcard__dept">{{ c.department }} · {{ d.category }}</span>
+    <span class="libcard__facts">
+      <span><b>{{ c.rules }}</b> rule{{ 's' if c.rules != 1 }}</span>
+      <span>{{ c.jobs }}</span>
+      {% if c.versions|length > 1 %}<span>{{ c.versions|length }} versions</span>{% endif %}
+    </span>
+    {% if c.flag %}<span class="libcard__flag">{{ icon('shield', 14) }}Suspicious text found and blocked</span>{% endif %}
+    <span class="libcard__code mono">{{ d.doc_id }} · v{{ d.version }}</span>
+  </a>
+  {% endfor %}
+  <div class="libnone" data-filter-none hidden>
+    {% call empty('No documents match', 'Try another word, or clear the filter.', 'file') %}<button type="button" class="btn" data-filter-clear>Clear</button>{% endcall %}
+  </div>
+  {% if not cards %}{% call empty('No documents yet', 'Upload a policy to get started.', 'file') %}{% endcall %}{% endif %}
+</div>
+
+<section class="panel panel--flush" data-libpane="table" hidden>
   {% if docs %}
   <div class="tablewrap">
     <table class="table">
@@ -57,9 +113,25 @@
       </tbody>
     </table>
   </div>
-  <div class="tablefoot">{{ docs|length }} file{{ 's' if docs|length != 1 }}</div>
+  <div class="tablefoot">{{ docs|length }} file{{ 's' if docs|length != 1 }}, every version</div>
   {% else %}
-    {% call empty('No documents match these filters', 'Try another status or category, or upload a new document.', 'file') %}{% if q or status or category %}<a class="btn" href="{{ url_for('documents.index') }}">Clear filters</a>{% endif %}{% endcall %}
+    {% call empty('No documents yet', 'Upload a policy to get started.', 'file') %}{% endcall %}
   {% endif %}
 </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  // Cards or list; the choice is remembered on this device only.
+  (function () {
+    var buttons = document.querySelectorAll("[data-libview]"), panes = document.querySelectorAll("[data-libpane]");
+    function show(view) {
+      buttons.forEach(function (b) { b.classList.toggle("is-on", b.dataset.libview === view); });
+      panes.forEach(function (p) { p.hidden = p.dataset.libpane !== view; });
+      try { localStorage.setItem("skillsprint-libview", view); } catch (e) {}
+    }
+    buttons.forEach(function (b) { b.addEventListener("click", function () { show(b.dataset.libview); }); });
+    try { if (localStorage.getItem("skillsprint-libview") === "table") show("table"); } catch (e) {}
+  })();
+</script>
 {% endblock %}

@@ -1,23 +1,55 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, empty, help %}
-{% block title %}Role Requirement Matrix{% endblock %}
+{% from "ground_truth/_heatmap.html" import heatmap %}
+{% block title %}Who learns what{% endblock %}
 {% block content %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow">Ground truth</p>
-    <h1>Role Requirement Matrix {{ help('matrix') }}</h1>
-    <p class="pagehead__meta">The approved matrix is what every generated plan is checked against. It is built by rules and approved by a person.</p>
+    <p class="eyebrow">Rules · Role Requirement Matrix</p>
+    <h1>Who learns what {{ help('matrix') }}</h1>
+    <p class="pagehead__meta">Which rules each job must learn. The app builds this list from the documents, and a person approves it. Every training plan is checked against the approved list.</p>
   </div>
   {% if can('matrix.build') %}
-  <form method="post" action="{{ url_for('ground_truth.matrix_build') }}" data-busy="Building draft…">
+  <form method="post" action="{{ url_for('ground_truth.matrix_build') }}" data-busy="Building a new list…">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button class="btn btn--primary" type="submit">{{ icon('grid', 16) }}Build new draft</button>
+    <button class="btn" type="submit">{{ icon('grid', 16) }}Build a new list</button>
   </form>
   {% endif %}
 </div>
 
-<section class="panel panel--flush">
-  {% if versions %}
+{% if shown %}
+<section class="mxstatus rise">
+  <div class="mxstatus__main {{ 'is-ok' if current else 'is-draft' }}">
+    <span class="mxstatus__icon">{{ icon('check' if current else 'alert', 22) }}</span>
+    <div>
+      {% if current %}<b>The approved list is version {{ current.version_no }}</b>
+        <span>Approved {{ current.approved_at.strftime('%d %b %Y') if current.approved_at }}{% if current.approved_by %} by {{ current.approved_by }}{% endif %}</span>
+      {% else %}<b>Nothing is approved yet</b><span>Training plans cannot be checked until a list is approved.</span>{% endif %}
+    </div>
+    <a class="btn btn--ghost" href="{{ url_for('ground_truth.matrix_view', number=shown.version_no) }}">Open the full list</a>
+  </div>
+  <div class="mxstatus__nums">
+    <div><b data-count="{{ shown.stats.requirements }}">{{ shown.stats.requirements }}</b><span>rules</span></div>
+    <div><b data-count="{{ heat.roles|length }}">{{ heat.roles|length }}</b><span>jobs</span></div>
+    <div><b data-count="{{ heat.topics|length }}">{{ heat.topics|length }}</b><span>topics</span></div>
+    <div><b data-count="{{ shown.stats.mandatory_requirements }}">{{ shown.stats.mandatory_requirements }}</b><span>are a must</span></div>
+  </div>
+</section>
+
+{% if draft %}
+<div class="notice notice--info mxdraft">
+  <span>A newer list (version {{ draft.version_no }}) was built from the latest documents and is waiting for approval.</span>
+  <a class="btn btn--primary" href="{{ url_for('ground_truth.matrix_view', number=draft.version_no) }}">Review version {{ draft.version_no }}</a>
+</div>
+{% endif %}
+
+<section class="acard mxcard rise">
+  <div class="acard__head"><h3>Rules per job and topic</h3><span>version {{ shown.version_no }}{% if shown == current %}, approved{% else %}, {{ shown.status }}{% endif %}</span></div>
+  <div class="acard__body">{{ heatmap(heat, shown) }}</div>
+</section>
+
+<details class="expert">
+  <summary>{{ icon('list', 16) }}<span>Every version</span><small>{{ versions|length }} built so far, with who built and approved each</small></summary>
   <div class="tablewrap">
     <table class="table">
       <thead><tr><th>Version</th><th>Status</th><th class="num">Requirements</th><th class="num">Mandatory</th><th class="num">Role-specific</th><th class="num">Rows</th><th>Built</th><th>Approved</th></tr></thead>
@@ -25,7 +57,7 @@
       {% for v in versions %}
         <tr>
           <td><a class="mono" href="{{ url_for('ground_truth.matrix_view', number=v.version_no) }}">v{{ v.version_no }} →</a></td>
-          <td>{% set tone = {'draft': 'info', 'approved': 'ok', 'retired': 'neutral'}[v.status] %}<span class="badge badge--{{ tone }}">{{ v.status|capitalize }}</span></td>
+          <td>{% set tone = {'draft': 'info', 'approved': 'ok', 'retired': 'neutral'}[v.status] %}<span class="badge badge--{{ tone }}">{{ {'draft': 'Waiting for approval', 'approved': 'Approved', 'retired': 'Replaced'}[v.status] }}</span></td>
           <td class="num">{{ v.stats.requirements }}</td><td class="num">{{ v.stats.mandatory_requirements }}</td>
           <td class="num">{{ v.stats.role_specific_requirements }}</td><td class="num">{{ v.stats.rows }}</td>
           <td class="small nowrap">{{ v.created_at.strftime('%d %b %H:%M') }} · {{ v.created_by }}</td>
@@ -35,6 +67,8 @@
       </tbody>
     </table>
   </div>
-  {% else %}{{ empty('No matrix yet', 'Build a draft from the extracted requirements, review it, then approve it as ground truth.', 'grid') }}{% endif %}
-</section>
+</details>
+{% else %}
+<section class="panel">{{ empty('No list yet', 'Build a list from the rules found in the documents, check it, then approve it.', 'grid') }}</section>
+{% endif %}
 {% endblock %}

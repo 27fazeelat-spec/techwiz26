@@ -1,73 +1,93 @@
 {% extends "base.html" %}
-{% from "_macros.html" import item_badge, icon, empty, help %}
-{% block title %}Review queue{% endblock %}
+{% from "_macros.html" import item_badge, icon, empty, help, initials %}
+{% block title %}Approvals{% endblock %}
 {% block content %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow">Onboarding</p>
-    <h1>Review queue {{ help('review') }}</h1>
-    <p class="pagehead__meta">Things Python could not verify on its own. Open an item to see what it means and the suggested decision, or tick several of the same kind and decide them together. A plan can be assigned only when nothing here is waiting.</p>
+    <p class="eyebrow">Approvals</p>
+    <h1>Approvals {{ help('review') }}</h1>
+    <p class="pagehead__meta">The app checks every part of a training plan against the documents. Anything it could not confirm on its own waits here for a person. A plan reaches the employee only when nothing is waiting.</p>
   </div>
 </div>
 
-<section class="kpis" aria-label="Summary">
-  <div class="kpi {{ 'kpi--warn' if counts.open }}"><span class="kpi__label">Waiting for a decision</span><span class="kpi__value">{{ counts.open or 0 }}</span><span class="kpi__note">on current plan versions</span></div>
-  <div class="kpi"><span class="kpi__label">Approved</span><span class="kpi__value">{{ counts.approved or 0 }}</span><span class="kpi__note">the original finding is kept alongside</span></div>
-  <div class="kpi"><span class="kpi__label">Edited or overridden</span><span class="kpi__value">{{ (counts.edited or 0) + (counts.overridden or 0) }}</span><span class="kpi__note">edits are re-checked by Python</span></div>
-  <div class="kpi"><span class="kpi__label">Removed</span><span class="kpi__value">{{ counts.rejected or 0 }}</span><span class="kpi__note">hidden from the employee</span></div>
+<section class="libstats rise" aria-label="Summary">
+  <div class="libstat {{ 'libstat--warn' if counts.open }}"><span class="libstat__icon">{{ icon('bell', 20) }}</span><b data-count="{{ counts.open or 0 }}">{{ counts.open or 0 }}</b><span>waiting for you</span></div>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('check', 20) }}</span><b data-count="{{ counts.approved or 0 }}">{{ counts.approved or 0 }}</b><span>approved</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('wrench', 20) }}</span><b data-count="{{ (counts.edited or 0) + (counts.overridden or 0) }}">{{ (counts.edited or 0) + (counts.overridden or 0) }}</b><span>changed by a person</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('x', 20) }}</span><b data-count="{{ counts.rejected or 0 }}">{{ counts.rejected or 0 }}</b><span>removed from plans</span></div>
 </section>
 
-<section class="panel panel--flush">
-  <div class="panel__bar">
-    <div class="segmented" role="group" aria-label="Show">
-      <a href="{{ url_for('review.queue', show='open', plan=plan_filter) }}" class="{{ 'is-on' if show == 'open' }}">Waiting</a>
-      <a href="{{ url_for('review.queue', show='decided', plan=plan_filter) }}" class="{{ 'is-on' if show == 'decided' }}">Decided</a>
-      <a href="{{ url_for('review.queue', show='all', plan=plan_filter) }}" class="{{ 'is-on' if show == 'all' }}">All</a>
-    </div>
-    {% if kinds %}
-    <div class="segmented" role="group" aria-label="Kind of issue">
-      <a href="{{ url_for('review.queue', show=show, plan=plan_filter) }}" class="{{ 'is-on' if not kind }}">Every kind <span class="count">{{ kinds.values()|sum }}</span></a>
-      {% for k, n in kinds.items() %}{% set text, tip = status_label('item', k) %}
-      <a href="{{ url_for('review.queue', show=show, plan=plan_filter, kind=k) }}" class="{{ 'is-on' if kind == k }}" data-tip="{{ tip }}">{{ text }} <span class="count">{{ n }}</span></a>
-      {% endfor %}
-    </div>
-    {% endif %}
+<div class="libtools">
+  <div class="segmented" role="group" aria-label="Show">
+    <a href="{{ url_for('review.queue', show='open', plan=plan_filter) }}" class="{{ 'is-on' if show == 'open' }}">Waiting</a>
+    <a href="{{ url_for('review.queue', show='decided', plan=plan_filter) }}" class="{{ 'is-on' if show == 'decided' }}">Already decided</a>
+    <a href="{{ url_for('review.queue', show='all', plan=plan_filter) }}" class="{{ 'is-on' if show == 'all' }}">All</a>
   </div>
-  {% if rows %}
-  <form method="post" action="{{ url_for('review.bulk') }}" data-bulk>
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="tablewrap">
-      <table class="table">
-        <thead><tr>
-          <th style="width: 36px">{% if show == 'open' %}<input type="checkbox" class="pick" data-pick-all aria-label="Select every item shown">{% endif %}</th>
-          <th>What needs a decision</th><th>Plan</th><th>Issue</th><th>Decision</th></tr></thead>
-        <tbody>
-        {% for r, p in rows %}
-          <tr>
-            <td class="middle">{% if r.status == 'open' %}<input type="checkbox" class="pick" name="item" value="{{ r.id }}" aria-label="Select RV-{{ '%05d' % r.id }}">{% endif %}</td>
-            <td><a href="{{ url_for('review.detail', pk=r.id) }}"><strong>{{ texts.get(r.target_key) or (r.reasons[0].message if r.reasons else r.target_key) }}</strong></a>
-              <div class="small muted" style="margin-top: 3px">RV-{{ '%05d' % r.id }} · {{ 'rule' if r.target_type == 'requirement' else (r.plan_item.item_type|replace('_', ' ') if r.plan_item else 'item') }}
-                {% if r.target_type == 'requirement' %}<span class="ref" data-ref="req:{{ r.target_key }}" tabindex="0">{{ r.target_key }}</span>{% endif %}</div></td>
-            <td class="small"><a href="{{ url_for('plans.plan_detail', pk=p.id) }}">{{ p.employee.name }}</a><br><span class="mono muted">{{ p.plan_code }} v{{ p.version }}</span></td>
-            <td>{{ item_badge(r.original_status) }}</td>
-            <td>{% if r.status == 'open' %}<a class="btn btn--sm" href="{{ url_for('review.detail', pk=r.id) }}">Decide</a>
-                {% else %}<span class="badge badge--{{ {'approved': 'ok', 'edited': 'info', 'overridden': 'info', 'rejected': 'bad', 'regenerated': 'info'}[r.status] }}">{{ r.status|capitalize }}</span>
-                <div class="small muted">{{ r.decision_by }}</div>{% endif %}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% if show == 'open' and can('review.decide') %}
-    <div class="bulkbar" data-bulkbar hidden>
-      <strong class="small"><span data-picked>0</span> selected</strong>
-      <input name="reason" type="text" value="{{ bulk_reason }}" placeholder="One reason for all selected items (kept in the audit trail)" aria-label="Reason" style="flex: 1 1 320px">
-      <button class="btn btn--primary" name="action" value="approve" type="submit">{{ icon('check', 15) }}Approve selected</button>
-      <button class="btn" name="action" value="reject" type="submit" data-tip="Only generated items can be removed; rules stay">Remove selected</button>
-    </div>
-    {% endif %}
-  </form>
-  {% else %}{{ empty('Nothing waiting' if show == 'open' else 'No items', 'When Python flags an item or a plan misses a required rule, it appears here.', 'check') }}{% endif %}
+  {% if plan_filter %}<a class="libchip" href="{{ url_for('review.queue', show=show) }}">One plan only {{ icon('x', 13) }}</a>{% endif %}
+</div>
+
+{% if kinds %}
+<nav class="topicchips" aria-label="Kind of issue">
+  <a class="topicchip {{ 'is-on' if not kind }}" href="{{ url_for('review.queue', show=show, plan=plan_filter) }}">Every kind<b>{{ kinds.values()|sum }}</b></a>
+  {% for k, n in kinds.items() %}{% set text, tip = status_label('item', k) %}
+  <a class="topicchip {{ 'is-on' if kind == k }}" href="{{ url_for('review.queue', show=show, plan=plan_filter, kind=k) }}" data-tip="{{ tip }}">{{ text }}<b>{{ n }}</b></a>
+  {% endfor %}
+</nav>
+{% if show == 'open' and not kind %}<p class="small muted apptip">{{ icon('spark', 14) }}Tip: pick one kind of issue above to approve all of them together, with a ready-made reason.</p>{% endif %}
+{% endif %}
+
+{% if rows %}
+<form method="post" action="{{ url_for('review.bulk') }}" data-bulk>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if show == 'open' and can('review.decide') %}
+  <label class="apppickall"><input type="checkbox" class="pick" data-pick-all> Select everything shown</label>
+  {% endif %}
+  {% for plan_id, group in rows|groupby('1.id') %}{% set p = group[0][1] %}
+  <section class="appgroup" style="--i: {{ [loop.index0, 8]|min }}">
+    <header class="appgroup__head">
+      <span class="personcard__avatar" aria-hidden="true">{{ initials(p.employee.name) }}</span>
+      <div><h3>{{ p.employee.name }}'s plan</h3><p>{{ p.employee.job_role.name }} · <span class="mono">{{ p.plan_code }} v{{ p.version }}</span></p></div>
+      <span class="appgroup__count">{{ group|length }} item{{ 's' if group|length != 1 }}</span>
+      <a class="btn btn--sm btn--ghost" href="{{ url_for('plans.plan_detail', pk=p.id) }}">Open plan</a>
+    </header>
+    <ul class="appitems">
+      {% for r, _ in group %}
+      <li class="appitem appitem--{{ r.status }}">
+        {% if r.status == 'open' and show == 'open' %}<input type="checkbox" class="pick" name="item" value="{{ r.id }}" aria-label="Select this item">{% else %}<span></span>{% endif %}
+        <div class="appitem__main">
+          <a href="{{ url_for('review.detail', pk=r.id) }}" class="appitem__text">{{ texts.get(r.target_key) or (r.reasons[0].message if r.reasons else r.target_key) }}</a>
+          <p class="appitem__meta">
+            {{ item_badge(r.original_status) }}
+            <span>{{ 'A rule the plan must cover' if r.target_type == 'requirement' else ('A ' ~ (r.plan_item.item_type|replace('_', ' ')) ~ ' in the plan' if r.plan_item else 'A plan item') }}</span>
+            <span class="mono faint">RV-{{ '%05d' % r.id }}{% if r.target_type == 'requirement' %} · <span class="ref" data-ref="req:{{ r.target_key }}" tabindex="0">{{ r.target_key }}</span>{% endif %}</span>
+          </p>
+        </div>
+        <div class="appitem__act">
+          {% if r.status == 'open' %}<a class="btn btn--sm btn--primary" href="{{ url_for('review.detail', pk=r.id) }}">Decide</a>
+          {% else %}<span class="badge badge--{{ {'approved': 'ok', 'edited': 'info', 'overridden': 'info', 'rejected': 'bad', 'regenerated': 'info'}[r.status] }}">{{ {'approved': 'Approved', 'edited': 'Edited', 'overridden': 'Overridden', 'rejected': 'Removed', 'regenerated': 'Written again'}[r.status] }}</span>
+            <small class="muted">{{ r.decision_by }}</small>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+
+  {% if show == 'open' and can('review.decide') %}
+  <div class="bulkbar" data-bulkbar hidden>
+    <strong class="small"><span data-picked>0</span> selected</strong>
+    <input name="reason" type="text" value="{{ bulk_reason }}" placeholder="One reason for all of them (it is kept on record)" aria-label="Reason" style="flex: 1 1 320px">
+    <button class="btn btn--primary" name="action" value="approve" type="submit">{{ icon('check', 15) }}Approve selected</button>
+    <button class="btn" name="action" value="reject" type="submit" data-tip="Only items the AI wrote can be removed; rules stay">Remove selected</button>
+  </div>
+  {% endif %}
+</form>
+{% else %}
+<section class="panel appdone">
+  {% if show == 'open' %}
+  <span class="justin__badge">{{ icon('check', 26) }}</span>
+  <h2>Nothing is waiting</h2><p>Every part of every current plan has been checked. Plans can be given to employees.</p>
+  {% else %}{{ empty('No items', 'When the app cannot confirm part of a plan, it appears here.', 'check') }}{% endif %}
 </section>
-{% if show == 'open' and rows and not kind %}<p class="small muted">Tip: pick a kind of issue above (for example "Expired source document") to decide all of them together with a ready-made reason.</p>{% endif %}
+{% endif %}
 {% endblock %}

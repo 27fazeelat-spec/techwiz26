@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, empty %}
-{% block title %}Policy changes{% endblock %}
+{% block title %}What changed{% endblock %}
 {% block content %}
+{% set state = {'open': ('Plans need updating', 'warn'), 'regenerated': ('Plans updated', 'ok'), 'no_impact': ('No one affected', 'neutral'), 'upcoming': ('Not in force yet', 'info')} %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow">Knowledge base</p>
-    <h1>Policy changes</h1>
-    <p class="pagehead__meta">Each new document version is compared clause by clause with the version it replaces. Affected plans, items and employees are traced through the requirement links, and only the affected modules are regenerated.</p>
+    <p class="eyebrow">Documents</p>
+    <h1>What changed</h1>
+    <p class="pagehead__meta">When a new version of a policy is uploaded, the app compares it rule by rule with the old one, finds whose training uses the changed rules, and updates only those parts.</p>
   </div>
   {% if can('documents.upload') %}
   <form method="post" action="{{ url_for('changes.detect') }}">
@@ -16,25 +17,55 @@
   {% endif %}
 </div>
 
-<section class="panel panel--flush">
-  {% if rows %}
-  <div class="tablewrap">
-    <table class="table">
-      <thead><tr><th>Document</th><th>Versions</th><th class="num">Changed</th><th class="num">Added</th><th class="num">Removed</th><th>Impact</th><th>Status</th></tr></thead>
-      <tbody>
-      {% for c in rows %}{% set i = impacts[c.id] %}
-        <tr>
-          <td><a href="{{ url_for('changes.detail', pk=c.id) }}"><span class="mono">{{ c.doc_id }}</span> {{ c.to_document.title }}</a></td>
-          <td class="mono nowrap">v{{ c.from_version }} → v{{ c.to_version }}</td>
-          <td class="num">{{ c.counts.changed or 0 }}</td><td class="num">{{ c.counts.added or 0 }}</td><td class="num">{{ c.counts.removed or 0 }}</td>
-          <td class="small">{% set items, plans, people = i %}{% if plans %}{{ items }} items · {{ plans }} plan{{ 's' if plans != 1 }} · {{ people }} employee{{ 's' if people != 1 }}{% else %}<span class="muted">No current plan uses the changed clauses</span>{% endif %}</td>
-          <td>{% set tone = {'open': 'warn', 'regenerated': 'ok', 'no_impact': 'neutral', 'upcoming': 'info'}[c.status] %}
-            <span class="badge badge--{{ tone }}">{{ {'open': 'Plans need updating', 'regenerated': 'Plans updated', 'no_impact': 'No impact', 'upcoming': 'Not in force yet'}[c.status] }}</span></td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}{{ empty('No policy changes yet', 'Upload a new version of an existing document to see what changed and which plans it affects.', 'split') }}{% endif %}
+{% if rows %}
+{% set matters = rows|rejectattr('status', 'equalto', 'no_impact')|list %}
+{% set quiet = rows|selectattr('status', 'equalto', 'no_impact')|list %}
+<section class="libstats rise" aria-label="Summary">
+  <div class="libstat"><span class="libstat__icon">{{ icon('split', 20) }}</span><b data-count="{{ rows|length }}">{{ rows|length }}</b><span>policies with a new version</span></div>
+  <div class="libstat {{ 'libstat--warn' if rows|selectattr('status', 'equalto', 'open')|list }}"><span class="libstat__icon">{{ icon('bell', 20) }}</span><b data-count="{{ rows|selectattr('status', 'equalto', 'open')|list|length }}">{{ rows|selectattr('status', 'equalto', 'open')|list|length }}</b><span>need plans updated</span></div>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('check', 20) }}</span><b data-count="{{ rows|selectattr('status', 'equalto', 'regenerated')|list|length }}">{{ rows|selectattr('status', 'equalto', 'regenerated')|list|length }}</b><span>plans already updated</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('users', 20) }}</span><b data-count="{{ quiet|length }}">{{ quiet|length }}</b><span>affected no one</span></div>
 </section>
+
+{% if matters %}
+<h2 class="chg__title">Changes that affect training</h2>
+<div class="chggrid">
+  {% for c in matters %}{% set items, plans, people = impacts[c.id] %}{% set label, tone = state[c.status] %}
+  <a class="chgcard chgcard--{{ tone }}" href="{{ url_for('changes.detail', pk=c.id) }}" style="--i: {{ loop.index0 }}">
+    <span class="chgcard__state">{{ label }}</span>
+    <b class="chgcard__title">{{ c.to_document.title }}</b>
+    <span class="chgcard__ver"><span class="mono">{{ c.doc_id }}</span><em>v{{ c.from_version }}</em>{{ icon('arrow', 13) }}<em class="is-new">v{{ c.to_version }}</em></span>
+    <span class="chgcard__diff">
+      {% if c.counts.added %}<i class="is-add">+{{ c.counts.added }} new</i>{% endif %}
+      {% if c.counts.changed %}<i class="is-change">{{ c.counts.changed }} changed</i>{% endif %}
+      {% if c.counts.removed %}<i class="is-remove">−{{ c.counts.removed }} removed</i>{% endif %}
+    </span>
+    <span class="chgcard__who">{% if plans %}{{ icon('users', 15) }}<span><b>{{ people }}</b> employee{{ 's' if people != 1 }} · {{ plans }} plan{{ 's' if plans != 1 }} · {{ items }} step{{ 's' if items != 1 }}</span>
+      {% elif c.status == 'upcoming' %}{{ icon('clock', 15) }}<span>Takes effect later; plans are updated when it does</span>
+      {% else %}{{ icon('check', 15) }}<span>The affected plans have been updated</span>{% endif %}</span>
+    <span class="chgcard__go">See what changed {{ icon('arrow', 14) }}</span>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="notice notice--info">{{ icon('check', 16) }} None of the new versions changes a rule that anyone is currently learning.</div>
+{% endif %}
+
+{% if quiet %}
+<details class="expert chg__quiet">
+  <summary>{{ icon('check', 16) }}<span>{{ quiet|length }} change{{ 's' if quiet|length != 1 }} that affected no one</span><small>the changed rules are not in anyone's current plan</small></summary>
+  <ul class="chglist">
+    {% for c in quiet %}
+    <li><a href="{{ url_for('changes.detail', pk=c.id) }}"><b>{{ c.to_document.title }}</b>
+      <span class="mono muted">{{ c.doc_id }} v{{ c.from_version }} → v{{ c.to_version }}</span>
+      <span class="chgcard__diff">
+        {% if c.counts.added %}<i class="is-add">+{{ c.counts.added }}</i>{% endif %}
+        {% if c.counts.changed %}<i class="is-change">{{ c.counts.changed }} changed</i>{% endif %}
+        {% if c.counts.removed %}<i class="is-remove">−{{ c.counts.removed }}</i>{% endif %}
+      </span></a></li>
+    {% endfor %}
+  </ul>
+</details>
+{% endif %}
+{% else %}<section class="panel">{{ empty('No policy changes yet', 'Upload a new version of an existing document to see what changed and whose training it affects.', 'split') }}</section>{% endif %}
 {% endblock %}

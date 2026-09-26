@@ -1,24 +1,90 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, item_state %}
-{% from "learning/_ui.html" import pagehero, mtile %}
+{% from "learning/_ui.html" import pagehero, kind_icon %}
 {% block title %}Calendar{% endblock %}
+{% macro step(r, i) -%}{% set c = i.content %}
+  <li><a href="{{ url_for('learning.module', module_key=i.module.module_key) }}#{{ i.item_key }}">
+    <span class="agenda__icon">{{ icon(kind_icon(i.item_type), 16) }}</span>
+    <span class="agenda__text"><strong>{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:100] }}</strong><span>{{ i.item_type|replace('_', ' ')|capitalize }} · {{ i.module.title }}</span></span>
+    <span style="margin-left: auto">{{ item_state(r) }}</span></a></li>
+{%- endmacro %}
 {% block content %}
-{% call pagehero('img/aurelle/photos/corridor.jpg', 'Calendar', 'What is due, and when', 'Due dates count from your joining date: Day 1, Week 1, Week 2, and the first 30, 60 and 90 days. A late step can still be done, and your manager can see it.') %}
+{% call pagehero('img/aurelle/photos/corridor.jpg', 'Calendar', 'What is due, and when', 'Pick a day to see what is due. Late steps can still be done; your manager just sees that they were late.') %}
   <span class="lchip"><b>{{ today.strftime('%d %b') }}</b> today</span>
+  <span class="lchip"><b>{{ week_left }}</b> due in the next 7 days</span>
+  {% if late_days %}<span class="lchip lchip--bad"><b>{{ late_days }}</b> day{{ 's' if late_days != 1 }} with late steps</span>{% endif %}
 {% endcall %}
-<div class="stack">
-  {% for day, rows in days.items() %}{% set done = rows | selectattr('0.status', 'in', ['completed', 'waived']) | list %}
-  <section class="rcard rise">
-    <div class="rhead"><h2>{{ icon('calendar', 18) }} {{ day.strftime('%A, %d %B') if day else 'No date' }}
-      {% if day and day < today and done|length < rows|length %}<span class="badge badge--bad">overdue</span>{% elif day == today %}<span class="badge badge--info">today</span>{% endif %}</h2>
-      <span class="small muted">{{ done|length }} of {{ rows|length }} done</span></div>
-    <ul class="agenda">{% for r, i in rows[:12] %}{% set c = i.content %}
-      <li><a href="{{ url_for('learning.module', module_key=i.module.module_key) }}#{{ i.item_key }}">
-        <span class="agenda__icon">{{ icon({'checklist': 'check', 'task': 'wrench', 'scenario': 'map', 'quiz_question': 'spark', 'assessment': 'trophy'}.get(i.item_type, 'list'), 16) }}</span>
-        <span class="agenda__text"><strong>{{ (c.activity or c.description or c.situation or c.question or c.topic)[:90] }}</strong><span>{{ i.item_type|replace('_', ' ') }} · {{ i.module.title }}</span></span>
-        <span style="margin-left: auto">{{ item_state(r) }}</span></a></li>{% endfor %}
-      {% if rows|length > 12 %}<li class="small muted" style="padding-top: 8px">+ {{ rows|length - 12 }} more on this day</li>{% endif %}</ul>
+
+{% if months %}
+{% set pick_month = pick.strftime('%Y-%m') %}
+<div class="cal" data-cal>
+  <section class="cal__month acard">
+    {% for mo in months %}
+    <div class="cal__page" data-cal-month="{{ mo.key }}" {{ 'hidden' if mo.key != pick_month }}>
+      <header class="cal__head">
+        <button type="button" class="iconbtn" data-cal-go="-1" aria-label="Previous month" {{ 'disabled' if loop.first }}>{{ icon('arrow', 15) }}</button>
+        <h2>{{ mo.label }}</h2>
+        <button type="button" class="iconbtn" data-cal-go="1" aria-label="Next month" {{ 'disabled' if loop.last }}>{{ icon('arrow', 15) }}</button>
+      </header>
+      <div class="cal__grid" role="grid">
+        {% for wd in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] %}<span class="cal__wd">{{ wd }}</span>{% endfor %}
+        {% for week in mo.weeks %}{% for d in week %}
+          {% if d %}{% set st = state.get(d) %}
+          <button type="button" class="cal__day {{ 'is-today' if d == today }} {{ 'has-work' if st }} {{ 'is-late' if st and st.late }} {{ 'is-done' if st and st.done == st.total }} {{ 'is-picked' if d == pick }}"
+                  {% if st %}data-cal-day="{{ d.isoformat() }}" data-tip="{{ d.strftime('%a %d %b') }}: {{ st.done }} of {{ st.total }} done"{% else %}disabled{% endif %}>
+            <span class="cal__n">{{ d.day }}</span>
+            {% if st %}<span class="cal__mark">{% if st.done == st.total %}{{ icon('check', 12) }}{% else %}{{ st.total - st.done }}{% endif %}</span>{% endif %}
+          </button>
+          {% else %}<span class="cal__blank"></span>{% endif %}
+        {% endfor %}{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+    <p class="cal__key"><span><i class="cal__dot"></i>steps to do</span><span><i class="cal__dot cal__dot--late"></i>late</span><span><i class="cal__dot cal__dot--done"></i>all done</span></p>
   </section>
-  {% endfor %}
+
+  <section class="cal__list">
+    {% for d, rows in days.items() %}{% set st = state.get(d) %}
+    <div class="acard cal__daylist" data-cal-list="{{ d.isoformat() if d else 'none' }}" {{ 'hidden' if d != pick }}>
+      <div class="acard__head"><h3>{{ d.strftime('%A %d %B') if d else 'No date' }}</h3>
+        <span>{% if st %}{{ st.done }} of {{ st.total }} done{% if st.late %} · <em class="is-late">late</em>{% elif d == today %} · today{% endif %}{% endif %}</span></div>
+      {% set todo = rows | rejectattr('0.status', 'in', ['completed', 'waived']) | list %}
+      {% set finished = rows | selectattr('0.status', 'in', ['completed', 'waived']) | list %}
+      {% if todo %}<ul class="agenda">{% for r, i in todo %}{{ step(r, i) }}{% endfor %}</ul>
+      {% else %}<p class="cal__alldone">{{ icon('check', 16) }}Everything for this day is done.</p>{% endif %}
+      {% if finished %}<details class="cal__finished"><summary>{{ icon('check', 14) }}Done ({{ finished|length }})</summary>
+        <ul class="agenda">{% for r, i in finished %}{{ step(r, i) }}{% endfor %}</ul></details>{% endif %}
+    </div>
+    {% endfor %}
+  </section>
 </div>
+{% else %}<section class="panel"><p class="muted">Nothing is scheduled yet.</p></section>{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+  // Month pages with previous / next, and a day picker that shows that day's steps beside the calendar.
+  (function () {
+    var root = document.querySelector("[data-cal]");
+    if (!root) return;
+    var pages = Array.prototype.slice.call(root.querySelectorAll("[data-cal-month]"));
+    root.addEventListener("click", function (e) {
+      var go = e.target.closest("[data-cal-go]");
+      if (go) {
+        var at = pages.findIndex(function (p) { return !p.hidden; }), to = at + Number(go.dataset.calGo);
+        if (to < 0 || to >= pages.length) return;
+        pages[at].hidden = true; pages[to].hidden = false;
+        pages[to].classList.remove("is-in"); void pages[to].offsetWidth; pages[to].classList.add("is-in");
+        return;
+      }
+      var day = e.target.closest("[data-cal-day]");
+      if (!day) return;
+      root.querySelectorAll(".cal__day.is-picked").forEach(function (b) { b.classList.remove("is-picked"); });
+      day.classList.add("is-picked");
+      root.querySelectorAll("[data-cal-list]").forEach(function (l) {
+        l.hidden = l.dataset.calList !== day.dataset.calDay;
+        if (!l.hidden) { l.classList.remove("is-in"); void l.offsetWidth; l.classList.add("is-in"); }
+      });
+    });
+  })();
+</script>
 {% endblock %}

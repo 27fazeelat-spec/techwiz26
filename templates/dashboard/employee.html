@@ -92,14 +92,37 @@
 </section>
 
 {% elif section.key == 'glance' %}
-<section class="asec">
-  <dl class="tstats">
-    <div><dt>Plan complete</dt><dd>{{ summary.pct }}<small>%</small></dd></div>
-    <div><dt>Modules finished</dt><dd>{{ completed|length }}<small>/{{ mods|length }}</small></dd></div>
-    <div><dt>Quizzes passed</dt><dd>{{ quizzes|length - quiz_open|length }}<small>/{{ quizzes|length }}</small></dd></div>
-    <div class="{{ 'is-bad' if summary.overdue }}"><dt>Overdue</dt><dd>{{ summary.overdue }}</dd></div>
-    <div><dt>Status</dt><dd class="tstats__badge">{{ progress_badge(summary.status) }} {% if page_on('learning.progress_page') %}<a href="{{ url_for('learning.progress_page') }}">what it means</a>{% endif %}</dd></div>
-  </dl>
+<section class="asec eglance">
+  <div class="eglance__ring acard">
+    <div class="donut donut--progress" data-donut="{{ [{'key': 'active', 'label': 'Done', 'value': summary.done}]|tojson|forceescape }}" data-donut-total="{{ summary.total }}" data-donut-unit="step|steps">
+      <div class="donut__center"><b><em data-count="{{ summary.pct }}">{{ summary.pct }}</em>%</b><span>done</span></div>
+    </div>
+    <div class="eglance__say">
+      <p class="eglance__big">{{ summary.done }} of {{ summary.total }} steps done</p>
+      <p>{{ progress_badge(summary.status) }}</p>
+      {% if page_on('learning.progress_page') %}<a href="{{ url_for('learning.progress_page') }}">See my progress →</a>{% endif %}
+    </div>
+  </div>
+  <div class="eglance__tiles">
+    <a class="libstat libstat--ok" href="{{ url_for('learning.modules') }}"><span class="libstat__icon">{{ icon('book', 20) }}</span>
+      <b><span data-count="{{ completed|length }}">{{ completed|length }}</span><small>/{{ mods|length }}</small></b><span>modules finished</span></a>
+    <a class="libstat" href="{{ url_for('learning.assessments') if page_on('learning.assessments') else url_for('learning.modules') }}"><span class="libstat__icon">{{ icon('spark', 20) }}</span>
+      <b><span data-count="{{ quizzes|length - quiz_open|length }}">{{ quizzes|length - quiz_open|length }}</span><small>/{{ quizzes|length }}</small></b><span>quizzes passed</span></a>
+    <div class="libstat {{ 'libstat--warn' if summary.overdue }}"><span class="libstat__icon">{{ icon('clock', 20) }}</span>
+      <b data-count="{{ summary.overdue }}">{{ summary.overdue }}</b><span>{{ 'steps are late' if summary.overdue else 'nothing is late' }}</span></div>
+  </div>
+  <div class="enext acard">
+    {% if task %}{% set r, item, module = task %}{% set c = item.content %}
+    <p class="enext__label">{{ icon('arrow', 14) }}Your next step{% if r.due_date %} · {% if r.due_date < today %}<em>late since {{ r.due_date.strftime('%d %b') }}</em>{% elif r.due_date == today %}due today{% else %}due {{ r.due_date.strftime('%d %b') }}{% endif %}{% endif %}</p>
+    <p class="enext__text">{{ ((c.activity or c.description or c.situation or c.question or c.topic)|plain_step)[:140] }}</p>
+    <p class="enext__where">{{ icon(kind_icon(item.item_type), 14) }}{{ item.item_type|replace('_', ' ')|capitalize }} in {{ module.title }}</p>
+    <a class="btn btn--primary" href="{{ url_for('learning.module', module_key=module.module_key) }}#{{ item.item_key }}" data-cursor="Go">Do it now {{ icon('arrow', 15) }}</a>
+    {% else %}
+    <p class="enext__label">{{ icon('check', 14) }}All caught up</p>
+    <p class="enext__text">Nothing is due right now. You can get ahead with your next module.</p>
+    <a class="btn btn--primary" href="{{ url_for('learning.modules') }}">My modules {{ icon('arrow', 15) }}</a>
+    {% endif %}
+  </div>
 </section>
 
 {% elif section.key == 'journey' %}

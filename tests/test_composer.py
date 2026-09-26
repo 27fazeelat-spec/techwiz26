@@ -88,7 +88,8 @@ def test_pages_each_role_sees(clean_settings):
 
     trainer = current_app.test_client()
     login(trainer, "training@aurelle.example")
-    assert 'href="/conflicts"' in trainer.get("/dashboard/plans").get_data(as_text=True)
+    rules = trainer.get("/requirements").get_data(as_text=True)                     # offered as a tab under Rules
+    assert '<a href="/conflicts" class="hubtab' in rules
 
     omar = current_app.test_client()
     login(omar, "omar.siddiqui@aurelle.example")

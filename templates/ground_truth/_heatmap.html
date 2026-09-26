@@ -1,0 +1,30 @@
+{# Topic x job grid: each cell is how many rules that job must learn on that topic; darker means more.
+   Every cell opens that job's rules on that topic. #}
+{% macro heatmap(heat, version, role=None, topic='') -%}
+<div class="heatwrap">
+  <table class="heat" style="--cols: {{ heat.roles|length }}">
+    <thead>
+      <tr><th class="heat__corner" scope="col"><span>Topic</span><span>Job →</span></th>
+        {% for r in heat.roles %}
+        <th scope="col" class="{{ 'is-on' if role and r.code == role.code }}">
+          <a href="{{ url_for('ground_truth.matrix_view', number=version.version_no, role=r.code) }}" data-tip="{{ r.name }}: {{ heat.per_role[r.code] }} rules in all">{{ r.name }}</a></th>
+        {% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for t in heat.topics %}
+      <tr class="{{ 'is-on' if t == topic }}" style="--i: {{ [loop.index0, 20]|min }}">
+        <th scope="row">{{ t }}</th>
+        {% for r in heat.roles %}{% set n = heat.cells[(t, r.code)] %}
+        <td>{% if n %}<a class="heat__cell heat--{{ heat.level(n) }} {{ 'is-on' if role and r.code == role.code and t == topic }}"
+               href="{{ url_for('ground_truth.matrix_view', number=version.version_no, role=r.code, topic=t) }}#rows"
+               data-tip="{{ r.name }} · {{ t }}: {{ n }} rule{{ 's' if n != 1 }}, {{ heat.must[(t, r.code)] }} must">{{ n }}</a>
+            {% else %}<span class="heat__cell heat--0" data-tip="{{ r.name }} · {{ t }}: nothing to learn" aria-label="none"></span>{% endif %}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="heatlegend" aria-hidden="true"><span>Fewer rules</span>{% for i in range(1, 6) %}<i class="heat--{{ i }}"></i>{% endfor %}<span>More rules</span>
+  <span class="heatlegend__hint">Click a square to see those rules</span></div>
+{%- endmacro %}

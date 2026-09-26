@@ -14,9 +14,8 @@
     '<div class="cmdk__foot"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></div></div>';
   document.body.appendChild(box);
   var input = box.querySelector("input"), list = box.querySelector(".cmdk__list");
-  var pages = Array.prototype.map.call(document.querySelectorAll(".sidebar .navlink"), function (a) {
-    return { title: a.textContent.trim(), url: a.getAttribute("href") };
-  });
+  var pages = [];                                   // every page the sidebar offers, including those shown as tabs
+  try { pages = JSON.parse(document.getElementById("nav-pages").textContent); } catch (e) {}
   var results = [], on = 0, timer = null, seq = 0, lastFocus = null;
 
   function render(groups) {
@@ -118,7 +117,7 @@
       if (mine !== dseq) return;
       var main = new DOMParser().parseFromString(text, "text/html").querySelector("#main");
       if (!main) throw new Error("fallback");
-      main.querySelectorAll(".flashes, script").forEach(function (n) { n.remove(); });
+      main.querySelectorAll(".flashes, .hubtabs, script").forEach(function (n) { n.remove(); });
       body.innerHTML = main.innerHTML;
       // A form without an action posts to the page it came from, not to the list the drawer is open on.
       body.querySelectorAll("form").forEach(function (f) { if (!f.getAttribute("action")) f.setAttribute("action", url); });

@@ -4,12 +4,14 @@ from flask import current_app
 from tests.conftest import login
 
 
-def test_admin_home_shows_the_pipeline_and_the_theme(corpus):
+def test_admin_home_shows_plain_charts_and_the_theme(corpus):
     client = current_app.test_client()
     login(client, "admin@aurelle.example")
     html = client.get("/dashboard/admin").get_data(as_text=True)
     assert "theme-terra" in html and "css/terra.css" in html and "js/workspace.js" in html
-    assert "From policy to plan" in html and "Needs you" in html
+    assert "Needs you" in html and "Training progress" in html and "Progress by department" in html
+    assert "From policy to plan" not in html and "Ingest" not in html          # no pipeline jargon on the home page
+    assert html.count('class="cols__col') == 14 and "Training plans" in html
     assert "data-cmdk-open" in html
 
 

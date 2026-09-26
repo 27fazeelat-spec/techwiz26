@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 {% from "_macros.html" import icon, empty, help %}
-{% block title %}Conflicts{% endblock %}
-{% macro clause(r, won, lost) -%}
-  <div class="side {{ 'side--won' if won else ('side--lost' if lost else '') }}">
-    <p class="side__ref"><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=r.id) }}" data-ref="req:{{ r.req_id }}">{{ r.req_id }}</a>
-      <span class="mono">{{ r.doc_id }}</span> v{{ r.version }} §{{ r.section_id }} · {{ r.document.category }} · tier {{ r.document.tier }}
-      {% if won %}<span class="badge badge--ok">Applies</span>{% elif lost %}<span class="badge badge--neutral">Overridden</span>{% endif %}</p>
-    <p class="side__text">{{ r.text }}</p>
+{% block title %}Clashing policies{% endblock %}
+{% macro side(c, r, key) -%}
+  {% set won = c.winner_requirement_id == r.id %}
+  {% set lost = c.winner_requirement_id and not won %}
+  <div class="clash__side {{ 'is-won' if won }} {{ 'is-lost' if lost }}">
+    <p class="clash__src">{{ icon('file', 14) }}<a href="{{ url_for('documents.detail', doc_id=r.doc_id, version=r.version) }}">{{ r.document.title or r.doc_id }}</a>
+      <span>{{ r.document.category }}</span></p>
+    <p class="clash__text">{{ r.text }}</p>
+    {% if won %}<span class="clash__verdict clash__verdict--won">{{ icon('check', 14) }}This one applies</span>
+    {% elif lost %}<span class="clash__verdict">Not used</span>{% endif %}
+    <p class="clash__ref"><a class="reqid" href="{{ url_for('ground_truth.requirement_detail', pk=r.id) }}" data-ref="req:{{ r.req_id }}">{{ r.req_id }}</a> · v{{ r.version }} §{{ r.section_id }} · authority level {{ r.document.tier }}</p>
   </div>
 {%- endmacro %}
 {% block content %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow">Ground truth</p>
-    <h1>Conflicts {{ help('conflict') }}</h1>
-    <p class="pagehead__meta">Contradictions between documents, found by deterministic checks and resolved by the documented precedence rules. Overridden clauses are removed from the matrix and never shown to Gemini.</p>
+    <p class="eyebrow">Rules</p>
+    <h1>Clashing policies {{ help('conflict') }}</h1>
+    <p class="pagehead__meta">When two documents say different things about the same rule, only one can be taught. Most are settled automatically by which document has more authority. The rest need you to choose.</p>
   </div>
   {% if can('conflicts.detect') %}
-  <form method="post" action="{{ url_for('ground_truth.conflicts_detect') }}" data-busy="Checking for contradictions…">
+  <form method="post" action="{{ url_for('ground_truth.conflicts_detect') }}" data-busy="Checking for clashes…">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button class="btn" type="submit">{{ icon('split', 16) }}Run contradiction check</button>
   </form>
@@ -26,61 +30,64 @@
 
 {% set open = counts.manual_review or 0 %}
 {% set auto = (counts.auto_resolved or 0) + (counts.auto_resolved_warning or 0) %}
-<section class="kpis" aria-label="Summary">
-  <div class="kpi {{ 'kpi--bad' if open }}"><span class="kpi__label">Needs a reviewer</span><span class="kpi__value">{{ open }}</span><span class="kpi__note">same authority, no automatic winner</span></div>
-  <div class="kpi"><span class="kpi__label">Resolved by precedence</span><span class="kpi__value">{{ auto }}</span><span class="kpi__note">{{ counts.auto_resolved_warning or 0 }} by the life-safety rule</span></div>
-  <div class="kpi"><span class="kpi__label">Resolved by reviewers</span><span class="kpi__value">{{ counts.resolved_by_reviewer or 0 }}</span><span class="kpi__note">recorded in the audit trail</span></div>
-  <div class="kpi"><span class="kpi__label">Version changes</span><span class="kpi__value">{{ versions }}</span><span class="kpi__note">old vs current policy</span></div>
+<section class="libstats rise" aria-label="Summary">
+  <div class="libstat {{ 'libstat--warn' if open }}"><span class="libstat__icon">{{ icon('bell', 20) }}</span><b data-count="{{ open }}">{{ open }}</b><span>need your decision</span></div>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('check', 20) }}</span><b data-count="{{ auto }}">{{ auto }}</b><span>settled automatically</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('user', 20) }}</span><b data-count="{{ counts.resolved_by_reviewer or 0 }}">{{ counts.resolved_by_reviewer or 0 }}</b><span>settled by a person</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('split', 20) }}</span><b data-count="{{ versions }}">{{ versions }}</b><span>old vs new version</span></div>
 </section>
 
 {% if rows %}
 <div class="toolbar">
-  <div class="segmented" data-filter-group="#conflict-list" role="group" aria-label="Show conflicts">
-    <button type="button" class="is-on" data-filter="all" aria-pressed="true">All <span class="count">{{ rows|length }}</span></button>
-    <button type="button" data-filter="manual_review" aria-pressed="false">Needs a reviewer <span class="count">{{ open }}</span></button>
-    <button type="button" data-filter="auto" aria-pressed="false">Resolved by precedence <span class="count">{{ auto }}</span></button>
-    <button type="button" data-filter="resolved_by_reviewer" aria-pressed="false">By reviewers <span class="count">{{ counts.resolved_by_reviewer or 0 }}</span></button>
-    <button type="button" data-filter="version" aria-pressed="false">Version changes <span class="count">{{ versions }}</span></button>
+  <div class="segmented" data-filter-group="#conflict-list" role="group" aria-label="Show">
+    <button type="button" class="{{ 'is-on' if not open }}" data-filter="all" aria-pressed="{{ 'false' if open else 'true' }}">All <span class="count">{{ rows|length }}</span></button>
+    <button type="button" class="{{ 'is-on' if open }}" data-filter="manual_review" aria-pressed="{{ 'true' if open else 'false' }}">Need your decision <span class="count">{{ open }}</span></button>
+    <button type="button" data-filter="auto" aria-pressed="false">Settled automatically <span class="count">{{ auto }}</span></button>
+    <button type="button" data-filter="resolved_by_reviewer" aria-pressed="false">Settled by a person <span class="count">{{ counts.resolved_by_reviewer or 0 }}</span></button>
+    <button type="button" data-filter="version" aria-pressed="false">Old vs new version <span class="count">{{ versions }}</span></button>
   </div>
 </div>
 {% endif %}
 
-<div class="stack" id="conflict-list">
+<div class="clashes" id="conflict-list">
 {% for c in rows %}
 {% set group = 'auto' if c.status in ['auto_resolved', 'auto_resolved_warning'] else c.status %}
-<section class="panel conflict {{ 'panel--alert' if c.status == 'manual_review' }}" id="{{ c.conflict_code }}"
+<article class="clash clash--{{ c.status }} {{ 'is-hidden' if open and c.status != 'manual_review' }}" id="{{ c.conflict_code }}" style="--i: {{ [loop.index0, 10]|min }}"
          data-filter-item data-filter-value="{{ group }}{{ ' version' if c.kind == 'version' }}">
-  <div class="conflict__head">
-    <span class="conflict__code">{{ c.conflict_code }}</span>
-    <span class="conflict__kind">{{ 'Version change' if c.kind == 'version' else 'Between documents' }}</span>
-    {% set tone = {'manual_review': 'bad', 'auto_resolved_warning': 'warn', 'resolved_by_reviewer': 'info', 'auto_resolved': 'ok'}[c.status] %}
-    <span class="badge badge--{{ tone }}">{{ {'manual_review': 'Needs a reviewer', 'auto_resolved_warning': 'Resolved, with warning', 'resolved_by_reviewer': 'Resolved by reviewer', 'auto_resolved': 'Resolved'}[c.status] }}</span>
-    <span class="conflict__meta">rule: <strong>{{ c.rule_applied|replace('_', ' ') }}</strong>{% if c.kind == 'cross_document' %} · topic match {{ '%.2f' % c.similarity }}{% endif %}</span>
+  <header class="clash__head">
+    <span class="clash__state">{{ {'manual_review': 'Needs your decision', 'auto_resolved_warning': 'Settled: the safer rule wins', 'resolved_by_reviewer': 'Settled by a person', 'auto_resolved': 'Settled automatically'}[c.status] }}</span>
+    <span class="clash__kind">{{ 'An old and a new version of one policy' if c.kind == 'version' else 'Two different documents' }}</span>
+    {% if c.differences %}
+    <span class="clash__diffs">
+      {% for d in c.differences %}<span class="clash__diff">{% if d.type == 'number' %}{% for v in d.left %}{{ '%g'|format(v) }}{{ ', ' if not loop.last }}{% endfor %}{{ '%' if d.unit == '%' }} vs {% for v in d.right %}{{ '%g'|format(v) }}{{ ', ' if not loop.last }}{% endfor %}{{ '%' if d.unit == '%' else (' ' ~ d.unit ~ 's' if d.unit in ['minute', 'hour', 'day', 'week', 'month', 'year', 'night', 'character', 'time'] else ' ' ~ (d.unit|upper if d.unit|length <= 3 and d.unit.isalpha() else d.unit|replace('°c', '°C'))) }}{% elif d.type == 'deadline' %}{{ '%g'|format(d.left) }} vs {{ '%g'|format(d.right) }} minutes{% elif d.type == 'frequency' %}every {{ d.left }} vs every {{ d.right }} months{% else %}{{ d.left }} vs {{ d.right }}{% endif %}</span>{% endfor %}
+    </span>{% endif %}
+  </header>
+  <div class="clash__sides">
+    {{ side(c, c.left, 'left') }}
+    <span class="clash__vs" aria-hidden="true">vs</span>
+    {{ side(c, c.right, 'right') }}
   </div>
-  <div class="conflict__body">
-    <div class="sides">
-      {{ clause(c.left, c.winner_requirement_id == c.left_requirement_id, c.winner_requirement_id and c.winner_requirement_id != c.left_requirement_id) }}
-      <span class="sides__vs" aria-hidden="true">VS</span>
-      {{ clause(c.right, c.winner_requirement_id == c.right_requirement_id, c.winner_requirement_id and c.winner_requirement_id != c.right_requirement_id) }}
-    </div>
-    <div class="diffs"><strong class="small">Disagreement</strong>
-      {% for d in c.differences %}<span class="diff">{% if d.type == 'number' %}{{ d.unit }} {{ d.left|join(', ') }} vs {{ d.right|join(', ') }}{% elif d.type == 'deadline' %}deadline {{ d.left }} vs {{ d.right }} min{% elif d.type == 'frequency' %}every {{ d.left }} vs every {{ d.right }} months{% else %}{{ d.left }} vs {{ d.right }}{% endif %}</span>{% endfor %}</div>
-    <p class="decision">{{ icon('check', 16) }}<span><strong>Decision:</strong> {{ c.explanation }}</span></p>
-  </div>
+  <p class="clash__why">{{ icon('spark', 15) }}<span><b>Why:</b> {{ c.explanation }}</span></p>
   {% if c.status == 'manual_review' and can('conflicts.resolve') %}
-  <form method="post" action="{{ url_for('ground_truth.conflict_resolve', pk=c.id) }}" class="resolve">
+  <form method="post" action="{{ url_for('ground_truth.conflict_resolve', pk=c.id) }}" class="clash__decide">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="field"><label for="winner-{{ c.id }}">Rule that applies</label>
-      <select id="winner-{{ c.id }}" name="winner" required><option value="">Choose…</option>
-        <option value="left">{{ c.left.req_id }} ({{ c.left.doc_id }})</option><option value="right">{{ c.right.req_id }} ({{ c.right.doc_id }})</option></select></div>
-    <div class="field field--grow"><label for="reason-{{ c.id }}">Reason (kept in the audit trail)</label>
-      <input id="reason-{{ c.id }}" name="reason" type="text" placeholder="e.g. Finance confirmed the 25% deposit applies group-wide"></div>
-    <button class="btn btn--primary" type="submit">Record decision</button>
+    <p class="clash__ask">Which one should people follow?</p>
+    <div class="clash__choices">
+      {% for key, r in [('left', c.left), ('right', c.right)] %}
+      <label class="clash__choice"><input type="radio" name="winner" value="{{ key }}" required>
+        <span><b>{{ r.document.title or r.doc_id }}</b><small>{{ r.text|truncate(110) }}</small></span></label>
+      {% endfor %}
+    </div>
+    <div class="clash__reason">
+      <input id="reason-{{ c.id }}" name="reason" type="text" required aria-label="Reason" placeholder="Why? For example: Finance confirmed the 25% deposit applies everywhere">
+      <button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Save decision</button>
+    </div>
   </form>
   {% endif %}
-</section>
+  <footer class="clash__foot mono">{{ c.conflict_code }} · rule: {{ c.rule_applied|replace('_', ' ') }}{% if c.kind == 'cross_document' %} · topic match {{ '%.2f' % c.similarity }}{% endif %}</footer>
+</article>
 {% else %}
-<section class="panel">{{ empty('No contradictions found', 'Run the check after uploading documents. Clauses that disagree on numbers, deadlines, frequencies or permissions will appear here.', 'split') }}</section>
+<section class="panel">{{ empty('No clashes found', 'Run the check after uploading documents. Rules that disagree on numbers, deadlines, how often, or what is allowed will appear here.', 'split') }}</section>
 {% endfor %}
 </div>
 {% endblock %}

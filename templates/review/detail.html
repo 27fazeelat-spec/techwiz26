@@ -13,15 +13,23 @@
 {%- endmacro %}
 {% block content %}
 {% set title, tip = status_label('item', r.original_status) %}
+{% set first = r.plan.employee.name.split(' ')[0] %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow"><a href="{{ url_for('review.queue', plan=r.plan.id) }}">Review queue</a><span class="mono">{{ code }}</span></p>
+    <p class="eyebrow"><a href="{{ url_for('plans.plan_detail', pk=r.plan.id) }}">← {{ r.plan.employee.name }}'s plan</a></p>
     <h1>{{ title }}</h1>
-    <p class="pagehead__meta">{{ item_badge(r.original_status) }} <span class="sep">·</span>
-      <a href="{{ url_for('plans.plan_detail', pk=r.plan.id) }}">{{ r.plan.employee.name }} · {{ r.plan.plan_code }} v{{ r.plan.version }}</a>
-      <span class="sep">·</span> {{ state.open }} of {{ state.total }} items in this plan still waiting</p>
+    <p class="pagehead__meta">{{ item_badge(r.original_status) }} <span class="mono muted">{{ code }}</span></p>
   </div>
+  {% if skip_to and r.status == 'open' %}<a class="btn btn--ghost" href="{{ url_for('review.detail', pk=skip_to) }}">Skip for now {{ icon('arrow', 14) }}</a>{% endif %}
 </div>
+
+{% if state.total %}
+<section class="rvprog" aria-label="Progress on this plan">
+  <span class="rvprog__text"><b>{{ state.decided }} of {{ state.total }}</b> checked in {{ first }}'s plan</span>
+  <span class="rvprog__bar"><i data-w="{{ (100 * state.decided / state.total)|round(1) }}%"></i></span>
+  <span class="rvprog__left">{{ state.open }} left</span>
+</section>
+{% endif %}
 
 {% if r.plan.status == 'superseded' %}<div class="notice notice--info">This plan version has been replaced. Decisions are made on the current version.</div>{% endif %}
 
@@ -43,7 +51,7 @@
     {% else %}<p class="trace__missing">No current policy section matches this citation.</p>{% endfor %}
 
     <details class="more" style="margin-top: var(--space-5)">
-      <summary>Why Python flagged it (technical)</summary>
+      <summary>Why the app flagged it (technical)</summary>
       <ul class="warnings">{% for x in r.reasons %}<li><span class="finding__rule">{{ x.rule_id }}</span>{{ x.message }}</li>{% else %}<li class="muted">No details stored.</li>{% endfor %}</ul>
     </details>
   </section>
@@ -60,9 +68,9 @@
     </section>
     {% elif can('review.decide') and r.plan.status != 'superseded' %}
     <section class="panel suggest">
-      <p class="suggest__label">Suggested decision</p>
+      <p class="suggest__label">{{ icon('spark', 13) }} What we suggest</p>
       <h2 class="panel__title" style="margin-top: 4px">{{ s.button }}</h2>
-      {% if s.action == 'regenerate' %}<p class="hint" style="margin-bottom: var(--space-3)">Gemini rewrites only the affected module; every other module is kept and the whole plan is checked again as a new version.</p>{% endif %}
+      {% if s.action == 'regenerate' %}<p class="hint" style="margin-bottom: var(--space-3)">The AI rewrites only this module. Every other module stays as it is, and the whole plan is checked again as a new version.</p>{% endif %}
       {{ decision_form(s.action, s.button, s.reason, primary=True) }}
     </section>
     {% if s.fallback %}
@@ -75,7 +83,7 @@
 
     <section class="panel">
       <details class="more">
-        <summary>More options</summary>
+        <summary>Other choices: approve as it is, remove, edit or override</summary>
         <form method="post" action="{{ url_for('review.decide', pk=r.id) }}" class="stack" style="gap: var(--space-3)">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="field"><label for="reason">Reason</label><input id="reason" name="reason" type="text" placeholder="Why you decided this"></div>

@@ -44,4 +44,34 @@ def test_sidebar_offers_only_each_roles_pages(client):
     client.post("/logout")
     login(client, "evaluator@aurelle.example")
     html = client.get("/dashboard/review").data.decode()
-    assert "Review queue" in html and "Job roles" not in html
+    assert "Approvals" in html and "Job roles" not in html
+
+
+def test_sidebar_groups_pages_into_a_few_hubs_with_tabs(client):
+    import re
+    login(client, "admin@aurelle.example")
+    html = client.get("/dashboard/admin").data.decode()
+    sidebar = html[html.index('<aside class="sidebar"'):html.index("</aside>")]
+    assert re.findall(r'class="navlink[^"]*"[^>]*>.*?<span>(.*?)</span>', sidebar) == [
+        "Home", "Employees", "Approvals", "Documents", "Rules", "Reports &amp; settings"]
+    assert 'class="hubtabs"' not in html                                 # the home page belongs to no hub
+    page = client.get("/changes").data.decode()                         # a page reached through a tab
+    tabs = page[page.index('class="hubtabs"'):]
+    tabs = tabs[:tabs.index("</nav>")]
+    assert re.findall(r">([^<]+)</a>", tabs) == ["All documents", "What changed", "Safety check"]
+    assert 'class="hubtab is-on" aria-current=page>What changed' in tabs
+    assert 'data-hub="documents"' in page and "is-active" in page[page.index('data-hub="documents"') - 120:page.index('data-hub="documents"')]
+    client.post("/logout")
+    login(client, "evaluator@aurelle.example")                          # a reviewer only gets the tabs they may open
+    page = client.get("/requirements").data.decode()
+    tabs = page[page.index('class="hubtabs"'):]
+    assert re.findall(r">([^<]+)</a>", tabs[:tabs.index("</nav>")]) == ["All rules", "Clashing policies", "Is it covered?"]
+
+
+def test_employee_sidebar_has_four_plain_entries(client):
+    import re
+    login(client, "leila.haddad@aurelle.example")
+    html = client.get("/dashboard/me").data.decode()
+    sidebar = html[html.index('<aside class="sidebar"'):html.index("</aside>")]
+    assert re.findall(r'class="navlink[^"]*"[^>]*>.*?<span>(.*?)</span>', sidebar) == [
+        "Home", "My learning", "My progress", "Ask a question"]

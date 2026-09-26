@@ -222,3 +222,22 @@ def test_a_rule_that_lost_a_conflict_after_planning_can_be_removed(corpus):
     finally:
         db.session.delete(db.session.get(Conflict, conflict.id))            # tests share one database
         db.session.commit()
+
+
+def test_checking_a_plan_goes_item_by_item_and_ends_on_the_plan(corpus):
+    plan = fresh_plan()
+    items = open_items(plan)
+    client = current_app.test_client()
+    login(client, "evaluator@aurelle.example")
+    page = client.get(f"/plans/{plan.id}").get_data(as_text=True)
+    assert 'class="pjourney' in page and "Checked by a person" in page
+    assert f'href="/review/{items[0].id}?plan={plan.id}"' in page                  # "Start checking" opens the first one
+    first = client.get(f"/review/{items[0].id}").get_data(as_text=True)
+    assert f"0 of {len(items)}</b> checked" in first
+    if len(items) > 1:
+        assert f'href="/review/{items[1].id}"' in first and "Skip for now" in first
+    for r in items[:-1]:
+        response = client.post(f"/review/{r.id}/decide", data={"action": "approve", "then": "next", **REASON})
+        assert response.headers["Location"].endswith(f"/review/{open_items(plan)[0].id}")
+    last = client.post(f"/review/{items[-1].id}/decide", data={"action": "approve", "then": "next", **REASON})
+    assert last.headers["Location"].endswith(f"/plans/{plan.id}")               # nothing left: back to the plan

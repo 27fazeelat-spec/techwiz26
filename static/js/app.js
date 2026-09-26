@@ -285,6 +285,8 @@ document.querySelectorAll("select[data-autosubmit]").forEach(function (s) {
   if (!data) return;
   var steps = [];
   try { steps = JSON.parse(data.textContent); } catch (e) { return; }
+  steps = steps.filter(function (s) { return !s.target || document.querySelector(s.target); });   // skip pages this role does not have
+  if (!steps.length) return;
   var key = "skillsprint-tour-" + data.dataset.role;
   var start = document.querySelector("[data-tour-start]");
   var root = document.documentElement, layer = null, box = null, i = 0, navBefore;

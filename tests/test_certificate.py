@@ -46,6 +46,11 @@ def test_learner_pages_certificate_download_and_verify(corpus):
     login(client, "leila.haddad@aurelle.example")
     for url in ("/learn", "/learn/progress", "/learn/assessments", "/learn/resources", "/learn/calendar"):
         assert client.get(url).status_code == 200, url
+    cal = client.get("/learn/calendar").get_data(as_text=True)
+    assert 'class="cal__grid"' in cal and "data-cal-day=" in cal                 # a month to pick days from
+    assert cal.count('class="acard cal__daylist"') >= 1 and 'hidden>' in cal     # one day's steps shown at a time
+    res = client.get("/learn/resources").get_data(as_text=True)
+    assert 'class="polcard"' in res and "Show</span>" in res                    # policies as cards, rules folded
     page = client.get("/learn/certificate").data
     assert b"to go" in page and b"Claim certificate" not in page
     assert client.get("/learn/certificate.pdf").status_code == 404                 # nothing issued yet

@@ -5,7 +5,7 @@ from sqlalchemy import case, func, or_, select
 import database
 from database import db
 from database.models import (AuditLog, Chunk, Conflict, Document, Employee, JobRole, MatrixVersion, Plan, Requirement,
-                             ReviewItem, SecurityFinding)
+                             Progress, ReviewItem, SecurityFinding)
 from src.rbac import has_permission, require_permission
 
 bp = Blueprint("main", __name__)
@@ -157,8 +157,45 @@ def admin_dashboard():
         .order_by(Document.doc_id).limit(8)).all()
     from config.settings import today
     from flask import current_app
-    return render_template("dashboard/admin.html", counts=counts, stats=stats, recent=recent, today=today(current_app.config),
-                           attention=attention, statuses=DOC_STATUSES, plan_mix=plan_mix, role_cov=role_cov)
+    day = today(current_app.config)
+    return render_template("dashboard/admin.html", counts=counts, stats=stats, recent=recent, today=day,
+                           attention=attention, statuses=DOC_STATUSES, plan_mix=plan_mix, role_cov=role_cov,
+                           charts=_home_charts(plan_mix, day))
+
+
+# Chart groups in plain words. Keys pick the validated status colours (static/css/library.css), in drawing order.
+TASK_GROUPS = [("active", "Done", ("completed", "waived")), ("scheduled", "Waiting for sign-off", ("submitted",)),
+               ("draft", "Needs another try", ("failed",)), ("superseded", "Still to do", ("not_started", "in_progress"))]
+PLAN_GROUPS = [("active", "Ready", ("Verified", "Verified with Warning")),
+               ("scheduled", "Needs a person", ("Manual Review Required",)),
+               ("draft", "Not complete", ("Incomplete", "Unsupported")), ("expired", "Failed", ("Failed", "Contradictory"))]
+
+
+def _home_charts(plan_mix, day):
+    """Numbers for the administrator's home charts, current staff only."""
+    from datetime import timedelta
+    staff = Employee.left_on.is_(None)
+    tasks = dict(db.session.execute(select(Progress.status, func.count()).join(Employee, Employee.id == Progress.employee_id)
+                                    .where(staff).group_by(Progress.status)).all())
+    task_ring = [{"key": k, "label": label, "value": sum(tasks.get(s, 0) for s in group)} for k, label, group in TASK_GROUPS]
+    total = sum(t["value"] for t in task_ring)
+    plans = [{"key": k, "label": label, "value": sum(plan_mix.get(s, 0) for s in group)} for k, label, group in PLAN_GROUPS]
+    done = case((Progress.status.in_(["completed", "waived"]), 1), else_=0)
+    departments = [(dept, round(100 * d / n)) for dept, d, n in db.session.execute(
+        select(Employee.department, func.sum(done), func.count()).join(Progress, Progress.employee_id == Employee.id)
+        .where(staff).group_by(Employee.department)).all() if n]
+    departments.sort(key=lambda row: (-row[1], row[0]))
+    start = day - timedelta(days=13)
+    finished = {}
+    for when in db.session.scalars(select(Progress.completed_at).where(Progress.completed_at.isnot(None))):
+        if start <= when.date() <= day:
+            finished[when.date()] = finished.get(when.date(), 0) + 1
+    days = [(start + timedelta(days=i), finished.get(start + timedelta(days=i), 0)) for i in range(14)]
+    return {"tasks": [t for t in task_ring if t["value"]], "tasks_total": total,
+            "tasks_done": round(100 * task_ring[0]["value"] / total) if total else 0,
+            "plans": [p for p in plans if p["value"]], "plans_total": sum(p["value"] for p in plans),
+            "departments": departments, "days": days, "days_max": max([n for _, n in days] + [1]),
+            "days_total": sum(n for _, n in days)}
 
 
 @bp.route("/dashboard/team")

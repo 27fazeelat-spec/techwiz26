@@ -26,7 +26,8 @@
   {% if current_user.is_authenticated %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/aurelle.css') }}">
-  {% if terra %}<link rel="stylesheet" href="{{ url_for('static', filename='css/terra.css') }}">{% endif %}
+  {% if terra %}<link rel="stylesheet" href="{{ url_for('static', filename='css/terra.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/library.css') }}">{% endif %}
   {% if learner %}<link rel="stylesheet" href="{{ url_for('static', filename='css/learner.css') }}">{% endif %}
   <style>
     /* Workspace brand colours (config/branding.yaml or the organisation's settings). Status colours never change. */
@@ -44,9 +45,6 @@
 <a class="skip" href="#main">Skip to content</a>
 {% if current_user.is_authenticated %}<div class="cursor is-hidden" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>{% endif %}
 {% if current_user.is_authenticated %}
-{% macro navlink(endpoint_url, label, icon_name, active) -%}
-  <a href="{{ endpoint_url }}" class="navlink {{ 'is-active' if active }}" {{ 'aria-current=page' if active }} data-tip="{{ label }}">{{ icon(icon_name) }}<span>{{ label }}</span></a>
-{%- endmacro %}
 {% set ep = request.endpoint or '' %}
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
   <a class="brand" href="{{ url_for('main.home') }}" aria-label="{{ brand.name }} home">
@@ -56,12 +54,12 @@
     <span class="brand__word"><b>{{ brand.name|upper }}</b><small>{{ brand.tagline|upper }}</small></span>
   </a>
 
-  {% for group, links in nav_items(current_user.app_role) %}
+  {% set nav_side = nav_sidebar(current_user.app_role, ep, request.blueprint) %}
   <nav class="navgroup">
-    {% if group %}<p class="navgroup__label">{{ group }}</p>{% endif %}
-    {% for label, endpoint, icon_name, match in links %}{{ navlink(url_for(endpoint), label, icon_name, nav_active(match, ep, request.blueprint)) }}{% endfor %}
+    {% for e in nav_side %}<a href="{{ url_for(e.endpoint) }}" class="navlink {{ 'is-active' if e.active }}" {{ 'aria-current=page' if e.active }} data-tip="{{ e.label }}"{% if e.hub %} data-hub="{{ e.hub }}"{% endif %}>{{ icon(e.icon) }}<span>{{ e.label }}</span></a>{% endfor %}
   </nav>
-  {% endfor %}
+  {% set nav_pages = [] %}{% for e in nav_side %}{% for label, page, _ in (e.tabs or [(e.label, e.endpoint, e.active)]) %}{% set _ = nav_pages.append({"title": label, "url": url_for(page)}) %}{% endfor %}{% endfor %}
+  <script type="application/json" id="nav-pages">{{ nav_pages|tojson }}</script>
 
   <div class="sidebar__end">
     <p class="sidebar__quote">Exceptional people create exceptional experiences.</p>
@@ -118,6 +116,11 @@
       </div>
     {% endif %}
   {% endwith %}
+  {% for e in nav_side or [] if e.active and e.tabs %}
+  <nav class="hubtabs" aria-label="{{ e.label }}">
+    {% for label, page, on in e.tabs %}<a href="{{ url_for(page) }}" class="hubtab {{ 'is-on' if on }}" {{ 'aria-current=page' if on }}>{{ label }}</a>{% endfor %}
+  </nav>
+  {% endfor %}
   {% block content %}{% endblock %}
 </main>
 
@@ -135,18 +138,17 @@
 {% if role in ['admin', 'training_manager'] %}
   {% set t = [
     {"target": ".sidebar .brand", "title": "Welcome to your workspace", "text": "This tour shows where each part of onboarding lives. You can restart it any time from the ? button at the top."},
-    {"target": ".navlink[href='" ~ url_for('documents.index') ~ "']", "title": "1. Documents", "text": "Upload your policies here. Each one is read, checked for hidden instructions, and turned into rules."},
-    {"target": ".navlink[href='" ~ url_for('ground_truth.requirements') ~ "']", "title": "2. Requirements", "text": "Every rule found in the documents, in plain words, with the exact section it came from. Hover any code like R-GDP-01-004 to read it."},
-    {"target": ".navlink[href='" ~ url_for('ground_truth.matrix_index') ~ "']", "title": "3. Role matrix", "text": "Which rules each job role must learn, and by when. Approve it once; every plan is checked against it."},
-    {"target": ".navlink[href='" ~ url_for('plans.employees') ~ "']", "title": "4. Employees & plans", "text": "Generate a plan for a new hire. The AI writes it, Python checks it, and anything doubtful goes to review."},
-    {"target": ".navlink[href='" ~ url_for('review.queue') ~ "']", "title": "5. Review queue", "text": "Items that need a person's decision. When nothing is waiting, the plan can be assigned."},
-    {"target": ".navlink[href='" ~ url_for('reports.index') ~ "']", "title": "6. Reports", "text": "Everything as CSV, Excel or PDF, computed from the stored data."}
+    {"target": ".navlink[data-hub='documents']", "title": "Documents", "text": "Upload your policies here. Each one is read, checked for anything suspicious, and turned into rules. The tabs at the top show what changed between versions."},
+    {"target": ".navlink[data-hub='rules']", "title": "Rules", "text": "Every rule found in the documents, in plain words, with where it came from. The tabs show clashing policies and which job has to learn what."},
+    {"target": ".navlink[data-hub='people']", "title": "Employees", "text": "Make a training plan for a new hire. The AI writes it, Python checks it, and anything doubtful goes for approval."},
+    {"target": ".navlink[data-hub='approvals']", "title": "Approvals", "text": "Items that need a person's decision. When nothing is waiting, the plan can be given to the employee."},
+    {"target": ".navlink[data-hub='more']", "title": "Reports", "text": "Download everything as CSV, Excel or PDF."}
   ] %}
 {% elif role == 'reviewer' %}
   {% set t = [
     {"target": ".sidebar .brand", "title": "Welcome, reviewer", "text": "Your job is to decide on the items Python could not verify. Restart this tour from the ? button."},
-    {"target": ".navlink[href='" ~ url_for('review.queue') ~ "']", "title": "Your queue", "text": "Each item says what is wrong in plain words and suggests an action with a ready-made reason. Similar items can be approved together."},
-    {"target": ".navlink[href='" ~ url_for('ground_truth.conflicts') ~ "']", "title": "Conflicts", "text": "When two policies disagree and have the same authority, you choose which one applies."}
+    {"target": ".navlink[data-hub='approvals']", "title": "Approvals", "text": "Each item says what is wrong in plain words and suggests an action with a ready-made reason. Similar items can be approved together."},
+    {"target": ".navlink[data-hub='rules']", "title": "Rules and clashing policies", "text": "Open Rules, then Clashing policies: when two policies disagree and have the same authority, you choose which one applies."}
   ] %}
 {% elif role == 'manager' %}
   {% set t = [
@@ -156,7 +158,10 @@
 {% elif role == 'employee' %}
   {% set t = [
     {"target": ".sidebar .brand", "title": "Welcome to your onboarding", "text": "Your plan was checked against the company's approved policies before it reached you."},
-    {"target": ".navlink[href='" ~ url_for('main.employee_dashboard') ~ "']", "title": "My onboarding", "text": "Your modules, what is due next and your progress. Open a module to tick off checklists, submit tasks and take quizzes."}
+    {"target": ".navlink[href='" ~ url_for('main.employee_dashboard') ~ "']", "title": "My onboarding", "text": "How far you are, and your next step with one button to do it."},
+    {"target": ".navlink[data-hub='learn']", "title": "My learning", "text": "Your modules, quizzes and reading. Open a module to tick off steps, submit tasks and take its quiz."},
+    {"target": ".navlink[data-hub='mine']", "title": "My progress", "text": "Your progress, your calendar of due dates and, at the end, your certificate."},
+    {"target": ".navlink[href='" ~ url_for('bot.ask') ~ "']", "title": "Ask a question", "text": "Ask anything about the company's rules. Answers come only from the approved documents."}
   ] %}
 {% endif %}
 {% if t %}<script type="application/json" id="tour-steps" data-role="{{ role }}" data-auto="1">{{ t|tojson }}</script>{% endif %}
@@ -164,7 +169,8 @@
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 {% if current_user.is_authenticated %}<script src="{{ url_for('static', filename='js/portal.js') }}"></script>{% endif %}
 {% if learner %}<script src="{{ url_for('static', filename='js/learner.js') }}"></script>{% endif %}
-{% if terra %}<script src="{{ url_for('static', filename='js/workspace.js') }}"></script>{% endif %}
+{% if terra %}<script src="{{ url_for('static', filename='js/workspace.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>{% endif %}
 {% block scripts %}{% endblock %}
 </body>
 </html>

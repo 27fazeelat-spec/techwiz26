@@ -1,40 +1,79 @@
 {% extends "base.html" %}
-{% from "_macros.html" import empty %}
-{% block title %}Security findings{% endblock %}
+{% from "_macros.html" import empty, icon %}
+{% block title %}Safety check{% endblock %}
 {% block content %}
+{# What each technique tried to do, in plain words. #}
+{% set plain = {
+  'direct_instruction': 'Tried to give the AI orders',
+  'fake_authority': 'Pretended to be a manager or the CEO',
+  'system_impersonation': 'Pretended to be the system itself',
+  'prompt_extraction': 'Tried to make the AI reveal its hidden instructions',
+  'encoded_instruction': 'Hid an order in scrambled (encoded) text',
+  'hidden_text': 'Hid text that a reader cannot see',
+  'markup_injection': 'Slipped in web code that could run in a browser',
+  'structure_injection': 'Tried to fake the app’s own data format',
+  'obfuscation': 'Disguised an order with odd spelling or spacing',
+  'malicious_requirement': 'Tried to sneak in a harmful rule',
+  'draft_document': 'Is an unapproved draft',
+  'irrelevant': 'Has nothing to do with training'} %}
+{% set outcome = {
+  'quarantine': 'Blocked: kept away from the AI',
+  'hidden_text_excluded': 'Removed: hidden text is never used',
+  'not_a_source': 'Not used: drafts never teach anything',
+  'flag': 'Flagged for a person to look at'} %}
 <div class="pagehead">
   <div>
-    <p class="eyebrow">Ingestion security</p>
-    <h1>Security findings</h1>
-    <p class="pagehead__meta">Uploaded documents are treated as data. Text that tries to instruct an AI, impersonate the system or hide from readers is caught here, before any generation.</p>
+    <p class="eyebrow">Documents</p>
+    <h1>Safety check</h1>
+    <p class="pagehead__meta">Every uploaded file is read as plain information, never as instructions. If a file tries to trick the AI, that part is caught here and kept away from it, so it can never change anyone's training.</p>
   </div>
 </div>
 
-<section class="kpis" aria-label="Summary">
-  <div class="kpi"><span class="kpi__label">Findings</span><span class="kpi__value">{{ rows|length }}</span><span class="kpi__note">{{ counts|length }} techniques</span></div>
-  <div class="kpi {{ 'kpi--bad' if quarantined }}"><span class="kpi__label">Quarantined chunks</span><span class="kpi__value">{{ quarantined }}</span><span class="kpi__note">never sent to Gemini</span></div>
-  <div class="kpi"><span class="kpi__label">Hidden text blocks</span><span class="kpi__value">{{ counts.hidden_text or 0 }}</span><span class="kpi__note">excluded, kept as evidence</span></div>
+<ol class="safeflow rise" aria-label="How the safety check works">
+  <li><span>{{ icon('upload', 18) }}</span><b>A file is uploaded</b></li>
+  <li><span>{{ icon('search', 18) }}</span><b>Every section is scanned</b></li>
+  <li><span>{{ icon('shield', 18) }}</span><b>Tricks are blocked</b></li>
+  <li><span>{{ icon('check', 18) }}</span><b>The AI only sees clean text</b></li>
+</ol>
+
+{% set docs = rows|groupby('1.id') %}
+<section class="libstats rise" aria-label="Summary">
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('shield', 20) }}</span><b data-count="{{ rows|length }}">{{ rows|length }}</b><span>tricks caught and handled</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('file', 20) }}</span><b data-count="{{ docs|length }}">{{ docs|length }}</b><span>files had something suspicious</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('lock', 20) }}</span><b data-count="{{ quarantined }}">{{ quarantined }}</b><span>sections never shown to the AI</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('x', 20) }}</span><b data-count="{{ counts.hidden_text or 0 }}">{{ counts.hidden_text or 0 }}</b><span>hidden text blocks removed</span></div>
 </section>
 
-<section class="panel panel--flush">
-  {% if rows %}
-  <div class="tablewrap">
-    <table class="table">
-      <thead><tr><th>Document</th><th>Where</th><th>Technique</th><th>Severity</th><th>Action</th><th>Evidence</th></tr></thead>
-      <tbody>
-      {% for f, d, c in rows %}
-        <tr>
-          <td class="nowrap"><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}{% if c %}#{{ c.chunk_id }}{% endif %}"><span class="mono">{{ d.doc_id }}</span> v{{ d.version }}</a></td>
-          <td class="small nowrap">{{ ('§ ' ~ c.section_id) if c else 'Whole document' }}</td>
-          <td class="small">{{ f.technique|replace('_', ' ')|capitalize }}</td>
-          <td>{% set tone = {'high': 'bad', 'medium': 'warn', 'low': 'neutral'}[f.severity] %}<span class="badge badge--{{ tone }}">{{ f.severity|capitalize }}</span></td>
-          <td class="small">{{ f.action|replace('_', ' ') }}</td>
-          <td class="small"><span class="evidence">{{ f.excerpt }}</span>{% if f.decoded and f.technique == 'encoded_instruction' %}<div class="muted">Decoded: {{ f.decoded }}</div>{% endif %}</td>
-        </tr>
+{% if rows %}
+<div class="safegrid">
+  {% for doc_id, group in docs %}{% set d = group[0][1] %}
+  {% set worst = 'high' if group|selectattr('0.severity', 'equalto', 'high')|list else ('medium' if group|selectattr('0.severity', 'equalto', 'medium')|list else 'low') %}
+  <article class="safecard safecard--{{ worst }}" style="--i: {{ [loop.index0, 10]|min }}">
+    <header class="safecard__head">
+      <span class="safecard__icon">{{ icon('file', 18) }}</span>
+      <div><h2><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}">{{ d.title or d.doc_id }}</a></h2>
+        <p class="mono">{{ d.doc_id }} v{{ d.version }}</p></div>
+      <span class="safecard__count">{{ group|length }}</span>
+    </header>
+    <ul class="safecard__list">
+      {% for f, _, c in group %}
+      <li class="safeitem safeitem--{{ f.severity }}">
+        <span class="safeitem__dot" aria-hidden="true"></span>
+        <div>
+          <p class="safeitem__what">{{ plain.get(f.technique, f.technique|replace('_', ' ')|capitalize) }}</p>
+          <p class="safeitem__done">{{ icon('check', 13) }}{{ outcome.get(f.action, f.action|replace('_', ' ')|capitalize) }}</p>
+          <p class="safeitem__meta"><span class="tag">{{ f.technique|replace('_', ' ')|capitalize }}</span><span>{{ f.severity|capitalize }} risk</span>
+            <span>{{ ('section ' ~ c.section_id) if c else 'whole file' }}</span></p>
+          <details class="safeitem__text"><summary>Show the exact text</summary>
+            <span class="evidence">{{ f.excerpt }}</span>
+            {% if f.decoded and f.technique == 'encoded_instruction' %}<p class="small muted">Once decoded it says: {{ f.decoded }}</p>{% endif %}
+          </details>
+        </div>
+      </li>
       {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}{{ empty('No suspicious content found', 'Every uploaded document passed the injection scanner.', 'shield') }}{% endif %}
-</section>
+    </ul>
+  </article>
+  {% endfor %}
+</div>
+{% else %}<section class="panel">{{ empty('Nothing suspicious found', 'Every uploaded file passed the safety check.', 'shield') }}</section>{% endif %}
 {% endblock %}

@@ -1,13 +1,15 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon %}
 {% block title %}Upload document{% endblock %}
 {% block content %}
 <div class="pagehead">
-  <div><p class="eyebrow"><a href="{{ url_for('documents.index') }}">Documents</a></p><h1>Upload document</h1></div>
+  <div><p class="eyebrow"><a href="{{ url_for('documents.index') }}">← All documents</a></p><h1>Upload a document</h1>
+    <p class="pagehead__meta">Add a policy or procedure. The app reads it, checks it for anything suspicious and finds the rules in it.</p></div>
 </div>
 
 {% if result %}
 <section class="panel panel--alert" aria-live="polite">
-  <h2 class="panel__title">The document was not ingested</h2>
+  <h2 class="panel__title">The document could not be added</h2>
   <ol class="steps">
     {% for s in result.steps %}
       <li class="steps__item steps__item--{{ s.status }}"><strong>{{ s.name }}</strong><span>{{ s.detail }}</span></li>
@@ -19,20 +21,34 @@
 </section>
 {% endif %}
 
-<form method="post" enctype="multipart/form-data" class="upload" novalidate data-busy="Processing document" data-busy-steps="Checking the file type from its content|Parsing text, headings and tables|Scanning for hidden or injected instructions|Chunking and extracting requirements" data-busy-step-ms="1800">
+<form method="post" enctype="multipart/form-data" class="upload" novalidate data-busy="Adding your document"
+      data-busy-steps="Reading the file|Checking for anything suspicious|Finding the rules people must follow|Putting it in the library" data-busy-step-ms="1800">
   {{ form.hidden_tag() }}
-  <section class="panel">
-    <h2 class="panel__title">File</h2>
-    <div class="field">
-      <label for="file">{{ form.file.label.text }}</label>
-      {{ form.file(id="file", accept=".pdf,.docx") }}
-      <p class="hint">PDF and Word (.docx) are supported, up to the configured size limit. The file type is checked from its content, not its name.</p>
-    </div>
-  </section>
 
-  <section class="panel">
-    <h2 class="panel__title">Metadata <span class="muted small">optional</span></h2>
-    <p class="hint">SkillSprint reads metadata from the document's header. Fill these in only for documents without a header, such as memos or partner documents. If the document and the form disagree, the document wins and you'll see a warning.</p>
+  <label class="dropzone" data-dropzone>
+    {{ form.file(id="file", accept=".pdf,.docx", class_="dropzone__input") }}
+    <span class="dropzone__empty">
+      <span class="dropzone__icon">{{ icon('upload', 30) }}</span>
+      <b>Drop a file here, or click to choose</b>
+      <span>PDF or Word (.docx)</span>
+    </span>
+    <span class="dropzone__file" hidden>
+      <span class="dropzone__icon dropzone__icon--ok">{{ icon('file', 28) }}</span>
+      <b data-dropzone-name></b>
+      <span data-dropzone-size></span>
+      <span class="dropzone__change">Choose another file</span>
+    </span>
+  </label>
+  <ul class="uploadsteps" aria-label="What happens next">
+    <li><span>1</span>Read the text</li>
+    <li><span>2</span>Check for anything suspicious</li>
+    <li><span>3</span>Find the rules</li>
+    <li><span>4</span>Add to the library</li>
+  </ul>
+
+  <details class="expert" {{ 'open' if result }}>
+    <summary>{{ icon('list', 16) }}<span>Optional details</span><small>only for files without a header, such as memos</small></summary>
+    <p class="hint">The app reads these from the document itself. Fill them in only when the file has no header. If the document and the form disagree, the document wins and you'll see a warning.</p>
     <div class="formgrid">
       {% for name in ['doc_id', 'version', 'title', 'category', 'owner_department', 'applies_to', 'effective_date', 'expiry_date'] %}
         {% set f = form[name] %}
@@ -42,11 +58,43 @@
         </div>
       {% endfor %}
     </div>
-  </section>
+  </details>
 
   <div class="actions">
-    <button type="submit" class="btn btn--primary">Upload and process</button>
+    <button type="submit" class="btn btn--primary btn--lg" data-dropzone-submit>{{ icon('upload', 16) }}Upload and read it</button>
     <a class="btn btn--ghost" href="{{ url_for('documents.index') }}">Cancel</a>
   </div>
 </form>
+{% endblock %}
+{% block scripts %}
+<script>
+  // Drag a file onto the box, or click it; the chosen file is shown before uploading.
+  (function () {
+    var zone = document.querySelector("[data-dropzone]");
+    if (!zone) return;
+    var input = zone.querySelector("input[type=file]"), submit = document.querySelector("[data-dropzone-submit]");
+    var empty = zone.querySelector(".dropzone__empty"), chosen = zone.querySelector(".dropzone__file");
+    function size(n) { return n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+    function show() {
+      var f = input.files && input.files[0];
+      empty.hidden = !!f; chosen.hidden = !f; submit.disabled = !f;
+      zone.classList.toggle("has-file", !!f);
+      if (f) {
+        chosen.querySelector("[data-dropzone-name]").textContent = f.name;
+        chosen.querySelector("[data-dropzone-size]").textContent = size(f.size);
+      }
+    }
+    input.addEventListener("change", show);
+    ["dragenter", "dragover"].forEach(function (t) {
+      zone.addEventListener(t, function (e) { e.preventDefault(); zone.classList.add("is-over"); });
+    });
+    ["dragleave", "drop"].forEach(function (t) {
+      zone.addEventListener(t, function (e) { e.preventDefault(); zone.classList.remove("is-over"); });
+    });
+    zone.addEventListener("drop", function (e) {
+      if (e.dataTransfer && e.dataTransfer.files.length) { input.files = e.dataTransfer.files; show(); }
+    });
+    show();
+  })();
+</script>
 {% endblock %}

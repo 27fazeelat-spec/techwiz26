@@ -90,10 +90,14 @@ def detail(pk):
     while prior.carried_from_id:
         prior = db.session.get(ReviewItem, prior.carried_from_id)
         history.append(prior)
+    # The next waiting item in the same plan, for "Skip": the one after this, else the first still waiting.
+    waiting = db.session.scalars(select(ReviewItem.id).where(ReviewItem.plan_id == r.plan_id, ReviewItem.status == "open",
+                                                             ReviewItem.id != r.id).order_by(ReviewItem.id)).all()
+    skip_to = next((i for i in waiting if i > r.id), waiting[0] if waiting else None)
     return render_template("review/detail.html", r=r, item=item, sources=sources, history=history,
                            fields=review.editable_fields(item) if item else [],
                            override_statuses=review.cfg()["override_statuses"], code=review.code(r),
-                           state=review.plan_review_state(r.plan), s=review.suggestion(r))
+                           state=review.plan_review_state(r.plan), s=review.suggestion(r), skip_to=skip_to)
 
 
 @bp.route("/review/<int:pk>/decide", methods=["POST"])
@@ -118,6 +122,10 @@ def decide(pk):
         return redirect(url_for("plans.plan_detail", pk=plan.id))
     nxt = db.session.scalar(select(ReviewItem).where(ReviewItem.plan_id == r.plan_id, ReviewItem.status == "open")
                             .order_by(ReviewItem.id))
-    if action != "comment" and nxt is not None and request.form.get("then") == "next":
-        return redirect(url_for("review.detail", pk=nxt.id))
+    if action != "comment" and request.form.get("then") == "next":
+        if nxt is not None:
+            return redirect(url_for("review.detail", pk=nxt.id))
+        done = plan or r.plan
+        flash(f"Every item in {done.employee.name}'s plan has a decision.", "success")
+        return redirect(url_for("plans.plan_detail", pk=done.id))            # nothing left: back to the plan to give it out
     return redirect(url_for("review.detail", pk=pk))
