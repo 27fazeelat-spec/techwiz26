@@ -45,7 +45,7 @@
     <span class="rulecard__check rulecard__check--{{ req.review_status }}">{{ {'pending': 'Not checked yet', 'confirmed': '✓ Checked', 'edited': '✓ Edited by a person', 'rejected': 'Rejected'}[req.review_status] }}{% if req.reviewed_by %} · {{ req.reviewed_by }}{% endif %}</span></h2>
   {% if can('requirements.edit') %}
   <p class="small muted" style="margin-bottom: 12px">The app read this rule from the document by itself. If something below is wrong, correct it and save; your change is kept on record.</p>
-  <form method="post" novalidate>
+  <form method="post" novalidate data-rule-form>
     {{ form.hidden_tag() }}
     <div class="formgrid">
       <div class="field"><label for="decision">{{ form.decision.label.text }}</label>{{ form.decision(id="decision") }}</div>
@@ -60,4 +60,17 @@
   </form>
   {% else %}<p class="muted">You can read this rule but not change it.</p>{% endif %}
 </section>
+{% endblock %}
+{% block scripts %}
+<script>
+  // Changing any value means "Save my changes": otherwise "It is right as it is" would keep the old values.
+  (function () {
+    var form = document.querySelector("[data-rule-form]");
+    if (!form) return;
+    var decision = form.querySelector("#decision");
+    form.addEventListener("change", function (e) {
+      if (e.target !== decision && decision.value === "confirmed") decision.value = "edited";
+    });
+  })();
+</script>
 {% endblock %}

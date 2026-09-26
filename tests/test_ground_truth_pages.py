@@ -66,11 +66,11 @@ def test_confirming_a_requirement_says_the_matrix_needs_no_rebuild(loaded):
     client = loaded.test_client()
     login(client, "training@aurelle.example")
     page = client.post(f"/requirements/{pk}", data={**same, "decision": "confirmed"}, follow_redirects=True).get_data(as_text=True)
-    assert "does not need rebuilding" in page
+    assert "does not need a new list" in page
     page = client.post(f"/requirements/{pk}", data={**same, "decision": "rejected"}, follow_redirects=True).get_data(as_text=True)
-    assert "Build a new matrix draft" in page
+    assert "Build a new list on Who learns what" in page
     page = client.post(f"/requirements/{pk}", data={**same, "decision": "confirmed"}, follow_redirects=True).get_data(as_text=True)
-    assert "Build a new matrix draft" in page                 # back from rejected: the matrix must include it again
+    assert "Build a new list on Who learns what" in page                 # back from rejected: the matrix must include it again
 
 
 def test_matrix_build_and_approve_through_the_web(loaded):
@@ -145,3 +145,18 @@ def test_a_document_added_after_the_list_asks_for_a_new_list(loaded):
         assert ingest_document((SAMPLES / name).read_bytes(), name, today=TODAY).ok
     page = client.get("/matrix").get_data(as_text=True)
     assert "1 document arrived after this list was built" in page and "Build a new list now" in page
+
+
+def test_changed_values_are_kept_even_if_the_decision_was_left_on_confirm(loaded):
+    with loaded.app_context():
+        req = db.session.scalar(select(Requirement).where(Requirement.text.like("%paper copies are prohibited%")))
+        pk = req.id
+        form = {"req_type": req.req_type, "roles": ["FOA"], "due_stage": req.due_stage, "priority": req.priority,
+                "competency": req.competency, "decision": "confirmed", "reason": "Only the front desk scans passports"}
+    client = loaded.test_client()
+    login(client, "training@aurelle.example")
+    page = client.post(f"/requirements/{pk}", data=form, follow_redirects=True).get_data(as_text=True)
+    assert "Your changes are saved" in page
+    with loaded.app_context():
+        req = db.session.get(Requirement, pk)
+        assert req.roles == ["FOA"] and req.review_status == "edited"

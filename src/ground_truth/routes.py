@@ -97,6 +97,11 @@ def requirement_detail(pk):
         if not has_permission(current_user, "requirements.edit"):
             abort(403)
         before = {k: getattr(req, k) for k in EDITABLE}
+        submitted = {"req_type": form.req_type.data, "due_stage": form.due_stage.data, "priority": form.priority.data,
+                     "competency": form.competency.data.strip(),
+                     "roles": ["ALL"] if "ALL" in form.roles.data or not form.roles.data else form.roles.data}
+        if form.decision.data == "confirmed" and any(before[k] != v for k, v in submitted.items()):
+            form.decision.data = "edited"                      # values were changed: keep them rather than drop them
         if form.decision.data != "confirmed":
             req.req_type = form.req_type.data
             req.mandatory = req.req_type.startswith("Must")
@@ -112,9 +117,9 @@ def requirement_detail(pk):
         db.session.commit()
         changed = [k for k in EDITABLE if k != "review_status" and before[k] != after[k]]
         rebuild = bool(changed) or "rejected" in (before["review_status"], after["review_status"])
-        flash(f"{req.req_id} was {form.decision.data}. " + (
-            "Build a new matrix draft to include the change." if rebuild
-            else "No values changed; the matrix does not need rebuilding."), "success")
+        flash({"confirmed": "Rule checked.", "edited": "Your changes are saved.", "rejected": "Marked as not a rule."}[form.decision.data]
+              + (" Build a new list on Who learns what so training follows the change." if rebuild
+                 else " Nothing changed, so Who learns what does not need a new list."), "success")
         return redirect(url_for("ground_truth.requirement_detail", pk=req.id))
     prereqs = db.session.execute(
         select(Requirement, RequirementPrerequisite.source)
