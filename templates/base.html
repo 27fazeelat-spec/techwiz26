@@ -153,7 +153,8 @@
 {% elif role == 'manager' %}
   {% set t = [
     {"target": ".sidebar .brand", "title": "Welcome", "text": "Here you follow your team's onboarding and sign off their work."},
-    {"target": ".navlink[href='" ~ url_for('main.team_dashboard') ~ "']", "title": "My team", "text": "Progress for each person, and the tasks waiting for your sign-off."}
+    {"target": ".navlink[href='" ~ url_for('main.team_dashboard') ~ "']", "title": "Home", "text": "What is waiting for your sign-off today."},
+    {"target": ".navlink[href='" ~ url_for('main.team_people') ~ "']", "title": "My team", "text": "Everyone who reports to you, how far each has got, and who has tasks to sign off or assessments to mark."}
   ] %}
 {% elif role == 'employee' %}
   {% set t = [

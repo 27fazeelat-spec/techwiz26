@@ -59,7 +59,12 @@ def employees():
         want = args["result"]
         people = [e for e in people if (latest.get(e.id).status if latest.get(e.id) else "No plan") == want]
     matrix = planning.current_matrix()
+    # Parts of each current plan still waiting for a person: a plan with none left is ready to give (or given).
+    from database.models import ReviewItem
+    open_by_plan = dict(db.session.execute(select(ReviewItem.plan_id, func.count()).where(
+        ReviewItem.status == "open", ReviewItem.plan_id.in_([p.id for p in latest.values()])).group_by(ReviewItem.plan_id)).all()) if latest else {}
     return render_template("plans/employees.html", people=people, latest=latest, failed=failed, matrix=matrix, args=args,
+                           open_by_plan=open_by_plan, signers=_line_managers(),
                            roles=db.session.scalars(select(JobRole).order_by(JobRole.code)).all(),
                            properties=db.session.scalars(select(Property).order_by(Property.name)).all(),
                            departments=sorted(set(db.session.scalars(select(Employee.department)))),
@@ -67,6 +72,12 @@ def employees():
                            results=["No plan", "Verified", "Verified with Warning", "Incomplete", "Unsupported",
                                     "Contradictory", "Manual Review Required", "Failed"],
                            progress_statuses=["Not assigned"] + list(progress.cfg()["status_order"]))
+
+
+def _line_managers():
+    """Employee codes of line managers who can sign in: only they see and sign off their team's tasks."""
+    from database.models import User
+    return set(db.session.scalars(select(User.employee_code).where(User.app_role == "manager", User.active.is_(True))))
 
 
 @bp.route("/employees/<code>/generate", methods=["POST"])

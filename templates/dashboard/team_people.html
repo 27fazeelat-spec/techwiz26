@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, initials, progress_badge, empty %}
+{% block title %}My team{% endblock %}
+{% block content %}
+{% set to_do = people|sum(attribute='sent') + people|sum(attribute='ready') %}
+<div class="pagehead">
+  <div>
+    <p class="eyebrow">My team</p>
+    <h1>Your team's training</h1>
+    <p class="pagehead__meta">Everyone who reports to you. Open a person to see their progress, sign off their tasks and mark their assessments.</p>
+  </div>
+</div>
+
+<section class="libstats rise" aria-label="Summary">
+  <div class="libstat"><span class="libstat__icon">{{ icon('users', 20) }}</span><b data-count="{{ people|length }}">{{ people|length }}</b><span>{{ 'person' if people|length == 1 else 'people' }} in your team</span></div>
+  <div class="libstat {{ 'libstat--warn' if to_do }}"><span class="libstat__icon">{{ icon('check', 20) }}</span><b data-count="{{ to_do }}">{{ to_do }}</b><span>waiting for you to sign off or mark</span></div>
+  <div class="libstat"><span class="libstat__icon">{{ icon('clock', 20) }}</span><b data-count="{{ people|selectattr('s')|map(attribute='s')|selectattr('overdue')|list|length }}">{{ people|selectattr('s')|map(attribute='s')|selectattr('overdue')|list|length }}</b><span>with late steps</span></div>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('trophy', 20) }}</span><b data-count="{{ people|selectattr('s')|map(attribute='s')|selectattr('status', 'equalto', 'Completed')|list|length }}">{{ people|selectattr('s')|map(attribute='s')|selectattr('status', 'equalto', 'Completed')|list|length }}</b><span>finished their training</span></div>
+</section>
+
+{% if people %}
+<div class="teamgrid">
+  {% for x in people %}{% set e, s = x.e, x.s %}
+  <article class="teamcard {{ 'teamcard--act' if x.sent or x.ready }}" style="--i: {{ [loop.index0, 12]|min }}">
+    <header class="personcard__head">
+      <span class="personcard__avatar" aria-hidden="true">{{ initials(e.name) }}</span>
+      <div><h3>{{ e.name }}</h3><p>{{ e.job_role.name }}</p><p class="muted">{{ e.property.name }} · {{ 'joins' if e.joining_date > today else 'joined' }} {{ e.joining_date.strftime('%d %b %Y') }}</p></div>
+    </header>
+    {% if s %}
+    <div class="teamcard__prog">
+      <div class="teamcard__pct"><b>{{ s.pct }}%</b><span>{{ s.done }} of {{ s.total }} steps</span></div>
+      <span class="teamcard__bar"><i data-w="{{ s.pct }}%"></i></span>
+      <p>{{ progress_badge(s.status) }}{% if s.overdue %} <span class="teamcard__late">{{ s.overdue }} late</span>{% endif %}</p>
+    </div>
+    <div class="teamcard__waits">
+      {% if x.sent %}<a class="teamwait teamwait--sign" href="{{ url_for('learning.team_member', code=e.employee_code) }}#signoff">{{ icon('check', 14) }}<b>{{ x.sent }}</b> task{{ 's' if x.sent != 1 }} to sign off</a>{% endif %}
+      {% if x.ready %}<a class="teamwait teamwait--mark" href="{{ url_for('learning.team_member', code=e.employee_code) }}#signoff">{{ icon('trophy', 14) }}<b>{{ x.ready }}</b> assessment{{ 's' if x.ready != 1 }} ready to mark</a>{% endif %}
+      {% if not x.sent and not x.ready %}<span class="teamwait">{{ icon('check', 14) }}Nothing waiting for you</span>{% endif %}
+    </div>
+    <a class="btn btn--sm {{ 'btn--primary' if x.sent or x.ready }}" href="{{ url_for('learning.team_member', code=e.employee_code) }}">Open {{ e.name.split(' ')[0] }}'s progress {{ icon('arrow', 14) }}</a>
+    {% else %}
+    <p class="personcard__none">{{ icon('clock', 15) }}No training plan yet. It appears here once it is checked and given to {{ e.name.split(' ')[0] }}.</p>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}<section class="panel">{{ empty('Nobody reports to you yet', 'New hires appear here once you are chosen as their line manager on their employee form.', 'users') }}</section>{% endif %}
+{% endblock %}

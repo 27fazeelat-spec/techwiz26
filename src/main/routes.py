@@ -158,15 +158,27 @@ def admin_dashboard():
     from config.settings import today
     from flask import current_app
     day = today(current_app.config)
+    # A plan is ready when nothing in it waits for a person any more (or it has been given out).
+    current = db.session.scalars(select(Plan.id).where(Plan.status.notin_(["superseded", "Failed", "generating"]))).all()
+    waiting = set(db.session.scalars(select(ReviewItem.plan_id).where(ReviewItem.status == "open",
+                                                                      ReviewItem.plan_id.in_(current)))) if current else set()
+    stats["plans_current"], stats["plans_ready"] = len(current), sum(1 for pid in current if pid not in waiting)
+    # Work sent for sign-off by someone with no line manager who can sign in: nobody sees it unless we say so.
+    from database.models import User
+    signers = set(db.session.scalars(select(User.employee_code).where(User.app_role == "manager", User.active.is_(True))))
+    unsigned = db.session.execute(
+        select(Employee, func.count(Progress.id)).join(Progress, Progress.employee_id == Employee.id)
+        .where(Progress.status == "submitted", Employee.left_on.is_(None)).group_by(Employee.id)).all()
+    no_manager = [(e, n) for e, n in unsigned if not e.reporting_manager_code or e.reporting_manager_code not in signers]
     return render_template("dashboard/admin.html", counts=counts, stats=stats, recent=recent, today=day,
                            attention=attention, statuses=DOC_STATUSES, plan_mix=plan_mix, role_cov=role_cov,
-                           charts=_home_charts(plan_mix, day))
+                           charts=_home_charts(plan_mix, day), no_manager=no_manager)
 
 
 # Chart groups in plain words. Keys pick the validated status colours (static/css/library.css), in drawing order.
 TASK_GROUPS = [("active", "Done", ("completed", "waived")), ("scheduled", "Waiting for sign-off", ("submitted",)),
                ("draft", "Needs another try", ("failed",)), ("superseded", "Still to do", ("not_started", "in_progress"))]
-PLAN_GROUPS = [("active", "Ready", ("Verified", "Verified with Warning")),
+PLAN_GROUPS = [("active", "Passed every check", ("Verified", "Verified with Warning")),
                ("scheduled", "Needs a person", ("Manual Review Required",)),
                ("draft", "Not complete", ("Incomplete", "Unsupported")), ("expired", "Failed", ("Failed", "Contradictory"))]
 
@@ -210,8 +222,29 @@ def team_dashboard():
     for e in team:
         plan = progress.assigned_plan(e)
         states[e.id] = (plan, progress.summary(plan, e, today(current_app.config)) if plan else None)
+    ready = [(r, i, m, e) for e in team for r, i, m in ((states[e.id][1] or {}).get("assessments_ready") or [])]
     return render_template("dashboard/team.html", team=team, states=states, pending=progress.pending_signoffs(team),
-                           today=today(current_app.config))
+                           ready=ready, today=today(current_app.config))
+
+
+@bp.route("/team")
+@require_permission("dashboard.team")
+def team_people():
+    """Everyone who reports to this manager, with what each of them is waiting on."""
+    from config.settings import today
+    from flask import current_app
+    from src.services import progress
+    day = today(current_app.config)
+    team = db.session.scalars(select(Employee).where(Employee.reporting_manager_code == current_user.employee_code,
+                                                     Employee.left_on.is_(None)).order_by(Employee.name)).all()
+    people = []
+    for e in team:
+        plan = progress.assigned_plan(e)
+        s = progress.summary(plan, e, day) if plan else None
+        people.append({"e": e, "plan": plan, "s": s, "sent": s["submitted"] if s else 0,
+                       "ready": len(s["assessments_ready"]) if s else 0})
+    people.sort(key=lambda x: (-(x["sent"] + x["ready"]), -(x["s"]["overdue"] if x["s"] else 0), x["e"].name))
+    return render_template("dashboard/team_people.html", people=people, today=day)
 
 
 @bp.route("/dashboard/me")

@@ -44,7 +44,8 @@ NAV = {
         ("Results", [("Reports", "reports.index", "file", "reports.")]),
     ],
     "manager": [
-        ("Home", [("My team", "main.team_dashboard", "users", "main.team_dashboard"),
+        ("Home", [("Home", "main.team_dashboard", "home", "main.team_dashboard"),
+                  ("My team", "main.team_people", "users", "main.team_people|learning.team_member"),
                   ("Team questions", "bot.team_questions", "chat", "bot.team_questions"),
                   ("Team reports", "reports.index", "file", "reports.")]),
     ],

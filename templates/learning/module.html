@@ -30,7 +30,7 @@
 
 {% set counter = namespace(n=0) %}
 {% for type, title, how in [('checklist', 'Things to do', 'Tick each one off when it is done.'),
-                            ('task', 'Tasks', 'Do the task, then send it to your manager to sign off.'),
+                            ('task', 'Tasks', 'Do the task, then send it to be signed off.'),
                             ('scenario', 'Practise a situation', 'Think through what you would do, then send it to your manager to talk about.'),
                             ('assessment', 'Assessment with your manager', 'Your manager checks you against these points.')] %}
 {% set group = items | selectattr('item_type', 'equalto', type) | list %}
@@ -67,8 +67,8 @@
             <form method="post" action="{{ url_for('learning.item_action', item_id=i.id, action='submit') }}" class="mstep__send">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input name="note" type="text" placeholder="A note for your manager (optional)" aria-label="Note">
-              <button class="btn btn--primary" type="submit">{{ icon('arrow', 15) }}Send to my manager</button></form>
-          {% elif st == 'submitted' %}<p class="mstep__wait">{{ icon('clock', 14) }}Sent. Your manager will sign it off.</p>
+              <button class="btn btn--primary" type="submit">{{ icon('arrow', 15) }}{{ 'Send to my manager' if has_manager else 'Send for sign-off' }}</button></form>
+          {% elif st == 'submitted' %}<p class="mstep__wait">{{ icon('clock', 14) }}Sent. {{ 'Your manager will sign it off.' if has_manager else 'You have no line manager yet, so the training team will sign it off.' }}</p>
           {% endif %}
         </div>
       </details>

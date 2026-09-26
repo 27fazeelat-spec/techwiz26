@@ -4,8 +4,7 @@
 {% block content %}
 {% set m = stats.matrix %}
 {% set draft_waiting = stats.matrix_draft and (not m or stats.matrix_draft.version_no > m.version_no) %}
-{% set todo_count = stats.conflicts_open + (1 if draft_waiting else 0) + (1 if stats.review_open else 0) + attention|length %}
-{% set ready = (charts.plans|selectattr('key', 'equalto', 'active')|map(attribute='value')|first) or 0 %}
+{% set todo_count = stats.conflicts_open + (1 if draft_waiting else 0) + (1 if stats.review_open else 0) + attention|length + no_manager|length %}
 
 <header class="ahead">
   <div class="ahead__text">
@@ -34,7 +33,7 @@
   <a class="libstat" href="{{ url_for('plans.employees') }}"><span class="libstat__icon">{{ icon('users', 20) }}</span>
     <b data-count="{{ stats.employees }}">{{ stats.employees }}</b><span>employees</span></a>
   <a class="libstat libstat--ok" href="{{ url_for('main.trainer_dashboard') }}"><span class="libstat__icon">{{ icon('check', 20) }}</span>
-    <b data-count="{{ ready }}">{{ ready }}</b><span>of {{ charts.plans_total }} training plans ready</span></a>
+    <b data-count="{{ stats.plans_ready }}">{{ stats.plans_ready }}</b><span>of {{ stats.plans_current }} training plans checked and ready</span></a>
   <a class="libstat" href="{{ url_for('main.trainer_dashboard') }}"><span class="libstat__icon">{{ icon('chart', 20) }}</span>
     <b><span data-count="{{ charts.tasks_done }}">{{ charts.tasks_done }}</span>%</b><span>of training tasks done</span></a>
   <a class="libstat {{ 'libstat--warn' if todo_count }}" href="#todo"><span class="libstat__icon">{{ icon('bell', 20) }}</span>
@@ -64,6 +63,12 @@
         <span class="todo__text"><strong>{{ stats.review_open }} part{{ 's' if stats.review_open != 1 }} of training plans need{{ 's' if stats.review_open == 1 }} a person to check</strong><span>A plan can be given to the employee once nothing is waiting.</span></span>
         <span class="todo__go">Open →</span></a></li>
       {% endif %}
+      {% for e, n in no_manager %}
+      <li><a href="{{ url_for('learning.team_member', code=e.employee_code) }}">
+        <span class="todo__kind todo__kind--bad">Sign off</span>
+        <span class="todo__text"><strong>{{ e.name }} sent {{ n }} task{{ 's' if n != 1 }} for sign-off, but has no line manager</strong><span>Sign them off yourself, or choose a line manager on {{ e.name.split(' ')[0] }}'s employee form.</span></span>
+        <span class="todo__go">Open →</span></a></li>
+      {% endfor %}
       {% for d in attention %}
       {% set hidden = d.parse and d.parse.hidden_blocks %}
       <li><a href="{{ url_for('documents.detail', doc_id=d.doc_id, version=d.version) }}" data-drawer>
@@ -93,7 +98,7 @@
 <!-- ============ charts ============ -->
 <section class="asec homecharts rise">
   <div class="acard">
-    <div class="acard__head"><h3>Training plans</h3><span><a href="{{ url_for('main.trainer_dashboard') }}">Plans board →</a></span></div>
+    <div class="acard__head"><h3>The app's first check</h3><span><a href="{{ url_for('main.trainer_dashboard') }}">Plans board →</a></span></div>
     <div class="acard__body donutwrap donutwrap--stack">
       {% if charts.plans_total %}
       <div class="donut donut--sm" data-donut="{{ charts.plans|tojson|forceescape }}" data-donut-unit="plan|plans">

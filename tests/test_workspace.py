@@ -11,7 +11,7 @@ def test_admin_home_shows_plain_charts_and_the_theme(corpus):
     assert "theme-terra" in html and "css/terra.css" in html and "js/workspace.js" in html
     assert "Needs you" in html and "Training progress" in html and "Progress by department" in html
     assert "From policy to plan" not in html and "Ingest" not in html          # no pipeline jargon on the home page
-    assert html.count('class="cols__col') == 14 and "Training plans" in html
+    assert html.count('class="cols__col') == 14 and "The app's first check" in html
     assert "data-cmdk-open" in html
 
 
@@ -108,3 +108,51 @@ def test_search_finds_modules_by_title(corpus):
     login(client, "training@aurelle.example")                                  # staff land on the plan page, at the module
     staff = {g["label"]: g["items"] for g in client.get(f"/api/search?q={word}").get_json()["groups"]}
     assert any(i["url"].endswith(f"#module-{module.module_key}") for i in staff["Modules"])
+
+
+def test_work_sent_by_someone_without_a_line_manager_reaches_the_administrator(corpus):
+    from database import db
+    from src.services import progress
+    from tests.test_planning_pipeline import leila
+    from tests.test_progress import assigned, rows
+    assigned()
+    me = leila()
+    plan = progress.assigned_plan(me)
+    task = rows(plan)[0]
+    status, task.status = task.status, "submitted"
+    manager, me.reporting_manager_code = me.reporting_manager_code, None     # nobody to send it to
+    db.session.commit()
+    client = current_app.test_client()
+    login(client, "admin@aurelle.example")
+    home = client.get("/dashboard/admin").get_data(as_text=True)
+    assert "Leila Haddad sent 1 task for sign-off, but has no line manager" in home
+    assert "No line manager" in client.get("/employees").get_data(as_text=True)
+    assert 'value="approve"' in client.get("/team/E001").get_data(as_text=True)     # the administrator can step in
+    me.reporting_manager_code, task.status = manager, status                   # the shared data goes back as it was
+    db.session.commit()
+
+
+def test_a_finished_module_puts_its_assessment_at_the_top_for_the_manager(corpus):
+    from database import db
+    from src.services import progress
+    from tests.test_planning_pipeline import leila
+    from tests.test_progress import assigned, rows
+    assigned()
+    plan = progress.assigned_plan(leila())
+    all_rows = rows(plan)
+    target = next((r for r in all_rows if r.plan_item.item_type == "assessment"), None)
+    assert target is not None
+    module_id = target.plan_item.module_id
+    for r in all_rows:                                                         # finish everything else in that module
+        if r.plan_item.module_id == module_id and r.plan_item.item_type != "assessment":
+            r.status = "completed"
+    target.status, target.due_date = "not_started", None
+    db.session.commit()
+    client = current_app.test_client()
+    login(client, "omar.siddiqui@aurelle.example")
+    team = client.get("/team").get_data(as_text=True)
+    assert "Leila Haddad" in team and "ready to mark" in team
+    assert "ready to mark" in client.get("/dashboard/team").get_data(as_text=True)
+    page = client.get("/team/E001").get_data(as_text=True)
+    top = page[page.index('id="signoff"'):page.index("All tasks, situations and assessments")]
+    assert "Module finished · ready to mark" in top and 'value="approve"' in top

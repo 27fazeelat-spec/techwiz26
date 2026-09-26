@@ -412,11 +412,15 @@ a.heat__cell:hover, .heat__cell.is-on { transform: scale(1.14); box-shadow: 0 0 
 .personcard__plan { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 10px; background: var(--surface-sunk); }
 .personcard__status { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .personcard__status a { color: var(--muted); }
+.personcard__check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.personcard__check .badge { transform: scale(.92); transform-origin: left; }
 .personcard__cover { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: baseline; font-size: 12.5px; color: var(--muted); }
 .personcard__cover b { font-size: 15px; color: var(--ink); }
 .personcard__meter { grid-column: 1 / -1; height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--line) 80%, transparent); overflow: hidden; }
 .personcard__meter i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--primary); transition: width 1s cubic-bezier(.22, 1, .36, 1); }
 .personcard__meter--ok i { background: var(--ok); } .personcard__meter--warn i { background: var(--warn); } .personcard__meter--bad i { background: var(--bad); }
+.personcard__nomgr { display: inline-flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 12.5px; font-weight: 600; color: var(--warn); }
+.personcard__nomgr a { color: inherit; }
 .personcard__none { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13.5px; }
 .personcard__failed { align-self: flex-start; }
 .personcard__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; }
@@ -771,6 +775,8 @@ a.heat__cell:hover, .heat__cell.is-on { transform: scale(1.14); box-shadow: 0 0 
 .fstep > header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
 .fstep h2 { font-family: var(--font-display); font-weight: 500; font-size: 19px; }
 .fstep header p { color: var(--muted); font-size: 13.5px; }
+.nomgr-hint { display: none; align-items: center; gap: 5px; margin-top: 6px; font-size: 12.5px; font-weight: 600; color: var(--warn); }
+.field:has(#reporting_manager_code option[value=""]:checked) .nomgr-hint { display: flex; }
 .fstep__n { display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: 50%; background: var(--primary); color: var(--on-primary); font-weight: 700; }
 .fstep .formgrid { margin-top: 0; }
 .fstep:focus-within { border-color: color-mix(in srgb, var(--primary) 45%, var(--line)); box-shadow: 0 0 0 3px var(--primary-soft); }
@@ -821,6 +827,9 @@ a.heat__cell:hover, .heat__cell.is-on { transform: scale(1.14); box-shadow: 0 0 
 .signoff__what p.small { font-size: 12.5px; margin-top: 4px; }
 .signoff__what .is-late { color: var(--bad); font-weight: 600; }
 .signoff__act .actions { flex-wrap: nowrap; }
+.signoff__ready { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; font-size: 12px; font-weight: 700; padding: 2px 9px;
+  border-radius: 999px; background: var(--ok-bg); color: var(--ok); animation: justin-pop .5s cubic-bezier(.34, 1.56, .64, 1) both; }
+.signoff__module { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
 .signoff__later { margin: 0 20px 14px; font-size: 13px; color: var(--muted); }
 .signoff__none { display: flex; align-items: center; gap: 8px; margin: 0 20px 16px; padding: 12px 14px; border-radius: 10px; background: var(--ok-bg); color: var(--ok); font-weight: 600; }
 @media (max-width: 860px) { .signoff__item { grid-template-columns: 1fr; } .signoff__act .actions { flex-wrap: wrap; } }
@@ -840,6 +849,26 @@ a.heat__cell:hover, .heat__cell.is-on { transform: scale(1.14); box-shadow: 0 0 
 .tmkind i { grid-column: 1 / -1; height: 6px; border-radius: 999px; background: var(--surface-sunk); overflow: hidden; }
 .tmkind em { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--ok); transition: width 1s cubic-bezier(.22, 1, .36, 1); }
 @media (max-width: 900px) { .tmglance { grid-template-columns: 1fr; } }
+
+/* ---------------------------------------------------------------- manager: my team */
+.teamgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.teamcard { display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line);
+  border-top: 4px solid var(--line-strong); animation: libpop .4s ease-out both; animation-delay: calc(var(--i) * 40ms); }
+.teamcard--act { border-top-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.teamcard__prog { display: grid; gap: 8px; }
+.teamcard__pct { display: flex; align-items: baseline; gap: 10px; }
+.teamcard__pct b { font-family: var(--font-display); font-weight: 500; font-size: 30px; }
+.teamcard__pct span { color: var(--muted); font-size: 13px; }
+.teamcard__bar { height: 8px; border-radius: 999px; background: var(--surface-sunk); overflow: hidden; }
+.teamcard__bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--ok); transition: width 1s cubic-bezier(.22, 1, .36, 1); }
+.teamcard__late { font-size: 12.5px; font-weight: 700; color: var(--bad); }
+.teamcard__waits { display: grid; gap: 6px; }
+.teamwait { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 10px; background: var(--surface-sunk); font-size: 13.5px;
+  color: var(--muted); text-decoration: none; }
+.teamwait--sign { background: var(--warn-bg); color: var(--warn); font-weight: 600; }
+.teamwait--mark { background: var(--ok-bg); color: var(--ok); font-weight: 600; }
+.teamwait:is(a):hover { filter: brightness(.97); }
+.teamcard > .btn { align-self: flex-start; margin-top: auto; }
 
 /* ---------------------------------------------------------------- phone widths */
 .cal > *, .eglance > *, .docgrid > *, .acols > * { min-width: 0; }
@@ -873,7 +902,7 @@ a.heat__cell:hover, .heat__cell.is-on { transform: scale(1.14); box-shadow: 0 0 
 @media (prefers-reduced-motion: reduce) {
   .libcard, .libchip, .vline::before, .vline__item, .dropzone__icon, .dropzone__file, .justin, .justin__badge,
   .justin__badge::after, .justin__steps li, .theme-terra .busy-steps li, .theme-terra .busy-card::after,
-  .heat tbody tr, .stagestrip li, .rulecard, .clash, .clash__verdict--won, .personcard, .appgroup, .mstep:target .mstep__dot, .mstep__body, .polcard, .polcard__rules ol, .pjourney::after, .pjourney li.is-now .pjourney__dot, .safeflow li, .safecard, .repcard, .chgcard, .rolecard { animation: none; }
+  .heat tbody tr, .stagestrip li, .rulecard, .clash, .clash__verdict--won, .personcard, .appgroup, .mstep:target .mstep__dot, .mstep__body, .polcard, .polcard__rules ol, .pjourney::after, .pjourney li.is-now .pjourney__dot, .safeflow li, .safecard, .repcard, .chgcard, .rolecard, .teamcard, .signoff__ready { animation: none; }
   .libcard:hover { transform: none; }
   .donut__seg, .dbar__track i, .cols__col i { transition: none; }
 }

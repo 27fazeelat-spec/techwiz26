@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import icon %}
 {% block title %}{{ 'Edit ' ~ employee.name if employee else 'Add employee' }}{% endblock %}
 {% block content %}
 <div class="pagehead"><div><p class="eyebrow"><a href="{{ url_for('plans.employees') }}">← Employees</a></p>
@@ -30,7 +31,8 @@
         <option value="">No line manager yet</option>
         {% for code, name in managers %}<option value="{{ code }}" {{ 'selected' if code == current }}>{{ name }} · {{ code }}</option>{% endfor %}
         {% if current and current not in managers|map(attribute=0)|list %}<option value="{{ current }}" selected>{{ current }} (no active login)</option>{% endif %}
-      </select></div>
+      </select>
+      <p class="nomgr-hint">{{ icon('alert', 13) }} Without a line manager, nobody receives their tasks to sign off.</p></div>
       <div class="field"><label for="department">Department <span class="muted">(leave empty to use the job's)</span></label><input id="department" name="department" type="text" value="{{ form.get('department', '') }}"></div>
       <div class="field"><label for="shift_pattern">Shift</label><select id="shift_pattern" name="shift_pattern">
         {% for s in shifts %}<option value="{{ s }}" {{ 'selected' if form.get('shift_pattern', 'day') == s }}>{{ s|capitalize }}</option>{% endfor %}</select></div>

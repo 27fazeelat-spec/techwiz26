@@ -54,7 +54,7 @@ def module(module_key):
                                                             QuizAttempt.module_key == module_key).order_by(QuizAttempt.attempt_no)).all()
     return render_template("learning/module.html", plan=plan, m=m, items=items, rows=rows, attempts=attempts,
                            sources=_sources(items), completion=progress.completion_type, cfg=progress.cfg(),
-                           today=today(current_app.config))
+                           today=today(current_app.config), has_manager=_has_line_manager(employee))
 
 
 @bp.route("/learn/item/<int:item_id>/<action>", methods=["POST"])
@@ -71,7 +71,8 @@ def item_action(item_id, action):
             flash("Marked as done.", "success")
         elif action == "submit":
             progress.submit_for_signoff(employee, item, request.form.get("note"), actor)
-            flash("Submitted. Your manager will sign it off.", "success")
+            flash("Sent. Your manager will sign it off." if _has_line_manager(employee)
+                  else "Sent. You have no line manager yet, so the training team will sign it off.", "success")
         else:
             abort(404)
     except progress.ProgressError as exc:
@@ -109,6 +110,13 @@ def _can_manage(employee):
     return has_permission(current_user, "progress.verify_team") and employee.reporting_manager_code == current_user.employee_code
 
 
+def _has_line_manager(employee):
+    """True when the employee's line manager can sign in to sign off their tasks."""
+    from database.models import User
+    return bool(employee.reporting_manager_code and db.session.scalar(select(User.id).where(
+        User.employee_code == employee.reporting_manager_code, User.app_role == "manager", User.active.is_(True))))
+
+
 def _can_sign_off(employee):
     """Tasks and assessments are signed off by the employee's own manager (config/progress.yaml); admins may step in."""
     if has_permission(current_user, "progress.verify"):
@@ -138,7 +146,7 @@ def team_member(code):
     return render_template("learning/team_member.html", employee=employee, plan=plan, summary=summary, rows=rows,
                            weak=progress.weak_areas(employee, plan) if plan else [], recs=recs,
                            can_sign=_can_sign_off(employee), can_train=has_permission(current_user, "plans.view"),
-                           line_manager=line_manager, today=today(current_app.config), timedelta=timedelta)
+                           line_manager=line_manager, today=today(current_app.config))
 
 
 @bp.route("/team/recommendation/<int:pk>", methods=["POST"])

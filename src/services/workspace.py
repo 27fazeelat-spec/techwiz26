@@ -75,7 +75,7 @@ PAGE_PERMISSION = {               # the permission each page needs (mirrors the 
     "ground_truth.security": "security.view", "ground_truth.requirements": "requirements.view",
     "ground_truth.conflicts": "conflicts.view", "ground_truth.matrix_index": "matrix.view", "people.roles": "roles.view",
     "ground_truth.topic_check": "requirements.view",
-    "reports.index": "reports.view", "main.reviewer_dashboard": "review.view", "main.team_dashboard": "dashboard.team",
+    "reports.index": "reports.view", "main.reviewer_dashboard": "review.view", "main.team_dashboard": "dashboard.team", "main.team_people": "dashboard.team",
     "main.employee_dashboard": "dashboard.employee", "learning.modules": "learning.view",
     "learning.progress_page": "learning.view", "learning.assessments": "learning.view", "learning.resources": "learning.view",
     "learning.calendar": "learning.view", "learning.certificate": "learning.view",

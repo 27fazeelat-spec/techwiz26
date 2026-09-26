@@ -20,13 +20,13 @@
 
 {% set ns = namespace(verified=0, attention=0, none=0) %}
 {% for e in people %}{% set p = latest.get(e.id) %}
-  {% if not p %}{% set ns.none = ns.none + 1 %}{% elif plan_tone(p.status) == 'ok' %}{% set ns.verified = ns.verified + 1 %}{% else %}{% set ns.attention = ns.attention + 1 %}{% endif %}
+  {% if not p %}{% set ns.none = ns.none + 1 %}{% elif p.approved_at or not open_by_plan.get(p.id) %}{% set ns.verified = ns.verified + 1 %}{% else %}{% set ns.attention = ns.attention + 1 %}{% endif %}
 {% endfor %}
 
 <section class="libstats rise" aria-label="Plan summary">
   <div class="libstat"><span class="libstat__icon">{{ icon('users', 20) }}</span><b data-count="{{ people|length }}">{{ people|length }}</b><span>employees shown</span></div>
-  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('check', 20) }}</span><b data-count="{{ ns.verified }}">{{ ns.verified }}</b><span>plans ready</span></div>
-  <div class="libstat {{ 'libstat--warn' if ns.attention }}"><span class="libstat__icon">{{ icon('alert', 20) }}</span><b data-count="{{ ns.attention }}">{{ ns.attention }}</b><span>plans need attention</span></div>
+  <div class="libstat libstat--ok"><span class="libstat__icon">{{ icon('check', 20) }}</span><b data-count="{{ ns.verified }}">{{ ns.verified }}</b><span>plans ready or given out</span></div>
+  <div class="libstat {{ 'libstat--warn' if ns.attention }}"><span class="libstat__icon">{{ icon('alert', 20) }}</span><b data-count="{{ ns.attention }}">{{ ns.attention }}</b><span>plans still being checked</span></div>
   <div class="libstat"><span class="libstat__icon">{{ icon('spark', 20) }}</span><b data-count="{{ ns.none }}">{{ ns.none }}</b><span>have no plan yet</span></div>
 </section>
 
@@ -35,7 +35,7 @@
   <div class="segmented" data-filter-group="#people" role="group" aria-label="Plan status">
     <button type="button" class="is-on" data-filter="all" aria-pressed="true">Everyone <span class="count">{{ people|length }}</span></button>
     <button type="button" data-filter="verified" aria-pressed="false">Plan ready <span class="count">{{ ns.verified }}</span></button>
-    <button type="button" data-filter="attention" aria-pressed="false">Needs attention <span class="count">{{ ns.attention }}</span></button>
+    <button type="button" data-filter="attention" aria-pressed="false">Being checked <span class="count">{{ ns.attention }}</span></button>
     <button type="button" data-filter="none" aria-pressed="false">No plan <span class="count">{{ ns.none }}</span></button>
   </div>
 </div>
@@ -65,7 +65,8 @@
 {% if people %}
 <div class="peoplegrid" id="people">
   {% for e in people %}{% set p = latest.get(e.id) %}{% set f = failed.get(e.id) %}
-  {% set state = 'none' if not p else ('verified' if plan_tone(p.status) == 'ok' else 'attention') %}
+  {% set waiting = open_by_plan.get(p.id, 0) if p else 0 %}
+  {% set state = 'none' if not p else ('verified' if p.approved_at or not waiting else 'attention') %}
   <article class="personcard personcard--{{ state }}" data-filter-item data-filter-value="{{ state }}" style="--i: {{ [loop.index0, 12]|min }}">
     <header class="personcard__head">
       <span class="personcard__avatar" aria-hidden="true">{{ initials(e.name) }}</span>
@@ -73,12 +74,18 @@
         <h3>{{ e.name }}{% if e.has_left %} <span class="badge badge--neutral">Left {{ e.left_on.strftime('%d %b %Y') }}</span>{% endif %}</h3>
         <p>{{ e.job_role.name }}</p>
         <p class="muted">{{ e.property.name }} · joins {{ e.joining_date.strftime('%d %b %Y') }} · {{ e.experience_level|lower }}</p>
+        {% if not e.has_left and e.reporting_manager_code not in signers %}<p class="personcard__nomgr" data-tip="Nobody can sign off their tasks until a line manager who can sign in is chosen.">{{ icon('alert', 13) }}No line manager{% if can('employees.edit') %} · <a href="{{ url_for('people.employee_edit', code=e.employee_code) }}">choose one</a>{% endif %}</p>{% endif %}
       </div>
     </header>
 
     <div class="personcard__plan">
       {% if p %}
-        <div class="personcard__status">{{ plan_badge(p.status) }}<a class="mono small" href="{{ url_for('plans.plan_detail', pk=p.id) }}">{{ p.plan_code }} v{{ p.version }}</a></div>
+        <div class="personcard__status">
+          {% if p.approved_at %}<span class="badge badge--ok">Given to {{ e.name.split(' ')[0] }}</span>
+          {% elif not waiting %}<span class="badge badge--ok">Ready to give</span>
+          {% else %}<span class="badge badge--warn">{{ waiting }} part{{ 's' if waiting != 1 }} to check</span>{% endif %}
+          <a class="mono small" href="{{ url_for('plans.plan_detail', pk=p.id) }}">{{ p.plan_code }} v{{ p.version }}</a></div>
+        <p class="personcard__check">App's first check: {{ plan_badge(p.status) }}</p>
         {% if p.score_coverage is not none %}
         <div class="personcard__cover" data-tip="The plan covers {{ p.score_coverage }}% of the rules this job must learn">
           <span>Covers the rules for this job</span><b>{{ p.score_coverage|round|int }}%</b>

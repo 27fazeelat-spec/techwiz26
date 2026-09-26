@@ -194,10 +194,13 @@ def summary(plan, employee, today):
         Progress.plan_id == plan.id, Progress.employee_id == employee.id))}
     by_type, modules = {}, []
     open_due, failed, pending_assessment, other_open, submitted = [], False, 0, 0, 0
+    ready = []                      # (progress row, item, module): every other step in its module is done, so mark it now
     for m in plan.modules:
         tracked = [(i, rows[i.id]) for i in m.items if i.id in rows]
         if not tracked:
             continue
+        if all(r.status in DONE for i, r in tracked if i.item_type != "assessment"):
+            ready += [(r, i, m) for i, r in tracked if i.item_type == "assessment" and r.status not in DONE]
         done = sum(1 for _, r in tracked if r.status in DONE)
         dues = [r.due_date for _, r in tracked if r.due_date and r.status not in DONE]
         quiz = [r for i, r in tracked if i.item_type == "quiz_question"]
@@ -231,7 +234,7 @@ def summary(plan, employee, today):
     status = next(s for s in cfg()["status_order"] if conditions.get(s))
     return {"by_type": by_type, "modules": modules, "done": done, "total": total,
             "pct": round(100.0 * done / total) if total else 0, "status": status, "submitted": submitted,
-            "overdue": sum(1 for d in open_due if d < today)}
+            "overdue": sum(1 for d in open_due if d < today), "assessments_ready": ready}
 
 
 def pending_signoffs(employees):

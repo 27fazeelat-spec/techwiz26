@@ -27,7 +27,7 @@
   <div>
     <p class="eyebrow"><a href="{{ url_for('main.team_dashboard') if can('dashboard.team') else url_for('plans.employees') }}">← {{ 'My team' if can('dashboard.team') else 'Employees' }}</a></p>
     <div class="person"><span class="avatar avatar--lg" aria-hidden="true">{{ initials(employee.name) }}</span>
-      <div><h1>{{ employee.name }}</h1><p class="pagehead__meta" style="margin-top: 2px">{{ employee.job_role.name }} <span class="sep">·</span> {{ employee.property.name }} <span class="sep">·</span> joined {{ employee.joining_date.strftime('%d %b %Y') }}</p></div></div>
+      <div><h1>{{ employee.name }}</h1><p class="pagehead__meta" style="margin-top: 2px">{{ employee.job_role.name }} <span class="sep">·</span> {{ employee.property.name }} <span class="sep">·</span> {{ 'joins' if employee.joining_date > today else 'joined' }} {{ employee.joining_date.strftime('%d %b %Y') }}</p></div></div>
   </div>
 </div>
 
@@ -54,11 +54,11 @@
   </div>
 </section>
 
-{# Sent for sign-off, or an assessment due within a week (or late). Later assessments stay in the full list below. #}
-{% set soon = today + timedelta(days=7) %}
-{% set waiting = [] %}{% for row, item in rows %}{% if row.status == 'submitted' or (item.item_type == 'assessment' and row.status != 'completed' and (not row.due_date or row.due_date <= soon)) %}{% set _ = waiting.append((row, item)) %}{% endif %}{% endfor %}
+{# Sent for sign-off, an assessment whose module is otherwise finished, or an assessment already late. #}
+{% set ready_ids = summary.assessments_ready|map(attribute=0)|map(attribute='id')|list %}
+{% set waiting = [] %}{% for row, item in rows %}{% if row.status == 'submitted' or (item.item_type == 'assessment' and row.status != 'completed' and (row.id in ready_ids or (row.due_date and row.due_date < today))) %}{% set _ = waiting.append((row, item)) %}{% endif %}{% endfor %}
 {% set later = rows|selectattr('1.item_type', 'equalto', 'assessment')|rejectattr('0.status', 'equalto', 'completed')|list|length - waiting|selectattr('1.item_type', 'equalto', 'assessment')|list|length %}
-<section class="acard signoff rise">
+<section class="acard signoff rise" id="signoff">
   <div class="acard__head"><h3>{{ icon('check', 18) }} {{ 'Waiting for your sign-off' if can_sign else 'Waiting for a sign-off' }}</h3><span>{{ waiting|length }} item{{ 's' if waiting|length != 1 }}</span></div>
   {% if waiting %}
   <ul class="signoff__list">
@@ -66,6 +66,8 @@
     <li class="signoff__item" id="wait-{{ item.item_key }}">
       <div class="signoff__what">
         <span class="tag">{{ {'task': 'Task', 'scenario': 'Situation', 'assessment': 'Assessment', 'checklist': 'Checklist'}.get(item.item_type, item.item_type) }}</span>
+        {% if row.id in ready_ids %}<span class="signoff__ready">{{ icon('trophy', 12) }}Module finished · ready to mark</span>{% endif %}
+        <span class="signoff__module">{{ item.module.title|module_title }}</span>
         <p>{{ c.description or c.situation or c.topic }}</p>
         {% if row.note %}<p class="small muted">{{ employee.name.split(' ')[0] }}'s note: {{ row.note }}</p>{% endif %}
         {% if row.due_date %}<p class="small {{ 'is-late' if row.due_date < today }}">Due {{ row.due_date.strftime('%d %b %Y') }}</p>{% endif %}
@@ -75,7 +77,7 @@
     {% endfor %}
   </ul>
   {% else %}<p class="signoff__none">{{ icon('check', 16) }}Nothing is waiting. {{ employee.name.split(' ')[0] }} will send tasks here as they finish them.</p>{% endif %}
-  {% if later > 0 %}<p class="signoff__later">{{ later }} more assessment{{ 's' if later != 1 }} later in the plan, in the full list below.</p>{% endif %}
+  {% if later > 0 %}<p class="signoff__later">{{ later }} more assessment{{ 's' if later != 1 }} will appear here once {{ first }} finishes the rest of that module.</p>{% endif %}
 </section>
 
 <div class="grid-2">

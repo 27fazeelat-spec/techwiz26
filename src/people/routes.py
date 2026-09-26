@@ -107,6 +107,16 @@ def _today():
     return today(current_app.config)
 
 
+def _warn_without_manager(employee):
+    """Tasks go to the line manager for sign-off; say so when nobody who can sign in will receive them."""
+    from database.models import User
+    signer = employee.reporting_manager_code and db.session.scalar(select(User.id).where(
+        User.employee_code == employee.reporting_manager_code, User.app_role == "manager", User.active.is_(True)))
+    if not signer:
+        flash(f"{employee.name} has no line manager who can sign in, so nobody will receive their tasks to sign off. "
+              "Choose one on their form, or sign them off yourself from their progress page.", "error")
+
+
 @bp.route("/employees/new", methods=["GET", "POST"])
 @require_permission("employees.create")
 def employee_new():
@@ -116,7 +126,8 @@ def employee_new():
             e = people.create_employee(request.form, _actor())
             if email:
                 people.set_login(e, email, password, _actor())
-            flash(f"{e.name} added{' with a login for ' + email if email else ''}. Generate a plan when you are ready.", "success")
+            flash(f"{e.name} added{' with a login for ' + email if email else ''}. Make their plan from their card when you are ready.", "success")
+            _warn_without_manager(e)
             return redirect(url_for("plans.employees"))
         except people.PeopleError as exc:
             db.session.rollback()
@@ -134,7 +145,8 @@ def employee_edit(code):
             people.update_employee(employee, request.form, _actor())
             if email:
                 people.set_login(employee, email, password, _actor())
-            flash("Profile saved. Regenerate the plan if the role or experience changed.", "success")
+            flash("Profile saved. Write the plan again if the job or experience changed.", "success")
+            _warn_without_manager(employee)
             return redirect(url_for("plans.employees"))
         except people.PeopleError as exc:
             db.session.rollback()
