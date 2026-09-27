@@ -90,9 +90,13 @@ def build_provider(app_config):
 
 
 def model_names(app_config, phase="outline"):
-    """[main, fallback] for a phase. GEMINI_MODEL overrides the Phase-1 model."""
+    """[main, fallback] for a phase. GEMINI_MODEL overrides the Phase-1 model. When the configured fallback is the
+    phase's own model (module content and the bot), the Phase-1 model is the fallback, so every call has a second model."""
     from config.loader import load_config
     cfg = load_config("genai")
-    main = (app_config.get("GEMINI_MODEL") or cfg["model"]) if phase == "outline" else cfg.get("module_model", cfg["model"])
+    outline = app_config.get("GEMINI_MODEL") or cfg["model"]
+    main = outline if phase == "outline" else cfg.get("module_model", cfg["model"])
     fallback = cfg.get("fallback_model")
+    if not fallback or fallback == main:
+        fallback = outline
     return [main, fallback if fallback != main else None]

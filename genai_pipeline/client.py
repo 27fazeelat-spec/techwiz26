@@ -1,8 +1,10 @@
 """Structured generation with controlled retry, JSON repair and model fallback (SRS Step 39).
 
   - retryable errors (timeout, 5xx): exponential backoff with jitter, max_attempts per model
-  - rate limit (429) or "high demand" (503) with a fallback left: switch to the fallback at once, and skip the busy
-    model for busy_cooldown_seconds, so parallel calls and the next plans do not wait for the same refusal
+  - rate limit (429) or "high demand" (503) with a fallback left: switch to the fallback at once, and try the busy
+    model last for busy_cooldown_seconds, so parallel calls and the next plans do not wait for the same refusal
+  - a call with no answer after hedge_after_seconds is sent again to the other model; the first good answer wins,
+    so one stuck request does not hold a plan for the full timeout
   - invalid JSON / schema mismatch: one repair attempt that sends the validation errors back
   - main model still unavailable: the fallback model gets the same number of attempts
   - non-retryable errors (auth, bad request, model not found): fail fast
@@ -12,6 +14,8 @@ import json
 import random
 import threading
 import time
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from concurrent.futures import TimeoutError as FutureTimeout
 from dataclasses import dataclass, field
 
 from pydantic import ValidationError
@@ -54,25 +58,50 @@ def reset_busy():
         _busy_until.clear()
 
 
+def _generate(provider, model, other, system, prompt, schema, hedge_after, record):
+    """provider.generate, sent again to `other` if no answer arrives within hedge_after seconds."""
+    if not hedge_after:
+        return provider.generate(model, system, prompt, schema)
+    pool = ThreadPoolExecutor(max_workers=2)
+    try:
+        first = pool.submit(provider.generate, model, system, prompt, schema)
+        try:
+            return first.result(timeout=hedge_after)
+        except FutureTimeout:
+            pass
+        record["hedged_to"] = other or model
+        pending, error = {first, pool.submit(provider.generate, other or model, system, prompt, schema)}, None
+        while pending:
+            done, pending = wait(pending, return_when=FIRST_COMPLETED)
+            for future in done:
+                try:
+                    return future.result()
+                except ProviderError as exc:
+                    error = exc
+        raise error
+    finally:
+        pool.shutdown(wait=False)                  # a slower duplicate finishes on its own; its answer is dropped
+
+
 def _schema_errors(exc):
     if isinstance(exc, ValidationError):
         return [{"loc": ".".join(str(p) for p in e["loc"]), "msg": e["msg"]} for e in exc.errors()[:20]]
     return [{"loc": "", "msg": str(exc)[:300]}]
 
 
-def call_structured(provider, models, system, user, schema, sleep=time.sleep):
-    """Return a CallResult. models: [main, fallback] (fallback may be None)."""
+def call_structured(provider, models, system, user, schema, sleep=time.sleep, hedge_after=None):
+    """Return a CallResult. models: [main, fallback] (fallback may be None).
+    hedge_after: seconds before a slow call is also sent to the other model (default from config; 0 = never)."""
     cfg = load_config("genai")["retry"]
+    hedge_after = cfg.get("hedge_after_seconds", 0) if hedge_after is None else hedge_after
     result = CallResult(ok=False)
     started = time.perf_counter()
     repaired = False
-    chain = [m for m in models if m]
+    named = [m for m in models if m]
+    chain = [m for m in named if not _is_busy(m)] + [m for m in named if _is_busy(m)]   # busy models go last
     for position, model in enumerate(chain):
         has_fallback = position < len(chain) - 1
-        if has_fallback and _is_busy(model):
-            result.attempts.append({"model": model, "attempt": 0, "repair": False, "outcome": "skipped",
-                                    "message": "refused as busy or rate-limited moments ago; went to the fallback"})
-            continue
+        other = next((m for m in chain if m != model), None)
         for attempt in range(1, cfg["max_attempts"] + 1):
             prompt = user
             if result.schema_errors and cfg.get("repair_invalid_json") and not repaired:
@@ -81,7 +110,7 @@ def call_structured(provider, models, system, user, schema, sleep=time.sleep):
                 repaired = True
             record = {"model": model, "attempt": attempt, "repair": prompt is not user}
             try:
-                response = provider.generate(model, system, prompt, schema)
+                response = _generate(provider, model, other, system, prompt, schema, hedge_after, record)
             except ProviderError as exc:
                 record.update(outcome="error", error_type=exc.kind, message=str(exc)[:200])
                 result.attempts.append(record)

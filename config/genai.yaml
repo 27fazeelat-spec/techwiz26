@@ -16,7 +16,8 @@ generation:
 retry:
   max_attempts: 2                  # per model; then the fallback model is tried
   base_delay_seconds: 1
-  busy_cooldown_seconds: 120       # a model that answered 503 (high demand) or 429 is skipped this long while a fallback exists
+  busy_cooldown_seconds: 120       # a model that answered 503 (high demand) or 429 is tried last for this long
+  hedge_after_seconds: 20          # no answer yet: send the same request to the other model; the first good answer wins
   repair_invalid_json: true        # one repair attempt that sends the schema errors back
 
 consistency:

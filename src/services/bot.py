@@ -148,7 +148,8 @@ def ask(question, employee, actor, app_config, module_key=None, plan=None, provi
         passages="\n\n".join(f"[{label}] {p['doc_id']} section {p['section_id']}\n{p['text']}" for label, p in given.items()))
     try:
         provider = provider or build_provider(app_config)
-        call = call_structured(provider, model_names(app_config, "module"), system, user, BotAnswer)
+        call = call_structured(provider, model_names(app_config, "module"), system, user, BotAnswer,
+                               hedge_after=load_config("bot").get("hedge_after_seconds", 8))
     except ProviderError as exc:
         call = None
         error = f"{exc.kind}: {exc}"

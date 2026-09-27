@@ -6,6 +6,7 @@ max_question_chars: 300
 daily_limit: 30             # questions per employee per day
 demo_limit: 10              # questions per demo sign-in session (nothing is stored for demo visitors)
 max_answer_chars: 900
+hedge_after_seconds: 8      # answers usually take 1-3 s; after this, the question is also sent to the other model
 # Question words that say nothing about the topic.
 extra_stopwords: [what, whats, how, when, who, why, which, where, need, needs, allowed, allow, happen, happens,
                   tell, please, about, know, does, did, doing, get, got, there, any, much, many, long, ok, okay,

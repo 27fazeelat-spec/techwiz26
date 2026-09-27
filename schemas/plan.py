@@ -36,10 +36,22 @@ def _stage_codes():
     return {s["code"] for s in load_config("stages")["stages"]}
 
 
+def _stage_code(value):
+    """Formatting only: a stage label ('Day 1', 'first 30 days') becomes its code; anything else is left as is."""
+    if not isinstance(value, str):
+        return value
+    wanted = " ".join(value.lower().replace("_", " ").split())
+    for s in load_config("stages")["stages"]:
+        if wanted in (s["code"].lower(), s["label"].lower(), s["label"].lower().replace("first ", "")):
+            return s["code"]
+    return value.strip()
+
+
 class StageField(IdField):
     @field_validator("due_stage", "stage", check_fields=False)
     @classmethod
     def known_stage(cls, value):
+        value = _stage_code(value)
         if value not in _stage_codes():
             raise ValueError(f"unknown stage '{value}'")
         return value
