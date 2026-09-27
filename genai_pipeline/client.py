@@ -1,7 +1,8 @@
 """Structured generation with controlled retry, JSON repair and model fallback (SRS Step 39).
 
   - retryable errors (timeout, 5xx): exponential backoff with jitter, max_attempts per model
-  - rate limit (429): no point retrying the same model within the minute, so switch to the fallback
+  - rate limit (429) or "high demand" (503) with a fallback left: switch to the fallback at once, and skip the busy
+    model for busy_cooldown_seconds, so parallel calls and the next plans do not wait for the same refusal
   - invalid JSON / schema mismatch: one repair attempt that sends the validation errors back
   - main model still unavailable: the fallback model gets the same number of attempts
   - non-retryable errors (auth, bad request, model not found): fail fast
@@ -9,6 +10,7 @@ Every attempt is recorded, so failures and retries are evidence, not guesswork.
 """
 import json
 import random
+import threading
 import time
 from dataclasses import dataclass, field
 
@@ -32,6 +34,26 @@ class CallResult:
     error: str = ""
 
 
+_busy_until = {}                     # model -> time.monotonic() until which it is skipped while a fallback exists
+_busy_lock = threading.Lock()
+
+
+def _is_busy(model):
+    with _busy_lock:
+        return _busy_until.get(model, 0) > time.monotonic()
+
+
+def _mark_busy(model, seconds):
+    with _busy_lock:
+        _busy_until[model] = time.monotonic() + seconds
+
+
+def reset_busy():
+    """Forget busy models (tests)."""
+    with _busy_lock:
+        _busy_until.clear()
+
+
 def _schema_errors(exc):
     if isinstance(exc, ValidationError):
         return [{"loc": ".".join(str(p) for p in e["loc"]), "msg": e["msg"]} for e in exc.errors()[:20]]
@@ -44,7 +66,13 @@ def call_structured(provider, models, system, user, schema, sleep=time.sleep):
     result = CallResult(ok=False)
     started = time.perf_counter()
     repaired = False
-    for model in [m for m in models if m]:
+    chain = [m for m in models if m]
+    for position, model in enumerate(chain):
+        has_fallback = position < len(chain) - 1
+        if has_fallback and _is_busy(model):
+            result.attempts.append({"model": model, "attempt": 0, "repair": False, "outcome": "skipped",
+                                    "message": "refused as busy or rate-limited moments ago; went to the fallback"})
+            continue
         for attempt in range(1, cfg["max_attempts"] + 1):
             prompt = user
             if result.schema_errors and cfg.get("repair_invalid_json") and not repaired:
@@ -58,8 +86,10 @@ def call_structured(provider, models, system, user, schema, sleep=time.sleep):
                 record.update(outcome="error", error_type=exc.kind, message=str(exc)[:200])
                 result.attempts.append(record)
                 result.error = f"{exc.kind}: {exc}"
-                if exc.kind in ("rate_limit", "quota"):
-                    break                              # this model's quota is spent for now: go to the fallback
+                if exc.kind in ("rate_limit", "quota") or (exc.kind == "unavailable" and has_fallback):
+                    if has_fallback:                   # busy or out of quota: retrying the same model only waits
+                        _mark_busy(model, cfg.get("busy_cooldown_seconds", 120))
+                    break
                 if not exc.retryable:
                     if exc.kind == "not_found":
                         break                          # try the fallback model

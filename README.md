@@ -250,6 +250,8 @@ documentation/        requirements analysis, architecture, database design, data
 - [System architecture](documentation/02_Architecture.md)
 - [Database design](documentation/03_Database_Design.md)
 - [Company dataset blueprint](documentation/dataset/README.md)
+- [Onboarding plans for the ten job roles](reports/onboarding_plans/README.md) (export: `python tools/export_onboarding_plans.py <employee codes>`)
+- [Evidence exports: comparison, validation, findings, security, GenAI runs](reports/evidence/README.md)
 - [AI usage declaration](AI_USAGE.md)
 
 ## License

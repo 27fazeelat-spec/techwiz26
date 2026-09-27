@@ -201,8 +201,9 @@ def generate_plan(employee, actor, app_config, provider=None):
     for tpl, sys_p, usr_p, res in calls:
         db.session.add(_run_row(plan, "outline", tpl, sys_p, usr_p, res, bundle,
                                 params={**params, "models": outline_models}))
-    timeline.mark("Gemini outline", t, f"{len(calls)} parallel calls, {sum(len(c[3].attempts) for c in calls)} "
-                                       f"attempts, {sum(c[3].tokens_out for c in calls)} output tokens")
+    tries = sum(1 for c in calls for x in c[3].attempts if x.get("outcome") != "skipped")   # skipped: busy model
+    timeline.mark("Gemini outline", t, f"{len(calls)} parallel calls, {tries} attempts, "
+                                       f"{sum(c[3].tokens_out for c in calls)} output tokens")
     if outline is None:
         error = next(c[3].error for c in calls if not c[3].ok)
         plan.status, plan.error, plan.timeline = "Failed", error, timeline.steps

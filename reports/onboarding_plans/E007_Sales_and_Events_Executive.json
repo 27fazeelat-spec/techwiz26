@@ -1,0 +1,3344 @@
+{
+  "employee": {
+    "code": "E007",
+    "name": "Sofia Petrova",
+    "job_role": "Sales & Events Executive",
+    "job_role_code": "SEE",
+    "property": "Aurelle Downtown Dubai",
+    "department": "Sales & Events",
+    "experience_level": "Intermediate",
+    "shift_pattern": "day",
+    "joining_date": "2026-10-12"
+  },
+  "plan": {
+    "code": "P-E007",
+    "version": 1,
+    "status": "Incomplete",
+    "matrix_version_id": 2,
+    "created_at": "2026-09-23T18:47:06.363116",
+    "given_at": "2026-09-27T13:26:23.499305",
+    "scores": {
+      "coverage": 90.3,
+      "traceability": 99.1,
+      "traceability_mandatory": 99.0,
+      "requirement_consistency": 77.9
+    },
+    "findings": {
+      "missing": 7,
+      "unsupported": 5,
+      "contradictions": 0,
+      "duplicates": 0
+    }
+  },
+  "modules": [
+    {
+      "key": "M01",
+      "title": "Data Privacy",
+      "category": "Data Privacy",
+      "stage": "D1",
+      "purpose": "To ensure Sales & Events Executives handle guest and employee personal data securely and in compliance with Aurelle Hotels & Residences data privacy policies.",
+      "estimated_minutes": 60,
+      "key_concepts": [
+        "Purpose limitation",
+        "PMS scanning and 7-day retention rule",
+        "Prohibition of personal devices and USB drives",
+        "Call and visitor privacy protocols",
+        "Data incident reporting within 1 hour"
+      ],
+      "assessment_topics": [
+        "Data Privacy Compliance for Sales & Events"
+      ],
+      "completion_criteria": "Successfully complete Guest Data Privacy training within Week 1, achieve at least 80% on the quiz, and complete all assigned tasks and checklist items.",
+      "items": [
+        {
+          "key": "P-E007-v1.M01.O01",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Apply data protection principles regarding guest personal data access, identity document scanning, retention limits, and secure communication.",
+            "requirement_ids": [
+              "R-CMP-01-002",
+              "R-GDP-01-001",
+              "R-GDP-01-002",
+              "R-GDP-01-003",
+              "R-GDP-01-004",
+              "R-GDP-01-005",
+              "R-GDP-01-009",
+              "R-ISP-01-007"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.O02",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Comply with employee file access restrictions and properly report any suspected data security incidents.",
+            "requirement_ids": [
+              "R-GDP-01-007",
+              "R-GDP-01-008"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.C01",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "CMP-01",
+          "source_section_id": "2.2",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Complete Guest Data Privacy training",
+            "required": true,
+            "due_stage": "W1",
+            "also_cited": [
+              {
+                "source_section_id": "2.1",
+                "source_document_id": "GDP-01"
+              }
+            ],
+            "responsible": "Sales & Events Executive",
+            "requirement_id": "R-CMP-01-002",
+            "requirement_ids": [
+              "R-CMP-01-002",
+              "R-GDP-01-001"
+            ],
+            "source_section_id": "2.2",
+            "source_document_id": "CMP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.T01",
+          "type": "task",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ISP-01",
+          "source_section_id": "6.2",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "D30",
+            "difficulty": "Intermediate",
+            "description": "Perform a compliance audit of temporary digital folders to ensure no guest identity documents or personal data have been copied to local USB drives, shared network drives, or personal cloud storage.",
+            "requirement_id": "R-ISP-01-007",
+            "requirement_ids": [
+              "R-ISP-01-007"
+            ],
+            "expected_outcome": "Confirmation that all stored data adheres to authorized PMS and HR system boundaries without unauthorized external copies.",
+            "source_section_id": "6.2",
+            "source_document_id": "ISP-01",
+            "completion_criteria": "Submit an audit checklist verifying zero unauthorized copies on removable media or personal cloud storage."
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.S01",
+          "type": "scenario",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "GDP-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "situation": "A corporate client calls the sales office asking for the room number of a VIP executive attending an event, and a visitor arrives at the desk asking if a specific guest is currently checked in.",
+            "requirement_id": "R-GDP-01-005",
+            "requirement_ids": [
+              "R-GDP-01-005"
+            ],
+            "expected_actions": [
+              "Do not disclose the room number or guest name to the caller or visitor.",
+              "Connect incoming calls directly to the room without confirming the guest's presence."
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "GDP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.Q01",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "GDP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Within their first month",
+              "Within their first week",
+              "Within their first 24 hours",
+              "Before the end of probation"
+            ],
+            "question": "When is Guest Data Privacy training required to be completed for roles involving guest personal data?",
+            "difficulty": "Intermediate",
+            "explanation": "Employees whose role involves guest personal data must complete Guest Data Privacy training within their first week.",
+            "requirement_id": "R-GDP-01-001",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-GDP-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "GDP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.Q02",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "GDP-01",
+          "source_section_id": "3.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Guest personal data may be accessed for any general business inquiry across different departments.",
+            "difficulty": "Intermediate",
+            "explanation": "Guest personal data may only be accessed to deliver the guest's stay or for a documented business need.",
+            "requirement_id": "R-GDP-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-GDP-01-002"
+            ],
+            "source_section_id": "3.1",
+            "source_document_id": "GDP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.Q03",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "GDP-01",
+          "source_section_id": "4.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Only into the PMS, while paper copies are prohibited",
+              "Into a secure local folder on your computer desktop",
+              "Onto a shared network drive for department access",
+              "Into a personal mobile messaging app"
+            ],
+            "question": "Where is it permissible to scan a guest's passport or national ID?",
+            "difficulty": "Intermediate",
+            "explanation": "A guest's passport or national ID may be scanned only into the PMS; paper copies are prohibited.",
+            "requirement_id": "R-GDP-01-003",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-GDP-01-003"
+            ],
+            "source_section_id": "4.1",
+            "source_document_id": "GDP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.Q04",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "GDP-01",
+          "source_section_id": "4.2",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "24 hours after check-out",
+              "7 days after check-out",
+              "30 days after check-out",
+              "1 year after check-out"
+            ],
+            "question": "What is the maximum retention period for scanned copies of guest identity documents in the PMS?",
+            "difficulty": "Intermediate",
+            "explanation": "Scanned copies of guest identity documents must be permanently deleted from the PMS no later than 7 days after check-out.",
+            "requirement_id": "R-GDP-01-004",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-GDP-01-004"
+            ],
+            "source_section_id": "4.2",
+            "source_document_id": "GDP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.Q05",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "GDP-01",
+          "source_section_id": "7.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Within 1 hour of discovery",
+              "Within 4 hours of discovery",
+              "Within 12 hours of discovery",
+              "Within 24 hours of discovery"
+            ],
+            "question": "Within what timeframe must any suspected loss or disclosure of guest data be reported to the Duty Manager and IT?",
+            "difficulty": "Intermediate",
+            "explanation": "Any suspected loss or disclosure of guest data must be reported to the Duty Manager and IT within 1 hour of discovery.",
+            "requirement_id": "R-GDP-01-008",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-GDP-01-008"
+            ],
+            "source_section_id": "7.1",
+            "source_document_id": "GDP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.Q06",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "GDP-01",
+          "source_section_id": "6.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Employee personal files may be stored in shared drives for easy team access.",
+            "difficulty": "Intermediate",
+            "explanation": "Employee personal files must be accessed only by Human Resources and stored in the HR system, never in shared drives.",
+            "requirement_id": "R-GDP-01-007",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-GDP-01-007"
+            ],
+            "source_section_id": "6.1",
+            "source_document_id": "GDP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M01.X01",
+          "type": "assessment",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "knowledge",
+            "topic": "Data Privacy Compliance for Sales & Events",
+            "rubric": [
+              {
+                "weight": 50,
+                "criterion": "Understanding of Data Access and Retention Rules",
+                "pass_condition": "Achieves full marks on access and retention scenario questions.",
+                "expected_performance": "Correctly identifies purpose limitation, PMS scanning constraints, and the 7-day post-checkout deletion timeline."
+              },
+              {
+                "weight": 50,
+                "criterion": "Incident Reporting and Security Protocols",
+                "pass_condition": "Accurately identifies reporting channels and prohibited storage methods.",
+                "expected_performance": "Demonstrates knowledge of the 1-hour incident reporting window and prohibitions against personal device storage and USB copying."
+              }
+            ],
+            "requirement_ids": [
+              "R-CMP-01-002",
+              "R-GDP-01-001",
+              "R-GDP-01-002",
+              "R-GDP-01-003",
+              "R-GDP-01-004",
+              "R-GDP-01-005",
+              "R-GDP-01-007",
+              "R-GDP-01-008",
+              "R-GDP-01-009",
+              "R-ISP-01-007"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "M02",
+      "title": "Fire & Life Safety and 2 related areas",
+      "category": "Fire & Life Safety",
+      "stage": "D1",
+      "purpose": "To ensure new employees understand fire and life safety protocols, IT access standards, and employee handbook guidelines on their first day and ongoing.",
+      "estimated_minutes": 60,
+      "key_concepts": [
+        "RACE procedure",
+        "Fire assembly point",
+        "PMS access levels",
+        "Employee handbook acknowledgement",
+        "Staff ID badge"
+      ],
+      "assessment_topics": [
+        "Fire Safety and Onboarding Compliance Verification"
+      ],
+      "completion_criteria": "Completion of all mandatory Day 1 checklists, tasks, and achieving a passing grade on the assessment.",
+      "items": [
+        {
+          "key": "P-E007-v1.M02.O01",
+          "type": "objective",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Identify fire and life safety orientation, assembly point, exit locations, and the RACE procedure without lift usage.",
+            "requirement_ids": [
+              "R-CMP-01-001",
+              "R-FLS-01-001",
+              "R-FLS-01-002",
+              "R-FLS-01-003",
+              "R-FLS-01-004"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.O02",
+          "type": "objective",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Acknowledge the Employee Handbook and maintain proper staff ID badge display while adhering to PMS access limits.",
+            "requirement_ids": [
+              "R-HBK-01-001",
+              "R-HBK-01-002",
+              "R-HBK-01-004",
+              "R-ITA-01-002",
+              "R-ITA-01-006"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.C01",
+          "type": "checklist",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": "CMP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Complete Fire and Life Safety orientation on Day 1",
+            "required": true,
+            "due_stage": "D1",
+            "also_cited": [
+              {
+                "source_section_id": "1.2",
+                "source_document_id": "FLS-01"
+              }
+            ],
+            "responsible": "Employee",
+            "requirement_id": "R-CMP-01-001",
+            "requirement_ids": [
+              "R-CMP-01-001",
+              "R-FLS-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "CMP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.C03",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "FLS-01",
+          "source_section_id": "1.3",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Locate fire assembly point and two nearest fire exits for work area",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-FLS-01-002",
+            "requirement_ids": [
+              "R-FLS-01-002"
+            ],
+            "source_section_id": "1.3",
+            "source_document_id": "FLS-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.C04",
+          "type": "checklist",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": "HBK-01",
+          "source_section_id": "1.2",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Read the Employee Handbook and sign the acknowledgement form on first working day",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-HBK-01-001",
+            "requirement_ids": [
+              "R-HBK-01-001"
+            ],
+            "source_section_id": "1.2",
+            "source_document_id": "HBK-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.C05",
+          "type": "checklist",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": "HBK-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Collect staff ID badge from Human Resources on Day 1",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-HBK-01-002",
+            "requirement_ids": [
+              "R-HBK-01-002"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "HBK-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.C08",
+          "type": "checklist",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": "HBK-01",
+          "source_section_id": "3.2",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Complete the Aurelle Culture e-learning path within first 30 days",
+            "required": false,
+            "due_stage": "D30",
+            "responsible": "Employee",
+            "requirement_id": "R-HBK-01-004",
+            "requirement_ids": [
+              "R-HBK-01-004"
+            ],
+            "source_section_id": "3.2",
+            "source_document_id": "HBK-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.T01",
+          "type": "task",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "FLS-01",
+          "source_section_id": "1.3",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "D1",
+            "difficulty": "Intermediate",
+            "description": "Locate and map out the two nearest fire exits and the fire assembly point for your sales and events work area.",
+            "requirement_id": "R-FLS-01-002",
+            "requirement_ids": [
+              "R-FLS-01-002"
+            ],
+            "expected_outcome": "Clear personal familiarity with escape routes from the work area.",
+            "source_section_id": "1.3",
+            "source_document_id": "FLS-01",
+            "completion_criteria": "Successfully walk the route to the fire assembly point and identify both nearest exits."
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.S01",
+          "type": "scenario",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "FLS-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "situation": "You hear the fire alarm sound while working in your office. Your colleague suggests taking the elevator to reach the ground floor quickly.",
+            "requirement_id": "R-FLS-01-003",
+            "requirement_ids": [
+              "R-FLS-01-003"
+            ],
+            "expected_actions": [
+              "Refuse to use the lifts",
+              "Follow the RACE procedure (Rescue, Alarm, Contain, Evacuate)",
+              "Proceed to the fire assembly point using the stairs"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "FLS-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.Q01",
+          "type": "quiz_question",
+          "stage": "D1",
+          "difficulty": "Intermediate",
+          "source_document_id": "CMP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Within your first week",
+              "On Day 1",
+              "Within 30 days",
+              "Before your first shift review"
+            ],
+            "question": "When must the Fire and Life Safety orientation be completed?",
+            "difficulty": "Intermediate",
+            "explanation": "Fire and Life Safety orientation must be completed on Day 1.",
+            "requirement_id": "R-CMP-01-001",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-CMP-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "CMP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.Q02",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "FLS-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Employees are permitted to use the lifts when hearing the fire alarm if they are in a hurry.",
+            "difficulty": "Intermediate",
+            "explanation": "On hearing the fire alarm, employees must follow the RACE procedure (Rescue, Alarm, Contain, Evacuate) and must not use the lifts.",
+            "requirement_id": "R-FLS-01-003",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-FLS-01-003"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "FLS-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.Q03",
+          "type": "quiz_question",
+          "stage": "D90",
+          "difficulty": "Intermediate",
+          "source_document_id": "FLS-01",
+          "source_section_id": "3.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Every month",
+              "Every three months",
+              "Every six months",
+              "Once a year"
+            ],
+            "question": "How often must all employees participate in a fire drill?",
+            "difficulty": "Intermediate",
+            "explanation": "All employees must participate in a fire drill every six months.",
+            "requirement_id": "R-FLS-01-004",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-FLS-01-004"
+            ],
+            "source_section_id": "3.1",
+            "source_document_id": "FLS-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.Q04",
+          "type": "quiz_question",
+          "stage": "D1",
+          "difficulty": "Intermediate",
+          "source_document_id": "HBK-01",
+          "source_section_id": "1.2",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "On your first working day",
+              "Within your first week",
+              "By Day 30",
+              "Prior to confirmation"
+            ],
+            "question": "When must you read the Employee Handbook and sign the acknowledgement form?",
+            "difficulty": "Intermediate",
+            "explanation": "All employees must read the Employee Handbook and sign the acknowledgement form on their first working day.",
+            "requirement_id": "R-HBK-01-001",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-HBK-01-001"
+            ],
+            "source_section_id": "1.2",
+            "source_document_id": "HBK-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.Q05",
+          "type": "quiz_question",
+          "stage": "D1",
+          "difficulty": "Intermediate",
+          "source_document_id": "HBK-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "From your department head on Day 3",
+              "From Human Resources on Day 1",
+              "From IT on your first week",
+              "From security after probation"
+            ],
+            "question": "When and where must you collect your staff ID badge?",
+            "difficulty": "Intermediate",
+            "explanation": "Employees must collect their staff ID badge from Human Resources on Day 1 and wear it visibly at all times while on property.",
+            "requirement_id": "R-HBK-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-HBK-01-002"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "HBK-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.Q06",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "ITA-01",
+          "source_section_id": "2.3",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Associates can request any access level they prefer",
+              "Access levels are assigned by role, and associates must not request or use a higher level than required",
+              "All sales executives have unrestricted superuser access",
+              "Access levels can be shared between team members"
+            ],
+            "question": "Which of the following applies to PMS access levels?",
+            "difficulty": "Intermediate",
+            "explanation": "PMS access levels are assigned by role; associates must not request or use a higher access level than their role requires.",
+            "requirement_id": "R-ITA-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-ITA-01-002"
+            ],
+            "source_section_id": "2.3",
+            "source_document_id": "ITA-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M02.X01",
+          "type": "assessment",
+          "stage": "D90",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "practical",
+            "topic": "Fire Safety and Onboarding Compliance Verification",
+            "rubric": [
+              {
+                "weight": 40,
+                "criterion": "Orientation Attendance and Handbook Acknowledgement",
+                "pass_condition": "Completed on Day 1 without delay.",
+                "expected_performance": "Attends Day 1 FLS orientation and submits signed handbook acknowledgement form."
+              },
+              {
+                "weight": 30,
+                "criterion": "Work Area Exit and Assembly Point Knowledge",
+                "pass_condition": "Demonstrated accurately during physical check.",
+                "expected_performance": "Correctly identifies the two nearest fire exits and assembly point for work area."
+              },
+              {
+                "weight": 30,
+                "criterion": "IT and Badge Compliance",
+                "pass_condition": "Compliant with badge policy and role access restrictions.",
+                "expected_performance": "Wears staff ID badge visibly and adheres to assigned PMS access level rules."
+              }
+            ],
+            "requirement_ids": [
+              "R-CMP-01-001",
+              "R-FLS-01-001",
+              "R-FLS-01-002",
+              "R-FLS-01-003",
+              "R-FLS-01-004",
+              "R-HBK-01-001",
+              "R-HBK-01-002",
+              "R-HBK-01-004",
+              "R-ITA-01-002",
+              "R-ITA-01-006"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "M03",
+      "title": "HR Operations",
+      "category": "HR Operations",
+      "stage": "D1",
+      "purpose": "To equip employees with essential knowledge regarding Aurelle Hotels & Residences HR policies, working hours, attendance procedures, leave entitlements, grievances, and workplace guidelines.",
+      "estimated_minutes": 60,
+      "key_concepts": [
+        "Probation period",
+        "Standard working hours",
+        "Biometric attendance",
+        "Leave accrual and carry-forward",
+        "Medical certification requirements",
+        "Grievance escalation"
+      ],
+      "assessment_topics": [
+        "HR Operations and Company Policies"
+      ],
+      "completion_criteria": "Successfully complete all required checklist items, practical tasks, and pass the knowledge assessment covering HR operations and leave policies.",
+      "items": [
+        {
+          "key": "P-E007-v1.M03.O01",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Understand probation requirements, standard working hours, attendance procedures, and grievance escalation steps.",
+            "requirement_ids": [
+              "R-HRP-01-001",
+              "R-HRP-01-003",
+              "R-HRP-01-006",
+              "R-HBK-01-003"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.O02",
+          "type": "objective",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Master leave entitlements, accrual rules, request timelines, blackout dates, and sick leave medical certification policies.",
+            "requirement_ids": [
+              "R-LVP-01-001",
+              "R-LVP-01-002",
+              "R-LVP-01-003",
+              "R-LVP-01-004",
+              "R-LVP-01-005"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.O03",
+          "type": "objective",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Comply with illness reporting procedures, internal transfer eligibility rules, and uniform laundering guidelines.",
+            "requirement_ids": [
+              "R-HRP-01-005",
+              "R-HRP-01-007",
+              "R-FAQ-01-002"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C01",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "HRP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge probation period terms and formal review schedule",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-HRP-01-001",
+            "requirement_ids": [
+              "R-HRP-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "HRP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C02",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "HRP-01",
+          "source_section_id": "2.3",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Complete and record the 30-day check-in meeting with reporting manager in the HR portal",
+            "required": true,
+            "due_stage": "D30",
+            "responsible": "Employee",
+            "requirement_id": "R-HRP-01-002",
+            "requirement_ids": [
+              "R-HRP-01-002"
+            ],
+            "source_section_id": "2.3",
+            "source_document_id": "HRP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C03",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "HRP-01",
+          "source_section_id": "3.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge standard working hours and overtime pre-approval rules",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-HRP-01-003",
+            "requirement_ids": [
+              "R-HRP-01-003"
+            ],
+            "source_section_id": "3.1",
+            "source_document_id": "HRP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C04",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "HRP-01",
+          "source_section_id": "4.2",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge illness absence reporting procedure",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-HRP-01-005",
+            "requirement_ids": [
+              "R-HRP-01-005"
+            ],
+            "source_section_id": "4.2",
+            "source_document_id": "HRP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C05",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "HRP-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge workplace grievance escalation procedure",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-HRP-01-006",
+            "requirement_ids": [
+              "R-HRP-01-006"
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "HRP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C07",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "LVP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge annual leave entitlement and monthly accrual rules",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-LVP-01-001",
+            "requirement_ids": [
+              "R-LVP-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C08",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "LVP-01",
+          "source_section_id": "2.4",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge annual leave carry-forward limits and lapse dates",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-LVP-01-002",
+            "requirement_ids": [
+              "R-LVP-01-002"
+            ],
+            "source_section_id": "2.4",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C09",
+          "type": "checklist",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": "LVP-01",
+          "source_section_id": "3.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge annual leave request submission lead time requirements",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-LVP-01-003",
+            "requirement_ids": [
+              "R-LVP-01-003"
+            ],
+            "source_section_id": "3.1",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C10",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "LVP-01",
+          "source_section_id": "3.3",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge property blackout dates restrictions for annual leave",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-LVP-01-004",
+            "requirement_ids": [
+              "R-LVP-01-004"
+            ],
+            "source_section_id": "3.3",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C11",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "LVP-01",
+          "source_section_id": "4.2",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge sick leave medical certificate submission rules",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-LVP-01-005",
+            "requirement_ids": [
+              "R-LVP-01-005"
+            ],
+            "source_section_id": "4.2",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C12",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "HBK-01",
+          "source_section_id": "2.4",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge staff entrance and biometric clock attendance recording rules",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-HBK-01-003",
+            "requirement_ids": [
+              "R-HBK-01-003"
+            ],
+            "source_section_id": "2.4",
+            "source_document_id": "HBK-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.C13",
+          "type": "checklist",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "FAQ-01",
+          "source_section_id": "Q7",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge uniform room laundering policies",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-FAQ-01-002",
+            "requirement_ids": [
+              "R-FAQ-01-002"
+            ],
+            "source_section_id": "Q7",
+            "source_document_id": "FAQ-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.T01",
+          "type": "task",
+          "stage": "W2",
+          "difficulty": "Beginner",
+          "source_document_id": "HBK-01",
+          "source_section_id": "2.4",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "D1",
+            "difficulty": "Beginner",
+            "description": "Log your attendance via the biometric clock at the staff entrance and verify your first shift record.",
+            "requirement_id": "R-HBK-01-003",
+            "requirement_ids": [
+              "R-HBK-01-003"
+            ],
+            "expected_outcome": "Attendance correctly captured on the biometric clock system.",
+            "source_section_id": "2.4",
+            "source_document_id": "HBK-01",
+            "completion_criteria": "Biometric record successfully verified by reporting manager."
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.S01",
+          "type": "scenario",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "LVP-01",
+          "source_section_id": "3.3",
+          "validation_status": "Verified with Warning",
+          "content": {
+            "situation": "You need to request annual leave for a family vacation starting 20 days from now, but you notice your dates overlap with a published property blackout period.",
+            "requirement_id": "R-LVP-01-004",
+            "requirement_ids": [
+              "R-LVP-01-004"
+            ],
+            "expected_actions": [
+              "Recognize that annual leave will not be approved during property blackout dates except in documented emergencies.",
+              "Reschedule your leave outside of blackout dates or obtain emergency documentation if applicable before submitting through the HR portal at least 14 days in advance."
+            ],
+            "source_section_id": "3.3",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.Q01",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "HRP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Three-month probation with reviews at months one and two",
+              "Six-month probation with formal reviews at the end of months one, three and five",
+              "One-year probation with reviews every six months",
+              "Six-month probation with a single review at month six"
+            ],
+            "question": "What is the duration of the probation period for new employees, and when do formal reviews take place?",
+            "difficulty": "Intermediate",
+            "explanation": "New employees must complete a six-month probation period, with formal reviews at the end of months one, three and five.",
+            "requirement_id": "R-HRP-01-001",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-HRP-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "HRP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.Q02",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "LVP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "24 calendar days, accrued yearly on January 1st",
+              "30 calendar days, accrued monthly from the date of joining",
+              "30 working days, accrued quarterly",
+              "21 calendar days, accrued monthly after probation"
+            ],
+            "question": "How many days of annual leave are employees entitled to per year, and how do they accrue?",
+            "difficulty": "Intermediate",
+            "explanation": "Employees are entitled to 30 calendar days of annual leave per year, accrued monthly from the date of joining.",
+            "requirement_id": "R-LVP-01-001",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-LVP-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.Q03",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "LVP-01",
+          "source_section_id": "2.4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Any number of unused annual leave days can be carried forward to the next year without restriction.",
+            "difficulty": "Intermediate",
+            "explanation": "A maximum of 5 unused annual leave days may be carried forward to the next year; any excess days lapse on 31 March.",
+            "requirement_id": "R-LVP-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-LVP-01-002"
+            ],
+            "source_section_id": "2.4",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.Q04",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "LVP-01",
+          "source_section_id": "4.2",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Submitted immediately before taking the leave",
+              "Submitted within 24 hours of starting the leave",
+              "Submitted within 48 hours of return",
+              "Submitted by the end of the calendar month"
+            ],
+            "question": "When must sick leave of more than two consecutive days be supported by a medical certificate?",
+            "difficulty": "Intermediate",
+            "explanation": "Sick leave of more than two consecutive days must be supported by a medical certificate submitted within 48 hours of return.",
+            "requirement_id": "R-LVP-01-005",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-LVP-01-005"
+            ],
+            "source_section_id": "4.2",
+            "source_document_id": "LVP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.Q05",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "FAQ-01",
+          "source_section_id": "Q7",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Wash uniforms at home using mild detergent",
+              "Drop uniforms off at local external dry cleaners",
+              "Return uniforms to the Uniform Room for laundering; washing at home is not permitted",
+              "Wash uniforms in guest laundry facilities on property"
+            ],
+            "question": "What is the correct procedure for uniform cleaning according to company policy?",
+            "difficulty": "Intermediate",
+            "explanation": "Uniforms must be returned to the Uniform Room for laundering; washing uniforms at home is not permitted.",
+            "requirement_id": "R-FAQ-01-002",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-FAQ-01-002"
+            ],
+            "source_section_id": "Q7",
+            "source_document_id": "FAQ-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.Q06",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "HRP-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Escalate immediately to the General Manager on the same day",
+              "Escalate in writing to Human Resources if unresolved within five working days",
+              "File a formal legal complaint after 30 days",
+              "Wait until the annual performance review to discuss it"
+            ],
+            "question": "If a workplace grievance is unresolved with your direct supervisor, what is the required next step and timeline?",
+            "difficulty": "Intermediate",
+            "explanation": "Grievances must be raised first with the direct supervisor and, if unresolved within five working days, escalated in writing to Human Resources.",
+            "requirement_id": "R-HRP-01-006",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-HRP-01-006"
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "HRP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M03.X01",
+          "type": "assessment",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "knowledge",
+            "topic": "HR Operations and Company Policies",
+            "rubric": [
+              {
+                "weight": 25,
+                "criterion": "Comprehension of Attendance and Working Hours",
+                "pass_condition": "Demonstrates full knowledge of attendance protocols without error.",
+                "expected_performance": "Accurately explains standard working hours, biometric clock-in procedures, and illness reporting timelines."
+              },
+              {
+                "weight": 40,
+                "criterion": "Mastery of Leave and Absence Policies",
+                "pass_condition": "Correctly answers leave policy scenarios and rules.",
+                "expected_performance": "Demonstrates understanding of annual leave accrual, carry-forward limits, notice periods, blackout dates, and sick leave medical certificates."
+              },
+              {
+                "weight": 35,
+                "criterion": "Understanding of HR Operations and Grievance Procedures",
+                "pass_condition": "Successfully articulates escalation paths and operational rules.",
+                "expected_performance": "Correctly identifies probation review schedules, grievance escalation timelines, and uniform care rules."
+              }
+            ],
+            "requirement_ids": [
+              "R-HRP-01-001",
+              "R-HRP-01-002",
+              "R-HRP-01-003",
+              "R-HRP-01-005",
+              "R-HRP-01-006",
+              "R-HRP-01-007",
+              "R-LVP-01-001",
+              "R-LVP-01-002",
+              "R-LVP-01-003",
+              "R-LVP-01-004",
+              "R-LVP-01-005",
+              "R-HBK-01-003",
+              "R-FAQ-01-002"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "M04",
+      "title": "Information Security",
+      "category": "Information Security",
+      "stage": "D1",
+      "purpose": "To ensure all employees understand and apply Aurelle Hotels & Residences information security standards, password requirements, multi-factor authentication rules, and proper incident reporting procedures.",
+      "estimated_minutes": 45,
+      "key_concepts": [
+        "Information Security Policy acknowledgement",
+        "Information Security Basics e-learning",
+        "Password standards and multi-factor authentication",
+        "Account security and workstation locking",
+        "Phishing and security incident reporting",
+        "Mobile Device Management and acceptable use"
+      ],
+      "assessment_topics": [
+        "Information Security Policies, Access Controls, and Incident Reporting"
+      ],
+      "completion_criteria": "Successfully complete all tasks, achieve at least 80% on the quiz, complete the e-learning module, and acknowledge the Information Security Policy.",
+      "items": [
+        {
+          "key": "P-E007-v1.M04.O01",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Complete mandatory information security e-learning and acknowledge the Information Security Policy within the designated timeframe.",
+            "requirement_ids": [
+              "R-CMP-01-003",
+              "R-ISP-01-001"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.O02",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Apply correct password standards, multi-factor authentication, account sharing prohibitions, workstation locking, and device connection rules.",
+            "requirement_ids": [
+              "R-ISP-01-002",
+              "R-ISP-01-003",
+              "R-ISP-01-004",
+              "R-ISP-01-005",
+              "R-ITA-01-004"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.O03",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Identify and appropriately report phishing emails, security incidents, and adhere to acceptable business use policies.",
+            "requirement_ids": [
+              "R-ISP-01-006",
+              "R-ISP-01-008",
+              "R-ITA-01-001",
+              "R-ITA-01-005"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.C01",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "CMP-01",
+          "source_section_id": "2.3",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge the Information Security Policy in the HR portal",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Employee",
+            "requirement_id": "R-CMP-01-003",
+            "requirement_ids": [
+              "R-CMP-01-003"
+            ],
+            "source_section_id": "2.3",
+            "source_document_id": "CMP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.T01",
+          "type": "task",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ISP-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "D1",
+            "difficulty": "Intermediate",
+            "description": "Complete the Information Security Basics e-learning module and ensure MFA is enabled for your email and PMS.",
+            "requirement_id": "R-ISP-01-001",
+            "requirement_ids": [
+              "R-ISP-01-001"
+            ],
+            "expected_outcome": "E-learning completed and MFA active on required systems, permitting system access request submission by line manager.",
+            "source_section_id": "2.1",
+            "source_document_id": "ISP-01",
+            "completion_criteria": "E-learning completion certificate generated and MFA verified active on email and PMS."
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.S01",
+          "type": "scenario",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "ISP-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "situation": "You receive an email that looks suspicious, requesting urgent verification of event booking credentials. Concurrently, you notice an unusual login alert on your account.",
+            "requirement_id": "R-ISP-01-006",
+            "requirement_ids": [
+              "R-ISP-01-006"
+            ],
+            "expected_actions": [
+              "Use the Report Phishing button on the suspicious email and do not forward it to colleagues.",
+              "Report the suspected security incident to the IT Service Desk immediately.",
+              "Change your password immediately if compromise is suspected."
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "ISP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.Q01",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ISP-01",
+          "source_section_id": "3.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "8 characters",
+              "10 characters",
+              "12 characters",
+              "16 characters"
+            ],
+            "question": "What is the minimum required length for passwords under Aurelle information security standards?",
+            "difficulty": "Intermediate",
+            "explanation": "Passwords must be at least 12 characters long and must be changed immediately if compromise is suspected.",
+            "requirement_id": "R-ISP-01-002",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-ISP-01-002"
+            ],
+            "source_section_id": "3.1",
+            "source_document_id": "ISP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.Q02",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ISP-01",
+          "source_section_id": "3.3",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Multi-factor authentication must be enabled for email and for the Property Management System (PMS) before first use.",
+            "difficulty": "Intermediate",
+            "explanation": "Multi-factor authentication must be enabled for email and for the Property Management System (PMS) before first use.",
+            "requirement_id": "R-ISP-01-003",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-ISP-01-003"
+            ],
+            "source_section_id": "3.3",
+            "source_document_id": "ISP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.Q03",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ISP-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Forward it to your colleagues to warn them.",
+              "Report it using the Report Phishing button.",
+              "Delete it without reporting.",
+              "Reply to the sender asking for clarification."
+            ],
+            "question": "How should you handle a suspected phishing email?",
+            "difficulty": "Intermediate",
+            "explanation": "Suspected phishing emails must be reported using the Report Phishing button and must not be forwarded to colleagues.",
+            "requirement_id": "R-ISP-01-006",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-ISP-01-006"
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "ISP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.Q04",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ISP-01",
+          "source_section_id": "4.2",
+          "validation_status": "Source Support Missing",
+          "content": {
+            "type": "scenario",
+            "options": [
+              "Leave the screen open since you will only be gone for a few minutes.",
+              "Ask a colleague to watch your desk.",
+              "Lock your workstation.",
+              "Turn off the monitor completely."
+            ],
+            "question": "You need to step away from your computer at your desk in the Sales & Events office to attend a quick meeting in the lobby. What must you do?",
+            "difficulty": "Intermediate",
+            "explanation": "Workstations must be locked whenever they are left unattended.",
+            "requirement_id": "R-ISP-01-005",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-ISP-01-005"
+            ],
+            "source_section_id": "4.2",
+            "source_document_id": "ISP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.Q05",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "ITA-01",
+          "source_section_id": "3.4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Approval from the General Manager",
+              "Enrolment in the Mobile Device Management app",
+              "Installation of the Property Management System",
+              "A written request submitted one week in advance"
+            ],
+            "question": "What is required before connecting a personal device to the staff Wi-Fi?",
+            "difficulty": "Intermediate",
+            "explanation": "Personal devices must not be connected to the staff Wi-Fi without enrolment in the Mobile Device Management app.",
+            "requirement_id": "R-ITA-01-004",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-ITA-01-004"
+            ],
+            "source_section_id": "3.4",
+            "source_document_id": "ITA-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.Q06",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ISP-01",
+          "source_section_id": "3.5",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Users are permitted to share login credentials with temporary team members as long as every action in the PMS is tracked.",
+            "difficulty": "Intermediate",
+            "explanation": "Users must never share login credentials; every action in the PMS must be performed under the user's own account.",
+            "requirement_id": "R-ISP-01-004",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-ISP-01-004"
+            ],
+            "source_section_id": "3.5",
+            "source_document_id": "ISP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M04.X01",
+          "type": "assessment",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "knowledge",
+            "topic": "Information Security Policies, Access Controls, and Incident Reporting",
+            "rubric": [
+              {
+                "weight": 30,
+                "criterion": "Policy Acknowledgment and E-learning Completion",
+                "pass_condition": "Completed within the first week (W1/D1).",
+                "expected_performance": "Demonstrates timely completion of Information Security Basics e-learning and HR policy acknowledgment."
+              },
+              {
+                "weight": 40,
+                "criterion": "System Access and Security Practices",
+                "pass_condition": "All scenario and quiz questions regarding access control answered correctly.",
+                "expected_performance": "Accurately applies password rules, MFA setup, workstation locking, and account non-sharing guidelines."
+              },
+              {
+                "weight": 30,
+                "criterion": "Incident and Phishing Reporting Procedures",
+                "pass_condition": "Identifies use of Report Phishing button and IT Service Desk reporting.",
+                "expected_performance": "Correctly identifies reporting mechanisms for phishing emails and security incidents."
+              }
+            ],
+            "requirement_ids": [
+              "R-CMP-01-003",
+              "R-ISP-01-001",
+              "R-ISP-01-002",
+              "R-ISP-01-003",
+              "R-ISP-01-004",
+              "R-ISP-01-005",
+              "R-ISP-01-006",
+              "R-ISP-01-008",
+              "R-ITA-01-001",
+              "R-ITA-01-004",
+              "R-ITA-01-005"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "M05",
+      "title": "Revenue Management and Incident Escalation",
+      "category": "Revenue Management",
+      "stage": "D1",
+      "purpose": "To equip the Sales & Events Executive with the necessary standards regarding loaded rates, rate overrides, late check-out waivers, and incident reporting and escalation procedures at Aurelle Hotels & Residences.",
+      "estimated_minutes": 45,
+      "key_concepts": [
+        "Loaded rates only",
+        "Rate overrides",
+        "Late check-out waivers",
+        "Injury reporting",
+        "Severity 1 incidents",
+        "Incident reports"
+      ],
+      "assessment_topics": [
+        "Revenue Management and Incident Escalation Policies"
+      ],
+      "completion_criteria": "Successfully complete all checklist items, tasks, and pass the knowledge assessment with a minimum score corresponding to rubric requirements.",
+      "items": [
+        {
+          "key": "P-E007-v1.M05.O01",
+          "type": "objective",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Comply with loaded rate policies and handle rate overrides and late check-out waivers according to Aurelle Revenue Management standards.",
+            "requirement_ids": [
+              "R-REV-01-001",
+              "R-REV-01-002",
+              "R-REV-01-003"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.O02",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Identify and escalate injuries, Severity 1 incidents, and complete incident reports within required timeframes.",
+            "requirement_ids": [
+              "R-ESC-01-001",
+              "R-ESC-01-003",
+              "R-ESC-01-004"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.C01",
+          "type": "checklist",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": "REV-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge and comply with loaded rate requirements prohibiting manual rate creation.",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Sales & Events Executive",
+            "requirement_id": "R-REV-01-001",
+            "requirement_ids": [
+              "R-REV-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "REV-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.C04",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "ESC-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge the 15-minute injury reporting rule to the Manager on Duty.",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Sales & Events Executive",
+            "requirement_id": "R-ESC-01-001",
+            "requirement_ids": [
+              "R-ESC-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.C06",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "ESC-01",
+          "source_section_id": "3.2",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Review end-of-shift Incident Report completion standards for Severity 1 and 2 incidents.",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Sales & Events Executive",
+            "requirement_id": "R-ESC-01-004",
+            "requirement_ids": [
+              "R-ESC-01-004"
+            ],
+            "source_section_id": "3.2",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.T01",
+          "type": "task",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ESC-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "D1",
+            "difficulty": "Intermediate",
+            "description": "Demonstrate understanding of injury reporting timelines by outlining the exact steps and timeframe required when a guest or employee is injured.",
+            "requirement_id": "R-ESC-01-001",
+            "requirement_ids": [
+              "R-ESC-01-001"
+            ],
+            "expected_outcome": "A clear understanding that any injury must be reported to the Manager on Duty within 15 minutes.",
+            "source_section_id": "2.1",
+            "source_document_id": "ESC-01",
+            "completion_criteria": "Successfully document the reporting workflow adhering to the 15-minute rule."
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.S01",
+          "type": "scenario",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "REV-01",
+          "source_section_id": "2.4",
+          "validation_status": "Verified with Warning",
+          "content": {
+            "situation": "A corporate client requests a special group rate that is 20% below the published rate, and a guest reports minor slip-and-fall injuries in the lobby.",
+            "requirement_id": "R-REV-01-002",
+            "requirement_ids": [
+              "R-REV-01-002"
+            ],
+            "expected_actions": [
+              "Recognize that rate overrides above 15% require an approval code from the Duty Manager or a Revenue Analyst.",
+              "Ensure the injury is reported to the Manager on Duty within 15 minutes."
+            ],
+            "source_section_id": "2.4",
+            "source_document_id": "REV-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.Q01",
+          "type": "quiz_question",
+          "stage": "D1",
+          "difficulty": "Intermediate",
+          "source_document_id": "REV-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Sales & Events Executives",
+              "Front Desk Agents",
+              "Revenue Management",
+              "Duty Managers"
+            ],
+            "question": "Who is permitted to create rates in the PMS?",
+            "difficulty": "Intermediate",
+            "explanation": "Only rates loaded in the PMS by Revenue Management may be offered to guests; manual rate creation is prohibited.",
+            "requirement_id": "R-REV-01-001",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-REV-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "REV-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.Q02",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "REV-01",
+          "source_section_id": "2.4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "An email confirmation from the General Manager",
+              "An approval code from the Duty Manager or a Revenue Analyst",
+              "Written agreement signed by the client only",
+              "No special approval is needed if it is corporate business"
+            ],
+            "question": "What is required for rate overrides above 15% of the published rate?",
+            "difficulty": "Intermediate",
+            "explanation": "Rate overrides above 15% of the published rate require an approval code from the Duty Manager or a Revenue Analyst.",
+            "requirement_id": "R-REV-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-REV-01-002"
+            ],
+            "source_section_id": "2.4",
+            "source_document_id": "REV-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.Q03",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "REV-01",
+          "source_section_id": "3.4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Late check-out fees may be waived by any department team member as long as it is noted in an email.",
+            "difficulty": "Intermediate",
+            "explanation": "Late check-out fees may be waived only by the Duty Manager, and the reason for the waiver must be recorded in the PMS.",
+            "requirement_id": "R-REV-01-003",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-REV-01-003"
+            ],
+            "source_section_id": "3.4",
+            "source_document_id": "REV-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.Q04",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ESC-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Within 15 minutes",
+              "Within 30 minutes",
+              "Before the end of the shift",
+              "Within 24 hours"
+            ],
+            "question": "Within what timeframe must any injury to a guest or employee be reported to the Manager on Duty (MOD)?",
+            "difficulty": "Intermediate",
+            "explanation": "Any injury to a guest or employee must be reported to the Manager on Duty (MOD) within 15 minutes.",
+            "requirement_id": "R-ESC-01-001",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-ESC-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.Q05",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ESC-01",
+          "source_section_id": "3.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "15 minutes",
+              "30 minutes",
+              "1 hour",
+              "End of the shift"
+            ],
+            "question": "The Duty Manager must notify the General Manager within what timeframe of any Severity 1 incident?",
+            "difficulty": "Intermediate",
+            "explanation": "The Duty Manager must notify the General Manager within 30 minutes of any Severity 1 incident, meaning death, serious injury, fire, police involvement or a data breach.",
+            "requirement_id": "R-ESC-01-003",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-ESC-01-003"
+            ],
+            "source_section_id": "3.1",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.Q06",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ESC-01",
+          "source_section_id": "3.2",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Within 2 hours",
+              "Before the end of the shift",
+              "Within 24 hours",
+              "Next morning before noon"
+            ],
+            "question": "When must the Duty Manager complete the Incident Report in the incident system for all Severity 1 and 2 incidents?",
+            "difficulty": "Intermediate",
+            "explanation": "The Duty Manager must complete the Incident Report in the incident system before the end of the shift for all Severity 1 and 2 incidents.",
+            "requirement_id": "R-ESC-01-004",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-ESC-01-004"
+            ],
+            "source_section_id": "3.2",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M05.X01",
+          "type": "assessment",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "knowledge",
+            "topic": "Revenue Management and Incident Escalation Policies",
+            "rubric": [
+              {
+                "weight": 35,
+                "criterion": "Loaded Rates and Rate Override Compliance",
+                "pass_condition": "Achieves 100% accuracy on rate policy questions.",
+                "expected_performance": "Demonstrates full compliance with loaded rates and correctly identifies override approval workflows."
+              },
+              {
+                "weight": 65,
+                "criterion": "Incident Escalation and Reporting Timelines",
+                "pass_condition": "Identifies correct timelines and reporting steps without error.",
+                "expected_performance": "Accurately details notification windows for injuries, Severity 1 incidents, and end-of-shift report requirements."
+              }
+            ],
+            "requirement_ids": [
+              "R-REV-01-001",
+              "R-REV-01-002",
+              "R-REV-01-003",
+              "R-ESC-01-001",
+              "R-ESC-01-003",
+              "R-ESC-01-004"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "M06",
+      "title": "Sales & Events",
+      "category": "Sales & Events",
+      "stage": "D1",
+      "purpose": "To equip Sales & Events Executives with the standard procedures for managing enquiries, group proposals, contracts, deposits, site inspections, and event handovers according to Aurelle standards.",
+      "estimated_minutes": 60,
+      "key_concepts": [
+        "Displacement Analysis",
+        "Sales & Catering System",
+        "Contract Change Approval",
+        "Deposit Schedules",
+        "Banquet Event Orders (BEO)",
+        "Event Handover"
+      ],
+      "assessment_topics": [
+        "Sales, Contracts, Proposals, and Event Handover Competency"
+      ],
+      "completion_criteria": "Successfully complete all tasks, achieve 80% or higher on the quiz, and pass the practical assessment rubric.",
+      "items": [
+        {
+          "key": "P-E007-v1.M06.O01",
+          "type": "objective",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Record all group and event bookings in the Sales & Catering system and apply displacement analysis for large groups.",
+            "requirement_ids": [
+              "R-REV-01-006",
+              "R-SAL-01-001"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.O02",
+          "type": "objective",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Execute contract management, secure non-refundable deposits, and prepare complete group proposals according to company templates.",
+            "requirement_ids": [
+              "R-SAL-01-002",
+              "R-SAL-01-003",
+              "R-SAL-01-005"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.O03",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Coordinate banquet event orders, site inspections, account targets, and event handovers with operations.",
+            "requirement_ids": [
+              "R-SAL-01-004",
+              "R-SAL-01-006",
+              "R-ROL-02-005",
+              "R-ROL-02-006"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.C09",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "ROL-02",
+          "source_section_id": "3.4",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Hand over each confirmed event to the Events Operations team at least 14 days before the event",
+            "required": true,
+            "due_stage": "W2",
+            "responsible": "Sales & Events Executive",
+            "requirement_id": "R-ROL-02-006",
+            "requirement_ids": [
+              "R-ROL-02-006"
+            ],
+            "source_section_id": "3.4",
+            "source_document_id": "ROL-02"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.T01",
+          "type": "task",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "SAL-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified with Warning",
+          "content": {
+            "due_stage": "W2",
+            "difficulty": "Intermediate",
+            "description": "Prepare a complete group proposal for a prospective client booking 15 rooms, ensuring it includes the applicable rate, a 30% deposit schedule, and standard cancellation terms.",
+            "requirement_id": "R-SAL-01-005",
+            "requirement_ids": [
+              "R-SAL-01-005"
+            ],
+            "expected_outcome": "A fully compliant group proposal document generated and verified.",
+            "source_section_id": "5.1",
+            "source_document_id": "SAL-01",
+            "completion_criteria": "Proposal contains rate, correct deposit schedule, cancellation terms, and passed displacement calculator evaluation."
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.S01",
+          "type": "scenario",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": "REV-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified with Warning",
+          "content": {
+            "situation": "You receive an enquiry for a group block requesting 12 rooms per night. Before quoting the client, you must follow the correct evaluation procedure.",
+            "requirement_id": "R-REV-01-006",
+            "requirement_ids": [
+              "R-REV-01-006"
+            ],
+            "expected_actions": [
+              "Recognize that group quotes above 10 rooms per night require evaluation with the displacement calculator.",
+              "Run the displacement analysis before offering the quote to the client."
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "REV-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.Q01",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "SAL-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "12 hours of the enquiry",
+              "24 hours of the enquiry",
+              "48 hours of the enquiry",
+              "7 days of the enquiry"
+            ],
+            "question": "Within what timeframe must all group and event bookings be recorded in the Sales & Catering system?",
+            "difficulty": "Intermediate",
+            "explanation": "All group and event bookings must be recorded in the Sales & Catering system within 24 hours of the enquiry.",
+            "requirement_id": "R-SAL-01-001",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-SAL-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "SAL-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.Q02",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "SAL-01",
+          "source_section_id": "3.2",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "General Manager",
+              "Director of Sales",
+              "Finance Director",
+              "Lead Sales Executive"
+            ],
+            "question": "Who must approve any changes to cancellation or payment clauses in a contract?",
+            "difficulty": "Intermediate",
+            "explanation": "Contracts must use the approved Aurelle template; any change to cancellation or payment clauses requires Director of Sales approval.",
+            "requirement_id": "R-SAL-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-SAL-01-002"
+            ],
+            "source_section_id": "3.2",
+            "source_document_id": "SAL-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.Q03",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "SAL-01",
+          "source_section_id": "4.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "A refundable deposit of 10% within 7 days",
+              "A non-refundable deposit of 30% of the total contract value within 14 days of signature",
+              "A non-refundable deposit of 50% within 30 days",
+              "No deposit is required for signed contracts"
+            ],
+            "question": "What is the requirement for securing group bookings with a deposit?",
+            "difficulty": "Intermediate",
+            "explanation": "Group bookings must be secured with a non-refundable deposit of 30% of the total contract value within 14 days of signature.",
+            "requirement_id": "R-SAL-01-003",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-SAL-01-003"
+            ],
+            "source_section_id": "4.1",
+            "source_document_id": "SAL-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.Q04",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "SAL-01",
+          "source_section_id": "4.4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "At least 3 days before the event",
+              "At least 7 days before the event",
+              "At least 14 days before the event",
+              "On the day of the event"
+            ],
+            "question": "When must Banquet Event Orders (BEOs) be issued to all operating departments?",
+            "difficulty": "Intermediate",
+            "explanation": "Banquet Event Orders must be issued to all operating departments at least 7 days before the event.",
+            "requirement_id": "R-SAL-01-004",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-SAL-01-004"
+            ],
+            "source_section_id": "4.4",
+            "source_document_id": "SAL-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.Q05",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "REV-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Group quotes above 10 rooms per night must be evaluated with the displacement calculator before being offered.",
+            "difficulty": "Intermediate",
+            "explanation": "Group quotes above 10 rooms per night must be evaluated with the displacement calculator before being offered.",
+            "requirement_id": "R-REV-01-006",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-REV-01-006"
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "REV-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.Q06",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ROL-02",
+          "source_section_id": "3.4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "At least 7 days before the event",
+              "At least 10 days before the event",
+              "At least 14 days before the event",
+              "At least 30 days before the event"
+            ],
+            "question": "How far in advance must Sales & Events Executives hand over each confirmed event to the Events Operations team?",
+            "difficulty": "Intermediate",
+            "explanation": "Sales & Events Executives must hand over each confirmed event to the Events Operations team at least 14 days before the event.",
+            "requirement_id": "R-ROL-02-006",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-ROL-02-006"
+            ],
+            "source_section_id": "3.4",
+            "source_document_id": "ROL-02"
+          }
+        },
+        {
+          "key": "P-E007-v1.M06.X01",
+          "type": "assessment",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "practical",
+            "topic": "Sales, Contracts, Proposals, and Event Handover Competency",
+            "rubric": [
+              {
+                "weight": 25,
+                "criterion": "Enquiry Recording and Displacement Analysis",
+                "pass_condition": "Successfully demonstrates system entry and displacement evaluation without errors.",
+                "expected_performance": "Accurately records enquiries within 24 hours and correctly runs displacement calculator for group blocks above 10 rooms."
+              },
+              {
+                "weight": 25,
+                "criterion": "Proposal and Contract Compliance",
+                "pass_condition": "Proposal includes all mandatory elements and appropriate Director of Sales approvals where required.",
+                "expected_performance": "Prepares complete proposals with correct deposit and cancellation terms, adhering to template and approval rules."
+              },
+              {
+                "weight": 25,
+                "criterion": "BEO Issuance and Event Handover",
+                "pass_condition": "Timelines for BEO issuance and event handover are strictly met.",
+                "expected_performance": "Issues BEOs 7 days prior and completes event handovers to Operations 14 days prior."
+              },
+              {
+                "weight": 25,
+                "criterion": "Target and Account Management",
+                "pass_condition": "Demonstrates clear understanding of market segment responsibilities and quota adherence.",
+                "expected_performance": "Shows competence in managing assigned market segment accounts and targeting quarterly revenue goals."
+              }
+            ],
+            "requirement_ids": [
+              "R-REV-01-006",
+              "R-SAL-01-001",
+              "R-SAL-01-002",
+              "R-SAL-01-003",
+              "R-SAL-01-004",
+              "R-SAL-01-005",
+              "R-SAL-01-006",
+              "R-ROL-02-005",
+              "R-ROL-02-006"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "M07",
+      "title": "Workplace Conduct",
+      "category": "Workplace Conduct",
+      "stage": "D1",
+      "purpose": "To ensure intermediate employees understand and adhere to Aurelle Hotels & Residences standards regarding professional conduct, uniform, gift limits, anti-harassment, social media privacy, conflict of interest declarations, media escalation, and break locations.",
+      "estimated_minutes": 45,
+      "key_concepts": [
+        "Code of Conduct declaration",
+        "Anti-harassment and discrimination policy",
+        "Unsolicited gift limit",
+        "Uniform and grooming standards",
+        "Guest privacy online",
+        "Conflict of interest declaration",
+        "Media enquiry escalation",
+        "Break locations away from guest areas"
+      ],
+      "assessment_topics": [
+        "Workplace Conduct and Compliance"
+      ],
+      "completion_criteria": "Successful completion of all checklist items, submission of written disclosures where applicable, and achieving a passing grade on the knowledge assessment.",
+      "items": [
+        {
+          "key": "P-E007-v1.M07.O01",
+          "type": "objective",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Comply with Aurelle standards on workplace conduct, professional appearance, and the Code of Conduct declaration.",
+            "requirement_ids": [
+              "R-COC-01-001",
+              "R-COC-01-004",
+              "R-MEM-01-002"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.O02",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Identify and appropriately report harassment, discrimination, gift declarations, and conflicts of interest.",
+            "requirement_ids": [
+              "R-COC-01-002",
+              "R-COC-01-003",
+              "R-COC-01-007"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.O03",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Maintain guest privacy on social media and correctly escalate media enquiries.",
+            "requirement_ids": [
+              "R-COC-01-006",
+              "R-ESC-01-005"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.C01",
+          "type": "checklist",
+          "stage": "D1",
+          "difficulty": null,
+          "source_document_id": "COC-01",
+          "source_section_id": "1.3",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Sign the Code of Conduct declaration before your first shift",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-COC-01-001",
+            "requirement_ids": [
+              "R-COC-01-001"
+            ],
+            "source_section_id": "1.3",
+            "source_document_id": "COC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.C02",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "COC-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge anti-harassment, discrimination, and bullying reporting procedures",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-COC-01-002",
+            "requirement_ids": [
+              "R-COC-01-002"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "COC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.C04",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "COC-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge restrictions on posting guest or back-of-house photos online",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-COC-01-006",
+            "requirement_ids": [
+              "R-COC-01-006"
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "COC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.C05",
+          "type": "checklist",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "ESC-01",
+          "source_section_id": "4.1",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge media enquiry referral protocols to the Communications team",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-ESC-01-005",
+            "requirement_ids": [
+              "R-ESC-01-005"
+            ],
+            "source_section_id": "4.1",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.C06",
+          "type": "checklist",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": "MEM-01",
+          "source_section_id": "para 4",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Acknowledge break policy requiring breaks to be taken away from guest areas",
+            "required": true,
+            "due_stage": "D1",
+            "responsible": "Employee",
+            "requirement_id": "R-MEM-01-002",
+            "requirement_ids": [
+              "R-MEM-01-002"
+            ],
+            "source_section_id": "para 4",
+            "source_document_id": "MEM-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.T01",
+          "type": "task",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "COC-01",
+          "source_section_id": "6.3",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "W1",
+            "difficulty": "Intermediate",
+            "description": "Submit any applicable conflict of interest disclosures (such as family relationships with suppliers) in writing to Human Resources.",
+            "requirement_id": "R-COC-01-007",
+            "requirement_ids": [
+              "R-COC-01-007"
+            ],
+            "expected_outcome": "A written declaration submitted to HR if any conflict of interest exists.",
+            "source_section_id": "6.3",
+            "source_document_id": "COC-01",
+            "completion_criteria": "Written conflict of interest declaration submitted and acknowledged by HR within the first week (W1)."
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.T02",
+          "type": "task",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "COC-01",
+          "source_section_id": "3.2",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "W1",
+            "difficulty": "Intermediate",
+            "description": "Review gift limit guidelines and complete a mock gift declaration form for a gift received from a guest valued above USD 25.",
+            "requirement_id": "R-COC-01-003",
+            "requirement_ids": [
+              "R-COC-01-003"
+            ],
+            "expected_outcome": "Correctly identifying a gift requiring declaration and reporting it to the Duty Manager within 24 hours.",
+            "source_section_id": "3.2",
+            "source_document_id": "COC-01",
+            "completion_criteria": "Gift declaration form accurately prepared and submitted to the Duty Manager within the required 24-hour timeframe."
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.S01",
+          "type": "scenario",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "ESC-01",
+          "source_section_id": "4.1",
+          "validation_status": "Verified with Warning",
+          "content": {
+            "situation": "A journalist approaches you in the hotel lobby asking about a security incident that occurred overnight, and a VIP guest offers you a personalized luxury watch worth USD 150 as a token of appreciation.",
+            "requirement_id": "R-ESC-01-005",
+            "requirement_ids": [
+              "R-ESC-01-005"
+            ],
+            "expected_actions": [
+              "Politely decline to answer any questions from the journalist and refer all enquiries immediately to the Communications team.",
+              "Recognize that the luxury watch exceeds the USD 25 unsolicited gift limit.",
+              "Declare the gift above USD 25 to the Duty Manager within 24 hours."
+            ],
+            "source_section_id": "4.1",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.Q01",
+          "type": "quiz_question",
+          "stage": "D1",
+          "difficulty": "Intermediate",
+          "source_document_id": "COC-01",
+          "source_section_id": "1.3",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "All employees must sign the Code of Conduct declaration before their first shift.",
+            "difficulty": "Intermediate",
+            "explanation": "All employees must sign the Code of Conduct declaration before their first shift as specified in COC-01 [§1.3].",
+            "requirement_id": "R-COC-01-001",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-COC-01-001"
+            ],
+            "source_section_id": "1.3",
+            "source_document_id": "COC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.Q02",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "COC-01",
+          "source_section_id": "3.2",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "USD 10",
+              "USD 25",
+              "USD 50",
+              "USD 100"
+            ],
+            "question": "What is the maximum value for unsolicited gifts from guests that employees may accept without declaring them?",
+            "difficulty": "Intermediate",
+            "explanation": "Employees may accept unsolicited gifts from guests up to a value of USD 25; any gift above this value must be declared to the Duty Manager within 24 hours [COC-01 §3.2].",
+            "requirement_id": "R-COC-01-003",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-COC-01-003"
+            ],
+            "source_section_id": "3.2",
+            "source_document_id": "COC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.Q03",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "COC-01",
+          "source_section_id": "6.3",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "The General Manager",
+              "Human Resources",
+              "The Communications team",
+              "The Duty Manager"
+            ],
+            "question": "Who must receive a declaration in writing regarding conflicts of interest, such as family relationships with suppliers?",
+            "difficulty": "Intermediate",
+            "explanation": "Conflicts of interest, including family relationships with suppliers, must be declared to Human Resources in writing [COC-01 §6.3].",
+            "requirement_id": "R-COC-01-007",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-COC-01-007"
+            ],
+            "source_section_id": "6.3",
+            "source_document_id": "COC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.Q04",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "ESC-01",
+          "source_section_id": "4.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Answer questions transparently to maintain public relations",
+              "Provide a personal statement only",
+              "Refer all enquiries to the Communications team",
+              "Ask the Duty Manager to speak on camera"
+            ],
+            "question": "What must an employee do if approached by the media regarding an incident at the hotel?",
+            "difficulty": "Intermediate",
+            "explanation": "Employees must not speak to the media about any incident and must refer all enquiries to the Communications team [ESC-01 §4.1].",
+            "requirement_id": "R-ESC-01-005",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-ESC-01-005"
+            ],
+            "source_section_id": "4.1",
+            "source_document_id": "ESC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.Q05",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "COC-01",
+          "source_section_id": "5.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "true_false",
+            "options": [
+              "True",
+              "False"
+            ],
+            "question": "Employees are permitted to post photographs of guest rooms on their personal social media accounts.",
+            "difficulty": "Intermediate",
+            "explanation": "Employees must not post photographs of guests, guest rooms or back-of-house areas on personal social media [COC-01 §5.1].",
+            "requirement_id": "R-COC-01-006",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-COC-01-006"
+            ],
+            "source_section_id": "5.1",
+            "source_document_id": "COC-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.Q06",
+          "type": "quiz_question",
+          "stage": "D30",
+          "difficulty": "Intermediate",
+          "source_document_id": "MEM-01",
+          "source_section_id": "para 4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "In the main hotel lobby",
+              "Away from guest areas",
+              "At guest dining tables during off-peak hours",
+              "By the poolside lounge"
+            ],
+            "question": "Where should employees take their breaks according to informal guidance reminders?",
+            "difficulty": "Intermediate",
+            "explanation": "Please remind your teams to take their breaks away from guest areas [MEM-01 para 4].",
+            "requirement_id": "R-MEM-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-MEM-01-002"
+            ],
+            "source_section_id": "para 4",
+            "source_document_id": "MEM-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M07.X01",
+          "type": "assessment",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "knowledge",
+            "topic": "Workplace Conduct and Compliance",
+            "rubric": [
+              {
+                "weight": 25,
+                "criterion": "Code of Conduct and Declarations",
+                "pass_condition": "Accurately answers questions and completes practical tasks regarding declarations.",
+                "expected_performance": "Correctly identifies requirements for signing the declaration and declaring conflicts of interest and gifts."
+              },
+              {
+                "weight": 25,
+                "criterion": "Professional Standards and Media Escalation",
+                "pass_condition": "Correctly states and applies escalation procedures without breaches.",
+                "expected_performance": "Demonstrates full adherence to uniform, social media privacy rules, and media referral protocols."
+              },
+              {
+                "weight": 50,
+                "criterion": "Harassment, Discrimination, and Workplace Etiquette",
+                "pass_condition": "Scores 80% or higher on scenario evaluations and quiz items.",
+                "expected_performance": "Applies reporting channels for harassment and adheres to break and conduct policies."
+              }
+            ],
+            "requirement_ids": [
+              "R-COC-01-001",
+              "R-COC-01-002",
+              "R-COC-01-003",
+              "R-COC-01-004",
+              "R-COC-01-006",
+              "R-COC-01-007",
+              "R-ESC-01-005",
+              "R-MEM-01-002"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "M08",
+      "title": "Finance Operations and 3 related areas",
+      "category": "Finance Operations",
+      "stage": "W1",
+      "purpose": "To equip employees with core operational knowledge regarding finance procedures, health and safety protocols, compliance training standards, and guest inquiry guidelines.",
+      "estimated_minutes": 45,
+      "key_concepts": [
+        "Purchase Orders",
+        "Three-way match",
+        "City ledger credit",
+        "Expense claims",
+        "Heavy loads",
+        "Mandatory training e-learning",
+        "Coaching reviews",
+        "Pet Policy"
+      ],
+      "assessment_topics": [
+        "Finance Operations, Safety and Compliance"
+      ],
+      "completion_criteria": "Complete all required reading, successfully finish tasks and scenarios, and pass the e-learning assessment with a minimum score of 80% within 30 days of joining.",
+      "items": [
+        {
+          "key": "P-E007-v1.M08.O01",
+          "type": "objective",
+          "stage": "W2",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Apply finance procedures correctly regarding purchase orders, invoice matching, city ledger credit limits, and expense claim deadlines.",
+            "requirement_ids": [
+              "R-FIN-01-001",
+              "R-FIN-01-002",
+              "R-FIN-01-003",
+              "R-FIN-01-004"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.O02",
+          "type": "objective",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Adhere to health, safety, and compliance training standards including heavy load handling and assessment passing criteria.",
+            "requirement_ids": [
+              "R-HSP-01-004",
+              "R-CMP-01-004",
+              "R-CMP-01-005"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.O03",
+          "type": "objective",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "text": "Consult appropriate policies when handling guest inquiries such as pet stays.",
+            "requirement_ids": [
+              "R-FAQ-01-004"
+            ]
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.C01",
+          "type": "checklist",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": "FIN-01",
+          "source_section_id": "4.2",
+          "validation_status": "Verified",
+          "content": {
+            "activity": "Submit expense claims with original receipts within 30 days of the expense",
+            "required": true,
+            "due_stage": "W1",
+            "responsible": "Sales & Events Executive",
+            "requirement_id": "R-FIN-01-004",
+            "requirement_ids": [
+              "R-FIN-01-004"
+            ],
+            "source_section_id": "4.2",
+            "source_document_id": "FIN-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.T01",
+          "type": "task",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "FIN-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "due_stage": "W1",
+            "difficulty": "Intermediate",
+            "description": "Review a set of mock purchase requisitions and supplier invoices to verify compliance with purchase order thresholds and three-way match requirements.",
+            "requirement_id": "R-FIN-01-001",
+            "requirement_ids": [
+              "R-FIN-01-001"
+            ],
+            "expected_outcome": "Accurately identify which purchases require an approved PO and verify that supplier invoices match the PO and goods received note.",
+            "source_section_id": "2.1",
+            "source_document_id": "FIN-01",
+            "completion_criteria": "Successfully process 3 mock procurement verification cases without error."
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.S01",
+          "type": "scenario",
+          "stage": "W1",
+          "difficulty": null,
+          "source_document_id": "HSP-01",
+          "source_section_id": "4.1",
+          "validation_status": "Verified with Warning",
+          "content": {
+            "situation": "You are organizing a large event portfolio and need to move a heavy display box weighing 24 kg into the sales suite.",
+            "requirement_id": "R-HSP-01-004",
+            "requirement_ids": [
+              "R-HSP-01-004"
+            ],
+            "expected_actions": [
+              "Recognize that the load exceeds 20 kg",
+              "Arrange for a second person to help lift the load or use a trolley"
+            ],
+            "source_section_id": "4.1",
+            "source_document_id": "HSP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.Q01",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "FIN-01",
+          "source_section_id": "2.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "USD 500",
+              "USD 1,000",
+              "USD 5,000",
+              "USD 10,000"
+            ],
+            "question": "What is the threshold above which purchases require an approved Purchase Order before placing the order with the supplier?",
+            "difficulty": "Intermediate",
+            "explanation": "Purchases above USD 1,000 require an approved Purchase Order before the order is placed with the supplier.",
+            "requirement_id": "R-FIN-01-001",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-FIN-01-001"
+            ],
+            "source_section_id": "2.1",
+            "source_document_id": "FIN-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.Q02",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "FIN-01",
+          "source_section_id": "2.4",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "The departmental budget and manager approval",
+              "The Purchase Order and the goods received note",
+              "The bank statement and tax receipt",
+              "The sales contract and delivery slip"
+            ],
+            "question": "To what must supplier invoices be matched before payment?",
+            "difficulty": "Intermediate",
+            "explanation": "Supplier invoices must be matched to the Purchase Order and the goods received note before payment.",
+            "requirement_id": "R-FIN-01-002",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-FIN-01-002"
+            ],
+            "source_section_id": "2.4",
+            "source_document_id": "FIN-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.Q03",
+          "type": "quiz_question",
+          "stage": "W2",
+          "difficulty": "Intermediate",
+          "source_document_id": "FIN-01",
+          "source_section_id": "3.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "General Manager",
+              "Sales & Events Executive",
+              "Finance Manager",
+              "Director of Operations"
+            ],
+            "question": "Who must approve city ledger credit above USD 5,000 per account before the account is activated?",
+            "difficulty": "Intermediate",
+            "explanation": "City ledger credit above USD 5,000 per account must be approved by the Finance Manager before the account is activated.",
+            "requirement_id": "R-FIN-01-003",
+            "correct_options": [
+              2
+            ],
+            "requirement_ids": [
+              "R-FIN-01-003"
+            ],
+            "source_section_id": "3.1",
+            "source_document_id": "FIN-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.Q04",
+          "type": "quiz_question",
+          "stage": "D30",
+          "difficulty": "Intermediate",
+          "source_document_id": "FIN-01",
+          "source_section_id": "4.2",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "14 days of the expense",
+              "30 days of the expense",
+              "60 days of the expense",
+              "90 days of the expense"
+            ],
+            "question": "What is the maximum timeframe for submitting expense claims with original receipts?",
+            "difficulty": "Intermediate",
+            "explanation": "Expense claims must be submitted with original receipts within 30 days of the expense.",
+            "requirement_id": "R-FIN-01-004",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-FIN-01-004"
+            ],
+            "source_section_id": "4.2",
+            "source_document_id": "FIN-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.Q05",
+          "type": "quiz_question",
+          "stage": "W1",
+          "difficulty": "Intermediate",
+          "source_document_id": "HSP-01",
+          "source_section_id": "4.1",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Lifted quickly by a single person",
+              "Lifted by two people or moved with a trolley",
+              "Split into smaller parts regardless of quantity",
+              "Reported to maintenance before moving"
+            ],
+            "question": "How should loads heavier than 20 kg be handled according to safety guidelines?",
+            "difficulty": "Intermediate",
+            "explanation": "Loads heavier than 20 kg must be lifted by two people or moved with a trolley.",
+            "requirement_id": "R-HSP-01-004",
+            "correct_options": [
+              1
+            ],
+            "requirement_ids": [
+              "R-HSP-01-004"
+            ],
+            "source_section_id": "4.1",
+            "source_document_id": "HSP-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.Q06",
+          "type": "quiz_question",
+          "stage": "D30",
+          "difficulty": "Intermediate",
+          "source_document_id": "FAQ-01",
+          "source_section_id": "Q15",
+          "validation_status": "Verified",
+          "content": {
+            "type": "multiple_choice",
+            "options": [
+              "Check the Pet Policy (PET-01)",
+              "Ask the guest to keep the pet outside",
+              "Allow the pet for a daily fee",
+              "Contact housekeeping immediately"
+            ],
+            "question": "What action must be taken if you are unsure whether a guest's pet can stay?",
+            "difficulty": "Intermediate",
+            "explanation": "If you are unsure whether a guest's pet can stay, check the Pet Policy (PET-01).",
+            "requirement_id": "R-FAQ-01-004",
+            "correct_options": [
+              0
+            ],
+            "requirement_ids": [
+              "R-FAQ-01-004"
+            ],
+            "source_section_id": "Q15",
+            "source_document_id": "FAQ-01"
+          }
+        },
+        {
+          "key": "P-E007-v1.M08.X01",
+          "type": "assessment",
+          "stage": "D30",
+          "difficulty": null,
+          "source_document_id": null,
+          "source_section_id": null,
+          "validation_status": "Verified",
+          "content": {
+            "type": "knowledge",
+            "topic": "Finance Operations, Safety and Compliance",
+            "rubric": [
+              {
+                "weight": 50,
+                "criterion": "Understanding of Finance Procedures and Thresholds",
+                "pass_condition": "Achieve at least 80% on the overall assessment within 30 days.",
+                "expected_performance": "Accurately answers questions and executes tasks related to purchase orders, three-way matching, city ledger limits, and expense deadlines."
+              },
+              {
+                "weight": 50,
+                "criterion": "Adherence to Safety and Compliance Guidelines",
+                "pass_condition": "Achieve at least 80% on the overall assessment within 30 days.",
+                "expected_performance": "Demonstrates correct knowledge of heavy lifting protocols, compliance e-learning pass marks, and policy consultation requirements."
+              }
+            ],
+            "requirement_ids": [
+              "R-FIN-01-001",
+              "R-FIN-01-002",
+              "R-FIN-01-003",
+              "R-FIN-01-004",
+              "R-HSP-01-004",
+              "R-FAQ-01-004",
+              "R-CMP-01-004",
+              "R-CMP-01-005"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

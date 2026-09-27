@@ -3,7 +3,9 @@ import json
 
 from pydantic import BaseModel
 
-from genai_pipeline.client import call_structured
+import pytest
+
+from genai_pipeline.client import call_structured, reset_busy
 from genai_pipeline.prompts import load
 from genai_pipeline.providers import classify
 from tests.fakes import SequenceProvider, rate_limited, unauthorised, unavailable
@@ -17,9 +19,16 @@ GOOD = json.dumps({"answer": "ok"})
 MODELS = ["main-model", "fallback-model"]
 
 
-def call(outcomes):
+@pytest.fixture(autouse=True)
+def fresh_busy_list():
+    reset_busy()
+    yield
+    reset_busy()
+
+
+def call(outcomes, models=MODELS):
     provider = SequenceProvider(outcomes)
-    return call_structured(provider, MODELS, "system", "user", Small, sleep=lambda s: None), provider
+    return call_structured(provider, models, "system", "user", Small, sleep=lambda s: None), provider
 
 
 def test_success_first_time():
@@ -27,10 +36,21 @@ def test_success_first_time():
     assert result.ok and result.parsed.answer == "ok" and len(result.attempts) == 1
 
 
-def test_503_is_retried_then_succeeds():
-    result, provider = call([unavailable(), GOOD])
+def test_503_on_the_only_model_is_retried_then_succeeds():
+    result, provider = call([unavailable(), GOOD], models=["main-model", None])
     assert result.ok and provider.models == ["main-model", "main-model"]
     assert [a["outcome"] for a in result.attempts] == ["error", "ok"]
+
+
+def test_a_busy_main_model_goes_to_the_fallback_and_is_skipped_for_a_while():
+    result, provider = call([unavailable(), GOOD])
+    assert result.ok and provider.models == ["main-model", "fallback-model"]
+    again, provider = call([GOOD])                       # the next call does not wait for the same refusal
+    assert again.ok and provider.models == ["fallback-model"]
+    assert [a["outcome"] for a in again.attempts] == ["skipped", "ok"]
+    reset_busy()
+    third, provider = call([GOOD])
+    assert provider.models == ["main-model"]
 
 
 def test_rate_limit_goes_straight_to_fallback():
@@ -55,7 +75,7 @@ def test_auth_error_fails_fast():
 
 def test_retries_are_bounded():
     result, provider = call([unavailable()] * 10)
-    assert not result.ok and len(provider.models) == 4          # 2 per model, main + fallback
+    assert not result.ok and len(provider.models) == 3          # main once (busy), then 2 on the fallback
 
 
 def test_error_classification():
