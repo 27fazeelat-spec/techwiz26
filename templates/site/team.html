@@ -1,0 +1,38 @@
+{% extends "site/base_site.html" %}
+{% block title %}Our team{% endblock %}
+{% block body_class %}page-dark-top{% endblock %}
+{% block content %}
+<section class="phero phero--dark dark" data-spotlight>
+  <div class="hero__grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="kicker reveal">Our team</p>
+    <h1 class="reveal" data-split>The people behind SkillSprint AI.</h1>
+    <p class="lead reveal">Four of us built SkillSprint AI for the TechWiz Generative AI PowerPlay competition.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="teamx">
+      {% for name in team %}
+      {% set words = name.split() %}
+      <article class="teamx__card reveal" data-spot style="--i: {{ loop.index0 }}">
+        <span class="teamx__avatar teamx__avatar--{{ loop.index }}" aria-hidden="true">{{ (words[-2][0] ~ words[-1][0]) if words|length > 2 else (words[0][0] ~ words[-1][0]) }}</span>
+        <h3>{{ name }}</h3>
+        <p>SkillSprint AI team</p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--cta">
+  <div class="wrap"><div class="cta dark reveal" data-spotlight>
+    <div><h2>See what we built</h2><p>Start with the platform overview, or sign in and open a plan.</p></div>
+    <div class="cta__actions">
+      <a class="sbtn sbtn--primary sbtn--lg" href="{{ url_for('site.platform') }}" data-magnetic data-cursor="Explore">See the platform <span class="sbtn__arrow">→</span></a>
+      <a class="sbtn sbtn--glass sbtn--lg" href="{{ url_for('auth.login') }}" data-magnetic>Sign in</a>
+    </div>
+  </div></div>
+</section>
+{% endblock %}

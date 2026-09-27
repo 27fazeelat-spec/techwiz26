@@ -32,6 +32,7 @@
       <a href="{{ url_for('site.platform') }}" class="{{ 'is-active' if ep == 'site.platform' }}">Platform</a>
       <a href="{{ url_for('site.trust') }}" class="{{ 'is-active' if ep == 'site.trust' }}">Trust &amp; security</a>
       <a href="{{ url_for('site.about') }}" class="{{ 'is-active' if ep == 'site.about' }}">About</a>
+      <a href="{{ url_for('site.team') }}" class="{{ 'is-active' if ep == 'site.team' }}">Our team</a>
     </nav>
     <div class="nav__actions">
       <button type="button" class="nav__icon" data-theme-toggle aria-label="Switch theme" data-cursor="Theme">
@@ -46,6 +47,7 @@
     <a href="{{ url_for('site.platform') }}">Platform</a>
     <a href="{{ url_for('site.trust') }}">Trust &amp; security</a>
     <a href="{{ url_for('site.about') }}">About</a>
+    <a href="{{ url_for('site.team') }}">Our team</a>
     <a href="{{ url_for('site.demo') }}">Request a demo</a>
     <a href="{{ url_for('auth.login') }}">Sign in</a>
   </div>
@@ -69,7 +71,7 @@
     <div class="foot__cols">
       <div><h4>Product</h4><a href="{{ url_for('site.platform') }}">Platform</a><a href="{{ url_for('site.platform') }}#pipeline">The verification pipeline</a><a href="{{ url_for('site.platform') }}#learning">Learning &amp; progress</a></div>
       <div><h4>Trust</h4><a href="{{ url_for('site.trust') }}">Security</a><a href="{{ url_for('site.trust') }}#audit">Audit trail</a><a href="{{ url_for('site.trust') }}#ai">How AI is used</a></div>
-      <div><h4>Project</h4><a href="{{ url_for('site.about') }}">About</a><a href="{{ url_for('auth.login') }}">Sign in</a></div>
+      <div><h4>Project</h4><a href="{{ url_for('site.about') }}">About</a><a href="{{ url_for('site.team') }}">Our team</a><a href="{{ url_for('auth.login') }}">Sign in</a></div>
     </div>
   </div>
   <div class="foot__base"><span>SkillSprint AI · built for TechWiz Generative AI PowerPlay</span><span>Demo workspace: Aurelle Hotels &amp; Residences (fictional)</span></div>

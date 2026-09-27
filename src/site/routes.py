@@ -14,7 +14,7 @@ def _test_count():
 
 
 # Figures measured on the Aurelle sample collection (see reports/ and the test suite); nothing here is invented.
-MEASURED = {"recall": 99.5, "precision": 100, "attacks": 12, "conflicts": 12, "documents": 44, "requirements": 185,
+MEASURED = {"recall": 99.5, "precision": 100, "attacks": 12, "conflicts": 13, "documents": 44, "requirements": 185,
             "roles": 10, "rules": 17, "tests": _test_count() or 157}
 
 
@@ -38,6 +38,14 @@ def trust():
 @bp.route("/about")
 def about():
     return render_template("site/about.html", m=MEASURED)
+
+
+TEAM = ["Syeda Fazeelat Ayaz", "Syed Muhammad Saqib Ali", "Talha Haroon", "Shayan Uddin"]
+
+
+@bp.route("/our-team")                             # /team is the line manager's page inside the workspace
+def team():
+    return render_template("site/team.html", m=MEASURED, team=TEAM)
 
 
 @bp.route("/demo", methods=["GET", "POST"])
