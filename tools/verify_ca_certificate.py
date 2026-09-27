@@ -1,6 +1,6 @@
 """Check a database CA certificate file against the live PostgreSQL server in DATABASE_URL.
 
-Usage:  python tools/verify_ca_certificate.py config/prod-ca-2021.crt
+Usage:  python tools/verify_ca_certificate.py config/<ca-file>.crt
 
 Prints the certificate's subject and SHA-256 fingerprint, then performs a fully verified TLS
 handshake (certificate chain + hostname) with the server. Read-only: no database login happens.

@@ -21,12 +21,9 @@ def _connection_help(url, exc):
                f"({type(exc.orig).__name__ if getattr(exc, 'orig', None) else type(exc).__name__}).")
     if "CERTIFICATE_VERIFY_FAILED" in str(exc):
         message += (" The server's TLS certificate could not be verified. Set DATABASE_SSL_ROOT_CERT to the "
-                    "provider's CA certificate file (Supabase: Project Settings > Database > SSL Configuration).")
-    elif parts.hostname and parts.hostname.startswith("db.") and parts.hostname.endswith(".supabase.co"):
-        message += (" Supabase direct-connection hosts are IPv6-only. On an IPv4 network, use the "
-                    "Session pooler connection string (Supabase dashboard > Connect > Session pooler).")
+                    "database server's CA certificate file.")
     else:
-        message += " Check DATABASE_URL, network access and that the database server is running."
+        message += " Check DATABASE_URL, network access and that the database server is running (locally: pg_ctl start -D <data folder>)."
     return message
 
 

@@ -13,9 +13,9 @@ def test_provider_urls_get_the_pg8000_driver():
 
 
 def test_unencoded_special_characters_in_password_are_encoded():
-    url = database_url("postgresql://postgres:@pa#ss/w?rd@db.example.supabase.co:5432/postgres")   # secret-scan: fake
+    url = database_url("postgresql://postgres:@pa#ss/w?rd@db.example.com:5432/postgres")   # secret-scan: fake
     parts = urlsplit(url)
-    assert parts.hostname == "db.example.supabase.co" and parts.port == 5432
+    assert parts.hostname == "db.example.com" and parts.port == 5432
     assert parts.path == "/postgres"
     assert unquote(parts.password) == "@pa#ss/w?rd"
 

@@ -67,8 +67,8 @@ def verified_context(cafile=None):
     """TLS context that verifies the certificate chain, expiry and hostname.
 
     Python 3.13+ also enables VERIFY_X509_STRICT by default, which additionally rejects CA
-    certificates without a keyUsage extension. Some providers' long-lived roots (including
-    "Supabase Root 2021 CA") predate that convention, so that single strictness flag is cleared.
+    certificates without a keyUsage extension. Some long-lived private roots predate that
+    convention, so that single strictness flag is cleared.
     Chain-of-trust, validity-period and hostname checks all remain in force.
     """
     context = ssl.create_default_context(cafile=cafile)
@@ -80,7 +80,7 @@ def engine_options(url):
     """Engine settings for a given URL.
 
     Remote PostgreSQL connections always use TLS with full certificate verification: against
-    DATABASE_SSL_ROOT_CERT when set (Supabase's own CA), otherwise the system trust store.
+    DATABASE_SSL_ROOT_CERT when set (the server's own CA), otherwise the system trust store.
     There is deliberately no option to switch verification off.
     """
     options = {"pool_pre_ping": True}

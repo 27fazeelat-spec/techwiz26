@@ -6,13 +6,12 @@ SkillSprint AI turns an organisation's policies, SOPs, role descriptions and FAQ
 
 The demonstration organisation is **Aurelle Hotels & Residences**, a fictional hotel group with 12 properties in three countries, 10 job roles and 31 policy documents.
 
-> Built for the TechWiz *Generative AI PowerPlay* competition (theme: OnboardVerse).
+> Built for the TechWiz *Generative AI PowerPlay*.
 
 | | |
 |---|---|
-| Live application | *link added at submission* (deployed on Railway, Singapore region) |
-| Demonstration video | *link added at submission* |
-| Technical blog | *link added at submission* |
+| Live application | (deployed on Railway) |
+| Technical blog |  |
 | Evaluator instructions | [Evaluating SkillSprint](#evaluating-skillsprint) below |
 | Hidden-document rehearsal | [`hidden_test_ready/`](hidden_test_ready/README.md) and [`reports/hidden_rehearsal.md`](reports/hidden_rehearsal.md) |
 
@@ -61,9 +60,9 @@ Set `SKILLSPRINT_TODAY=2026-09-23` in `.env` to reproduce the dataset's referenc
 
 ## Using PostgreSQL
 
-1. Create a PostgreSQL database: locally, or on a managed service such as Render PostgreSQL, Neon or Supabase.
-2. In `.env`, set `DATABASE_URL=postgresql+pg8000://<user>:<password>@<host>:5432/<database>` and choose a `SECRET_KEY`. A plain `postgres://` URL from a hosting provider also works; it is converted automatically.
-   **Supabase:** use the **Session pooler** string (dashboard → *Connect* → *Session pooler*, host `aws-…pooler.supabase.com`, user `postgres.<project-ref>`). The *direct connection* host `db.<project-ref>.supabase.co` is IPv6-only and fails on IPv4 networks. Passwords with characters such as `@` or `#` can be pasted as they are; the app encodes them. TLS is always on and verified for remote databases. Supabase uses its own CA, so download it (*Project Settings* → *Database* → *SSL Configuration* → *Download certificate*), save it as `config/prod-ca-2021.crt` and set `DATABASE_SSL_ROOT_CERT=config/prod-ca-2021.crt`. Check the file with `python tools/verify_ca_certificate.py config/prod-ca-2021.crt`, and the app's connection with `python -m flask --app run db-check` (read-only).
+1. Install PostgreSQL (version 14 or later) and create a database, for example `skillsprint`. If PostgreSQL is not installed as a service, start it with `pg_ctl start -D <data folder> -l <data folder>/server.log` before running the app.
+2. In `.env`, set `DATABASE_URL=postgresql+pg8000://<user>:<password>@localhost:5432/skillsprint` and choose a `SECRET_KEY`. A plain `postgresql://` or `postgres://` URL also works; it is converted automatically. Passwords with characters such as `@` or `#` can be pasted as they are; the app encodes them. Check the connection with `python -m flask --app run db-check` (read-only).
+   A database on another machine is always reached over verified TLS (certificate chain and hostname). If its certificate is not signed by a public CA, save the server's CA certificate in `config/` and set `DATABASE_SSL_ROOT_CERT` to it; `python tools/verify_ca_certificate.py <file>` checks the file against the server.
 3. Tables are created on first start. For production, run `database/postgres_hardening.sql` so the application's database role can only insert into the audit log.
 4. Load data through the normal pipeline:
 
@@ -81,20 +80,20 @@ API keys and passwords live only in `.env` (git-ignored) or the host's secret st
 
 ## Deployment
 
-The live application runs on Railway (Singapore) with the database on Supabase PostgreSQL (Tokyo).
+The application is deployed as a Railway web service with a PostgreSQL database.
 
-1. Create a web service from this repository.
+1. Create a web service from this repository and a PostgreSQL database the service can reach.
 2. Start command: `gunicorn -w 2 --threads 4 -b 0.0.0.0:$PORT run:app`
-3. Variables: `SECRET_KEY`, `DATABASE_URL` (Supabase session pooler), `DATABASE_SSL_ROOT_CERT=config/prod-ca-2021.crt`, `GEMINI_API_KEY`, `GEMINI_MODEL`. For e-mail (demo logins), either `BREVO_API_KEY`, `MAIL_FROM` and `MAIL_FROM_NAME` (HTTPS, works where SMTP is blocked, as on Railway) or `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`.
-4. Run `database/postgres_hardening.sql` once, then the seed and ingest commands above against the hosted database.
+3. Variables: `SECRET_KEY`, `DATABASE_URL`, `GEMINI_API_KEY`, `GEMINI_MODEL`, and `DATABASE_SSL_ROOT_CERT` only if the database's certificate needs its own CA file. For e-mail (demo logins), either `BREVO_API_KEY`, `MAIL_FROM` and `MAIL_FROM_NAME` (HTTPS, works where SMTP is blocked, as on Railway) or `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`.
+4. Run `database/postgres_hardening.sql` once, then the seed and ingest commands above against the hosted database (or restore a `pg_dump` of the local database).
 5. Create the SkillSprint console login with `python -m flask --app run console-user <email>`.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---|---|
-| `could not translate host name` / timeout to Supabase | Use the *Session pooler* host, not `db.<ref>.supabase.co` (IPv6 only) |
-| `certificate verify failed` | `DATABASE_SSL_ROOT_CERT` must point to Supabase's CA; check it with `tools/verify_ca_certificate.py` |
+| `Cannot connect to the database at localhost:5432` | The local PostgreSQL server is not running: start it with `pg_ctl start -D <data folder>` |
+| `certificate verify failed` (remote database) | Set `DATABASE_SSL_ROOT_CERT` to the server's CA file; check it with `tools/verify_ca_certificate.py` |
 | Plans stay *Failed* with a Gemini error | Check `GEMINI_API_KEY` and `GEMINI_MODEL`; the error text is on the plan page and in the GenAI log |
 | "The email could not be sent" | On hosts that block SMTP, set the Brevo variables instead |
 | Account locked | Wait 15 minutes, or `python -m flask --app run set-password <email>` |
