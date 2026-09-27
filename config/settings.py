@@ -13,6 +13,8 @@ load_dotenv()
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL_SQLITE = f"sqlite:///{(ROOT / 'instance' / 'skillsprint.db').as_posix()}"
 LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
+# A host's private network: traffic never leaves it (Railway's is encrypted), so the database is reached like a local one.
+PRIVATE_HOST_SUFFIXES = (".railway.internal",)
 
 
 def _encode_credentials(url):
@@ -81,6 +83,7 @@ def engine_options(url):
 
     Remote PostgreSQL connections always use TLS with full certificate verification: against
     DATABASE_SSL_ROOT_CERT when set (the server's own CA), otherwise the system trust store.
+    A database on this machine or on the host's private network (for example postgres.railway.internal) is not remote.
     There is deliberately no option to switch verification off.
     """
     options = {"pool_pre_ping": True}
@@ -90,7 +93,8 @@ def engine_options(url):
     # database). database.install_idle_ping pings only connections that sat idle, which is when the
     # pooler may have dropped them.
     options.update(pool_pre_ping=False, pool_size=5, max_overflow=5, pool_recycle=1800)
-    if (urlsplit(url).hostname or "") in LOCAL_HOSTS:
+    host = urlsplit(url).hostname or ""
+    if host in LOCAL_HOSTS or host.endswith(PRIVATE_HOST_SUFFIXES):
         return options
     options["connect_args"] = {"ssl_context": verified_context(root_cert_path()), "timeout": 15}
     return options

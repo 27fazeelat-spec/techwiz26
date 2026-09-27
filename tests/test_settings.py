@@ -47,3 +47,10 @@ def test_verification_is_on_by_default(monkeypatch):
 
 def test_local_postgres_does_not_force_tls():
     assert "connect_args" not in engine_options(database_url("postgresql://u:p@localhost:5432/d"))   # secret-scan: fake
+
+
+def test_a_private_network_database_does_not_force_tls():
+    url = database_url("postgresql://u:p@postgres.railway.internal:5432/railway")   # secret-scan: fake
+    assert "connect_args" not in engine_options(url)
+    public = database_url("postgresql://u:p@postgres.railway.internal.example.com:5432/d")   # secret-scan: fake
+    assert "ssl_context" in engine_options(public)["connect_args"]
