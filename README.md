@@ -31,7 +31,7 @@ The demonstration organisation is **Aurelle Hotels & Residences**, a fictional h
 4. **Configuration.** `cp .env.example .env` (Windows: `copy .env.example .env`) and fill in:
    - `SECRET_KEY`: a long random string;
    - `GEMINI_API_KEY`: a key from Google AI Studio (only needed to generate plans; everything else works without it);
-   - `DATABASE_URL`: leave empty for the local SQLite file, or see [Using PostgreSQL](#using-postgresql).
+   - `DATABASE_URL`: your PostgreSQL database (see [Using PostgreSQL](#using-postgresql)). Left empty, the app falls back to a local SQLite file, which is enough for a quick look.
 
    API keys and passwords go only in `.env` (git-ignored) or the host's secret store, never in the code or the repository.
 5. **Documents.** Nothing to do locally: the 44 sample documents in `sample_documents/` are ingested on first start. For PostgreSQL, load them with the commands below.
@@ -152,26 +152,26 @@ Sign in as `admin@aurelle.example` (all steps) or the role named in each step.
 | # | Step | Where |
 |---|---|---|
 | 1 | **Login** | `/login`. One page for everyone; the sidebar shows only what the role may open |
-| 2 | **Upload documents** | *Documents > Upload*. Metadata is read from the document, the form, or inferred, and the source of each value is shown. The security scan runs on upload |
-| 3 | **Create role** | *People > Job roles > Add a role*. Preview which requirements it picks up, then activate |
-| 4 | **Create employee** | *People > Employees > Add*. The login e-mail and password are set here by an administrator |
-| 5 | **Generate requirement matrix** | *Ground truth > Role matrix > Build new draft*, review the requirements, then *Approve* |
-| 6 | **Generate onboarding plan** | *Employees & plans*, choose an employee, *Generate plan* (Gemini) |
-| 7 | **Run validation** | Runs automatically after generation; *Run consistency check* on the plan page repeats it |
-| 8 | **Review comparison results** | Plan page, tab *AI vs approved matrix*; report *GenAI vs Python comparison* |
-| 9 | **Review hallucination warnings** | Plan page, *Findings* (V-HALLUCINATION, V-SOURCE); *What the sources do not cover*; *Knowledge > Topic check*; report *Hallucination flags* |
-| 10 | **Review contradictions** | *Ground truth > Conflicts* (Reviewer: `evaluator@aurelle.example`) |
-| 11 | **Approve content** | *Review queue*: approve, reject, edit, override with a reason; then *Assign plan* on the plan page |
-| 12a | **Ask the bot** | Employee: *Ask the bot*, or *Ask about this module* on a module page. Try a covered question ("How much cash can my float have?"), an uncovered one, and *Ask my manager*; the manager replies on *Team questions*. Unanswered questions appear in the report *Questions the documents did not answer* |
-| 12 | **Track employee progress** | Employee: `leila.haddad@aurelle.example`. Manager: `omar.siddiqui@aurelle.example` (*My team*, sign-offs) |
-| 13 | **Update policy** | Upload a new version of an existing document (for example `hidden_test_ready/documents/GDP-01_v3.0.pdf`) |
-| 14 | **Regenerate affected content** | *Policy changes*, open the change, *Regenerate affected modules* |
-| 15 | **Generate reports** | *Reports*: each report as CSV, Excel or PDF |
+| 2 | **Upload documents** | *Documents > All documents > Upload document* (or *Upload a policy* on Home). Metadata is read from the document, the form, or inferred, and the source of each value is shown. The security scan runs on upload; findings are on *Documents > Safety check* |
+| 3 | **Create role** | *Organisation > Job roles*, *Add this job*. Preview which requirements it picks up, then *Activate role* |
+| 4 | **Create employee** | *Onboarding > Employees > Add employee*. Choose the job role, property, shift and line manager; the login e-mail and password are set here by an administrator |
+| 5 | **Generate requirement matrix** | *Rules > All rules* to check the extracted rules, then *Rules > Who learns what > Build a new list* and *Approve this list* |
+| 6 | **Generate onboarding plan** | *Onboarding > Employees*, *Make a plan* next to the employee (Gemini) |
+| 7 | **Run validation** | Runs automatically after generation; the plan's *Summary* tab shows the status and scores, and *Run consistency check* repeats the outline |
+| 8 | **Review comparison results** | Plan page, tab *AI vs approved list*; report *GenAI vs Python comparison* |
+| 9 | **Review hallucination warnings** | Plan page, tab *Problems found* (V-HALLUCINATION, V-SOURCE) and *Things the policies do not cover*; *Rules > Is it covered?*; report *Hallucination and unsupported content* |
+| 10 | **Review contradictions** | *Rules > Clashing policies* (decided by the Reviewer: `evaluator@aurelle.example`) |
+| 11 | **Approve content** | Reviewer: *Decide > Approvals* (approve, reject, edit, override or regenerate, each with a reason). Then the training manager uses *Give the plan to …* on the plan page |
+| 12 | **Ask a question** | Employee: *Ask a question*, or *Ask a question about this* on a module page. Try a covered question ("How much cash can my float have?"), an uncovered one, and *Ask my manager*; the manager replies on *Team questions*. Unanswered questions appear in the report *Questions the documents did not answer* |
+| 13 | **Track employee progress** | Employee: `leila.haddad@aurelle.example` (*Home*, *Modules*, *Progress*). Manager: `omar.siddiqui@aurelle.example` (*My team*: sign-offs, assessments to mark, recommendations) |
+| 14 | **Update policy** | Upload a new version of an existing document (for example `hidden_test_ready/documents/GDP-01_v3.0.pdf`) |
+| 15 | **Regenerate affected content** | *Documents > What changed*, open the change, *Regenerate affected modules* |
+| 16 | **Generate reports** | *Organisation > Reports* (training manager: *Results > Reports*): each report as CSV, Excel or PDF |
 
 ## Evaluating SkillSprint
 
 - **Logins.** The evaluator and administrator logins for the live application are given in the submission form, not here. Locally, use the accounts in the table above.
-- **Sample roles.** 10 job roles (Front Office Associate, Duty Manager, Housekeeping Supervisor, and others) with employees and managers; *People > Job roles* shows each role's required rules and progress.
+- **Sample roles.** 10 job roles (Front Office Associate, Duty Manager, Housekeeping Supervisor, and others) with employees and managers; *Organisation > Job roles* shows each role's required rules and progress.
 - **Sample documents.** `sample_documents/` (44 files, 31 documents with versions), with planted conflicts, injections, a draft and an expired SOP; the answer key is in `documentation/dataset/`.
 - **Hidden documents.** Upload them on *Documents > Upload*, or run `python -m flask --app run ingest-folder <folder> --report reports/hidden_readiness.md`. The rehearsal pack in `hidden_test_ready/` shows the expected behaviour for each of the ten hidden-document types.
 - **Evidence.** `reports/evidence/` holds exports of the reports from the live workspace; `reports/extraction_accuracy.md` and `reports/hidden_rehearsal.md` are generated by the tools named in them.
@@ -193,7 +193,6 @@ Sign in as `admin@aurelle.example` (all steps) or the role named in each step.
 - **Topic check matches words, not meaning.** A topic phrased with words the documents do not use (for example "kept" where the policy says "deleted") scores lower and is sent to a person rather than refused.
 - **Numbers-based hallucination check.** V-HALLUCINATION compares numbers, durations and named facts with the cited source; a wrong statement with no checkable fact relies on the reviewer.
 - **No OCR, no languages other than English.**
-- **Latency.** The application server (Singapore) and database (Tokyo) are in different regions, which adds round-trip time to heavy pages.
 - **E-mail** needs a provider; on Railway only the Brevo HTTPS option works.
 
 ## Commands
@@ -240,7 +239,7 @@ sample_documents/     the Aurelle document collection (PDF + DOCX)
 hidden_test_ready/    rehearsal pack for the hidden evaluation and its runner
 tools/                dataset builder, accuracy tool, demo workspace and hidden pack builders
 reports/              extraction accuracy, hidden rehearsal, exported evidence
-screenshots/          screenshots of every main page
+screenshots/          screenshots of every main page, per role (index in screenshots/README.md)
 documentation/        requirements analysis, architecture, database design, dataset blueprint
 ```
 
