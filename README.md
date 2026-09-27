@@ -10,7 +10,7 @@ The demonstration organisation is **Aurelle Hotels & Residences**, a fictional h
 
 | | |
 |---|---|
-| Live application |  (deployed on Railway) |
+| Live application | https://techwiz26-production.up.railway.app  (deployed on Railway) |
 | Technical blog | https://medium.com/@27fazeelat/building-skillsprint-an-evidence-grounded-human-approved-approach-to-ai-onboarding-ad2ff2f618ed?sharedUserId=27fazeelat  |
 | Evaluator instructions | [Evaluating SkillSprint](#evaluating-skillsprint) below |
 | Hidden-document rehearsal | [`hidden_test_ready/`](hidden_test_ready/README.md) and [`reports/hidden_rehearsal.md`](reports/hidden_rehearsal.md) |
