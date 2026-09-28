@@ -83,10 +83,25 @@ def test_a_stuck_call_is_sent_to_the_other_model_and_the_first_answer_wins():
     assert time.perf_counter() - started < 1.5           # did not wait for the stuck request
 
 
-def test_every_phase_has_a_second_model():
+def test_every_phase_has_a_second_model_and_the_extra_models():
     for phase in ("outline", "module"):
-        main, fallback = model_names({}, phase)
-        assert main and fallback and main != fallback
+        chain = model_names({}, phase)
+        assert len(chain) >= 3 and len(set(chain)) == len(chain)
+
+
+def test_when_every_model_is_busy_it_waits_and_tries_once_more():
+    waits = []
+    provider = SequenceProvider([unavailable()] * 3 + [GOOD])   # main once, the fallback twice: round one fails
+    result = call_structured(provider, MODELS, "system", "user", Small, sleep=waits.append, hedge_after=0)
+    assert result.ok and provider.models == ["main-model", "fallback-model", "fallback-model", "fallback-model"]
+    assert waits[-1] >= 1                                # waited before the second round
+
+
+def test_a_hard_failure_does_not_wait_for_another_round():
+    waits = []
+    provider = SequenceProvider([unauthorised(), GOOD])
+    result = call_structured(provider, MODELS, "system", "user", Small, sleep=waits.append, hedge_after=0)
+    assert not result.ok and waits == [] and len(provider.models) == 1
 
 
 def test_stage_labels_are_read_as_stage_codes():
@@ -120,7 +135,7 @@ def test_auth_error_fails_fast():
 
 def test_retries_are_bounded():
     result, provider = call([unavailable()] * 10)
-    assert not result.ok and len(provider.models) == 3          # main once (busy), then 2 on the fallback
+    assert not result.ok and len(provider.models) == 6          # per round: main once (busy), 2 on the fallback
 
 
 def test_error_classification():

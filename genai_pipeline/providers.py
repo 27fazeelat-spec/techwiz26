@@ -57,20 +57,27 @@ class GeminiProvider:
         self._client = genai.Client(api_key=api_key,
                                     http_options=types.HttpOptions(timeout=int(timeout_seconds * 1000)))
         self.temperature, self.thinking_level, self.max_output_tokens = temperature, thinking_level, max_output_tokens
+        self._thinking = {}            # model -> thinking level it accepts, learned from a 400 that names the level
 
     def generate(self, model, system, user, schema):
         types = self._types
         config = dict(system_instruction=system, response_mime_type="application/json", response_schema=schema,
                       temperature=self.temperature, max_output_tokens=self.max_output_tokens,
                       automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True))
-        if self.thinking_level:
-            config["thinking_config"] = types.ThinkingConfig(thinking_level=self.thinking_level)
+        level = self._thinking.get(model, self.thinking_level)
         start = time.perf_counter()
-        try:
-            response = self._client.models.generate_content(model=model, contents=user,
-                                                            config=types.GenerateContentConfig(**config))
-        except Exception as exc:        # the SDK raises several exception families; classify them all
-            raise classify(exc) from exc
+        for _ in range(2):
+            if level:
+                config["thinking_config"] = types.ThinkingConfig(thinking_level=level)
+            try:
+                response = self._client.models.generate_content(model=model, contents=user,
+                                                                config=types.GenerateContentConfig(**config))
+                break
+            except Exception as exc:    # the SDK raises several exception families; classify them all
+                if level and level != "low" and "thinking level" in str(exc).lower():
+                    level = self._thinking[model] = "low"      # newer models start their thinking at "low"
+                    continue
+                raise classify(exc) from exc
         usage = response.usage_metadata
         return ProviderResponse(text=response.text or "", model=model,
                                 latency_ms=int((time.perf_counter() - start) * 1000),
@@ -90,8 +97,9 @@ def build_provider(app_config):
 
 
 def model_names(app_config, phase="outline"):
-    """[main, fallback] for a phase. GEMINI_MODEL overrides the Phase-1 model. When the configured fallback is the
-    phase's own model (module content and the bot), the Phase-1 model is the fallback, so every call has a second model."""
+    """[main, fallback, extra models...] for a phase. GEMINI_MODEL overrides the Phase-1 model. When the configured
+    fallback is the phase's own model (module content and the bot), the Phase-1 model is the fallback, so every call
+    has a second model; the extra models are tried after both when Google reports high demand."""
     from config.loader import load_config
     cfg = load_config("genai")
     outline = app_config.get("GEMINI_MODEL") or cfg["model"]
@@ -99,4 +107,5 @@ def model_names(app_config, phase="outline"):
     fallback = cfg.get("fallback_model")
     if not fallback or fallback == main:
         fallback = outline
-    return [main, fallback if fallback != main else None]
+    chain = [main, fallback, *cfg.get("extra_models", [])]
+    return [m for i, m in enumerate(chain) if m and m not in chain[:i]]

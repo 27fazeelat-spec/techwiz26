@@ -5,6 +5,7 @@
     model last for busy_cooldown_seconds, so parallel calls and the next plans do not wait for the same refusal
   - a call with no answer after hedge_after_seconds is sent again to the other model; the first good answer wins,
     so one stuck request does not hold a plan for the full timeout
+  - every model busy: wait busy_round_delay_seconds and go through the models again (busy_rounds in all)
   - invalid JSON / schema mismatch: one repair attempt that sends the validation errors back
   - main model still unavailable: the fallback model gets the same number of attempts
   - non-retryable errors (auth, bad request, model not found): fail fast
@@ -89,13 +90,29 @@ def _schema_errors(exc):
     return [{"loc": "", "msg": str(exc)[:300]}]
 
 
+BUSY_KINDS = ("unavailable", "rate_limit", "timeout")
+
+
 def call_structured(provider, models, system, user, schema, sleep=time.sleep, hedge_after=None):
-    """Return a CallResult. models: [main, fallback] (fallback may be None).
+    """Return a CallResult. models: [main, fallback, ...] (None entries are ignored).
     hedge_after: seconds before a slow call is also sent to the other model (default from config; 0 = never)."""
     cfg = load_config("genai")["retry"]
-    hedge_after = cfg.get("hedge_after_seconds", 0) if hedge_after is None else hedge_after
     result = CallResult(ok=False)
     started = time.perf_counter()
+    for round_no in range(cfg.get("busy_rounds", 1)):
+        if round_no:
+            sleep(cfg.get("busy_round_delay_seconds", 8) * round_no)
+        _one_round(provider, models, system, user, schema, sleep, hedge_after, cfg, result)
+        last = result.attempts[-1] if result.attempts else {}
+        if result.ok or last.get("error_type") not in BUSY_KINDS:
+            break                                  # done, or a failure that waiting will not fix
+    result.latency_ms = int((time.perf_counter() - started) * 1000)
+    return result
+
+
+def _one_round(provider, models, system, user, schema, sleep, hedge_after, cfg, result):
+    """One pass through the models, filling `result`."""
+    hedge_after = cfg.get("hedge_after_seconds", 0) if hedge_after is None else hedge_after
     repaired = False
     named = [m for m in models if m]
     chain = [m for m in named if not _is_busy(m)] + [m for m in named if _is_busy(m)]   # busy models go last
@@ -122,8 +139,7 @@ def call_structured(provider, models, system, user, schema, sleep=time.sleep, he
                 if not exc.retryable:
                     if exc.kind == "not_found":
                         break                          # try the fallback model
-                    result.latency_ms = int((time.perf_counter() - started) * 1000)
-                    return result
+                    return
                 if attempt < cfg["max_attempts"]:
                     sleep(cfg["base_delay_seconds"] * (2 ** (attempt - 1)) + random.uniform(0, 0.5))
                 continue
@@ -139,13 +155,9 @@ def call_structured(provider, models, system, user, schema, sleep=time.sleep, he
                 result.attempts.append(record)
                 result.error = "invalid_json: response did not match the schema"
                 if repaired or not cfg.get("repair_invalid_json"):
-                    result.latency_ms = int((time.perf_counter() - started) * 1000)
-                    return result
+                    return
                 continue
             record["outcome"] = "ok"
             result.attempts.append(record)
             result.ok, result.error = True, ""
-            result.latency_ms = int((time.perf_counter() - started) * 1000)
-            return result
-    result.latency_ms = int((time.perf_counter() - started) * 1000)
-    return result
+            return
