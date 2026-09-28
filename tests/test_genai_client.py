@@ -27,6 +27,17 @@ def fresh_busy_list():
     reset_busy()
 
 
+@pytest.fixture()
+def retry_cfg(monkeypatch):
+    """Override retry settings for one test, so behaviour switched off in config/genai.yaml stays tested."""
+    import genai_pipeline.client as client
+    real = client.load_config
+
+    def use(**overrides):
+        monkeypatch.setattr(client, "load_config", lambda name: {**real(name), "retry": {**real(name)["retry"], **overrides}})
+    return use
+
+
 def call(outcomes, models=MODELS):
     provider = SequenceProvider(outcomes)
     return call_structured(provider, models, "system", "user", Small, sleep=lambda s: None, hedge_after=0), provider
@@ -37,7 +48,8 @@ def test_success_first_time():
     assert result.ok and result.parsed.answer == "ok" and len(result.attempts) == 1
 
 
-def test_503_on_the_only_model_is_retried_then_succeeds():
+def test_503_on_the_only_model_is_retried_then_succeeds(retry_cfg):
+    retry_cfg(max_attempts=2)
     result, provider = call([unavailable(), GOOD], models=["main-model", None])
     assert result.ok and provider.models == ["main-model", "main-model"]
     assert [a["outcome"] for a in result.attempts] == ["error", "ok"]
@@ -83,13 +95,14 @@ def test_a_stuck_call_is_sent_to_the_other_model_and_the_first_answer_wins():
     assert time.perf_counter() - started < 1.5           # did not wait for the stuck request
 
 
-def test_every_phase_has_a_second_model_and_the_extra_models():
+def test_every_phase_has_a_second_model():
     for phase in ("outline", "module"):
         chain = model_names({}, phase)
-        assert len(chain) >= 3 and len(set(chain)) == len(chain)
+        assert len(chain) >= 2 and len(set(chain)) == len(chain)
 
 
-def test_when_every_model_is_busy_it_waits_and_tries_once_more():
+def test_when_every_model_is_busy_it_waits_and_tries_once_more(retry_cfg):
+    retry_cfg(max_attempts=2, busy_rounds=2)
     waits = []
     provider = SequenceProvider([unavailable()] * 3 + [GOOD])   # main once, the fallback twice: round one fails
     result = call_structured(provider, MODELS, "system", "user", Small, sleep=waits.append, hedge_after=0)
@@ -135,7 +148,7 @@ def test_auth_error_fails_fast():
 
 def test_retries_are_bounded():
     result, provider = call([unavailable()] * 10)
-    assert not result.ok and len(provider.models) == 6          # per round: main once (busy), 2 on the fallback
+    assert not result.ok and len(provider.models) == 2          # one request per model, no second round (config)
 
 
 def test_error_classification():

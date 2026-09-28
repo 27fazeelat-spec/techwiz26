@@ -4,7 +4,7 @@ provider: gemini
 model: gemini-3.5-flash                   # Phase 1: applicability, mandatory status, stages (the decisions Python checks)
 module_model: gemini-3.5-flash-lite       # Phase 2: learning content; faster, with its own rate limit
 fallback_model: gemini-3.5-flash-lite     # used when a model is unavailable or over its rate limit
-extra_models: [gemini-3.6-flash, gemini-3.7-flash, gemini-3.1-pro-preview, gemini-pro-latest]   # tried in order when Google reports high demand; Pro models have separate capacity
+extra_models: []   # tried in order when Google reports high demand; Pro models have separate capacity
 model_env: GEMINI_MODEL
 
 generation:
@@ -12,22 +12,22 @@ generation:
   thinking_level: minimal          # Python makes the decisions; long model "thinking" only adds latency
   max_output_tokens: 16384
   timeout_seconds: 45
-  module_concurrency: 4            # parallel Phase-2 module calls; lower it if the API rate limit is hit
+  module_concurrency: 1            # parallel Phase-2 module calls; lower it if the API rate limit is hit
 
 retry:
-  max_attempts: 2                  # per model; then the fallback model is tried
+  max_attempts: 1                  # per model; then the fallback model is tried
   base_delay_seconds: 1
   busy_cooldown_seconds: 120       # a model that answered 503 (high demand) or 429 is tried last for this long
-  hedge_after_seconds: 20          # no answer yet: send the same request to the other model; the first good answer wins
-  busy_rounds: 2                   # every model busy (503/429/timeout): wait and go through the models once more
+  hedge_after_seconds: 0          # no answer yet: send the same request to the other model; the first good answer wins
+  busy_rounds: 1                   # every model busy (503/429/timeout): wait and go through the models once more
   busy_round_delay_seconds: 15
   repair_invalid_json: true        # one repair attempt that sends the schema errors back
 
 consistency:
-  extra_runs: 2                    # Phase-1 re-runs used for the consistency score
+  extra_runs: 0                    # Phase-1 re-runs used for the consistency score
 
 plan:
-  outline_shard_requirements: 35   # requirement clauses per parallel Phase-1 call
+  outline_shard_requirements: 200   # requirement clauses per parallel Phase-1 call
   max_modules: 8                   # smallest knowledge areas are merged beyond this
   min_module_requirements: 2
   day1_max_items: 12
