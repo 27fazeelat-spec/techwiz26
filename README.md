@@ -130,12 +130,12 @@ The suite ingests the full sample collection and checks the results against the 
 | Gemini generation: sharded Phase-1 outline, deterministic modules, parallel module content, retry / repair / fallback, every call logged | ✅ |
 | Python validation: 17 rules (coverage, role, condition, stage, sequence, sources, quiz answers, numeric-fact hallucination check, duplicates, rubric) | ✅ |
 | GenAI vs Python comparison, item and plan statuses, coverage / traceability / consistency scores, plan page with traceability | ✅ |
-| Contradiction detection (numbers, deadlines, frequencies, permission vs prohibition, version changes) with configurable precedence and reviewer decisions: 12 of 12 planned conflicts found | ✅ |
+| Contradiction detection (numbers, deadlines, frequencies, permission vs prohibition, version changes) with configurable precedence and reviewer decisions: 13 of 13 planned conflicts found | ✅ |
 | Review queue: approve, reject, edit (re-validated), override with reason, regenerate one module, comment; plan assignment only after every decision | ✅ |
 | Policy updates: clause-by-clause change detection, impact on items / plans / employees, regeneration of affected modules only | ✅ |
 | Progress: checklist, tasks with manager sign-off, Python-scored quizzes (pass mark, attempt limit), assessments, progress status, weak areas, rule-based recommendations | ✅ |
 | Job roles added at runtime (mapping preview, activation), employee profiles without sensitive data | ✅ |
-| Twelve reports from stored data (comparison, validation, traceability, hallucination, progress, …) exported as CSV, Excel and PDF | ✅ |
+| Thirteen reports from stored data (comparison, validation, traceability, hallucination, progress, …) exported as CSV, Excel and PDF | ✅ |
 | Employee filters (role, department, property, verification result, progress) and plan comparison | ✅ |
 | Topic check: refuses topics the approved documents do not cover (deterministic, `hallucination_checks/`) | ✅ |
 | Ask the bot: employees ask questions answered only from approved passages; Python checks every citation and number, uncovered questions never reach Gemini, and the employee can send any question to their line manager | ✅ |
@@ -224,7 +224,7 @@ document_processing/  PDF/DOCX parsers, metadata, chunker, version control
 document_validation/  file and metadata checks
 database/             SQLAlchemy models (PostgreSQL), audit trail, seed data
 config/               YAML rules: permissions, precedence, stages, categories, Gemini settings
-templates/  static/   pages and the "Clean Verified" design tokens (light + dark)
+templates/  static/   pages; the "Terracotta & Olive" workspace theme and the public site, light + dark
 security/             prompt-injection scanner
 role_matrix/          deterministic requirement extraction
 genai_pipeline/       Gemini client, retrieval, retry / repair / fallback
