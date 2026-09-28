@@ -48,13 +48,6 @@ python run.py
 
 Open http://127.0.0.1:5000. On first start with the local SQLite database (`instance/skillsprint.db`), the app seeds itself and ingests the 44 sample documents through the normal pipeline (about 20 seconds). Data persists between restarts; delete the file to start fresh. PostgreSQL is used whenever `DATABASE_URL` is set.
 
-| Account | Role | Password (local SQLite mode) |
-|---|---|---|
-| `admin@aurelle.example` | Administrator | `skillsprint-demo` |
-| `training@aurelle.example` | Training Manager | `skillsprint-demo` |
-| `evaluator@aurelle.example` | Reviewer (evaluator login) | `skillsprint-demo` |
-| `omar.siddiqui@aurelle.example` | Manager | `skillsprint-demo` |
-| `leila.haddad@aurelle.example` | Employee | `skillsprint-demo` |
 
 Set `SKILLSPRINT_TODAY=2026-09-23` in `.env` to reproduce the dataset's reference date. On that date, one policy version is scheduled for the future, one SOP has expired, and one draft is unapproved.
 
