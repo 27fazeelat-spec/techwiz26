@@ -48,7 +48,6 @@ python run.py
 
 Open http://127.0.0.1:5000. On first start with the local SQLite database (`instance/skillsprint.db`), the app seeds itself and ingests the 44 sample documents through the normal pipeline (about 20 seconds). Data persists between restarts; delete the file to start fresh. PostgreSQL is used whenever `DATABASE_URL` is set.
 
-
 Set `SKILLSPRINT_TODAY=2026-09-23` in `.env` to reproduce the dataset's reference date. On that date, one policy version is scheduled for the future, one SOP has expired, and one draft is unapproved.
 
 ## Using PostgreSQL
@@ -163,7 +162,7 @@ Sign in as `admin@aurelle.example` (all steps) or the role named in each step.
 
 ## Evaluating SkillSprint
 
-- **Logins.** The evaluator and administrator logins for the live application are given in the submission form, not here. Locally, use the accounts in the table above.
+- **Logins.** The evaluator and administrator logins for the live application are given in the submission form, not here. Locally, use the accounts listed in the Installation Instructions.
 - **Sample roles.** 10 job roles (Front Office Associate, Duty Manager, Housekeeping Supervisor, and others) with employees and managers; *Organisation > Job roles* shows each role's required rules and progress.
 - **Sample documents.** `sample_documents/` (44 files, 31 documents with versions), with planted conflicts, injections, a draft and an expired SOP; the answer key is in `documentation/dataset/`.
 - **Hidden documents.** Upload them on *Documents > Upload*, or run `python -m flask --app run ingest-folder <folder> --report reports/hidden_readiness.md`. The rehearsal pack in `hidden_test_ready/` shows the expected behaviour for each of the ten hidden-document types.
