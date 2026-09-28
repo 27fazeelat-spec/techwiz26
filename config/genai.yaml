@@ -1,8 +1,8 @@
 # Generative AI settings (Pipeline 1). The API key is read from the GEMINI_API_KEY environment variable.
 # GEMINI_MODEL in the environment overrides model; nothing here is a secret.
 provider: gemini
-model: gemini-3.5-flash                   # Phase 1: applicability, mandatory status, stages (the decisions Python checks)
-module_model: gemini-3.5-flash-lite       # Phase 2: learning content; faster, with its own rate limit
+model: gemini-3.6-flash                   # Phase 1: applicability, mandatory status, stages (the decisions Python checks)
+module_model: gemini-3.6-flash            # Phase 2: learning content; faster, with its own rate limit
 fallback_model: gemini-3.5-flash-lite     # used when a model is unavailable or over its rate limit
 extra_models: []   # tried in order when Google reports high demand; Pro models have separate capacity
 model_env: GEMINI_MODEL
