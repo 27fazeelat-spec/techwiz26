@@ -120,7 +120,7 @@ def ai_error(text):
     if any(k in t for k in ("401", "403", "permission_denied", "api key", "api_key", "unauthenticated", "auth")):
         return "The AI service did not accept the API key. An administrator needs to check GEMINI_API_KEY."
     if "invalid_json" in t or "schema" in t:
-        return "The AI's answer was not in the expected format, even after one correction. Please try again."
+        return "The AI's answer was not in the expected format. Please try again."
     return "The AI service returned an error. Please try again in a few minutes."
 
 

@@ -120,7 +120,8 @@ def test_a_hard_failure_does_not_wait_for_another_round():
 def test_stage_labels_are_read_as_stage_codes():
     base = {"requirement_id": "R-X-01-001", "mandatory": True, "priority": "High", "category": "Safety",
             "source_document_id": "X-01", "source_section_id": "1"}
-    for label, code in (("Day 1", "D1"), ("week 1", "W1"), ("First 30 Days", "D30"), ("30 days", "D30"), ("D60", "D60")):
+    for label, code in (("Day 1", "D1"), ("week 1", "W1"), ("First 30 Days", "D30"), ("30 days", "D30"), ("D60", "D60"),
+                        ("D180", "D90"), ("D365", "D90")):                  # beyond the last stage: the last stage
         assert OutlineRequirement(**base, due_stage=label).due_stage == code
     with pytest.raises(Exception):
         OutlineRequirement(**base, due_stage="Someday")

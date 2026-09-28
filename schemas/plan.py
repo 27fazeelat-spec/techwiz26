@@ -4,6 +4,7 @@ These are passed to Gemini as the response schema, and every response is re-vali
 Field names follow the SRS (Step 37): requirement IDs, mandatory status, source document and
 section, priority, due stage, task and assessment topic.
 """
+import re
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
@@ -41,9 +42,13 @@ def _stage_code(value):
     if not isinstance(value, str):
         return value
     wanted = " ".join(value.lower().replace("_", " ").split())
-    for s in load_config("stages")["stages"]:
+    stages = load_config("stages")["stages"]
+    for s in stages:
         if wanted in (s["code"].lower(), s["label"].lower(), s["label"].lower().replace("first ", "")):
             return s["code"]
+    days = re.fullmatch(r"d(\d+)", wanted.replace(" ", ""))      # 'D180', 'D365': beyond the last stage
+    if days and int(days.group(1)) > stages[-1]["day_offset"]:
+        return stages[-1]["code"]                                 # the plan ends at its last stage; V-STAGE still compares
     return value.strip()
 
 
