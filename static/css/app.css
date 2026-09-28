@@ -662,6 +662,9 @@ details.more[open] > summary { margin-bottom: var(--space-4); }
 .nextstep__text { flex: 1 1 280px; }
 .nextstep__text strong { display: block; font-size: var(--text-md); }
 .nextstep__text span { font-size: var(--text-sm); color: var(--muted); }
+.nextstep__tech { margin-top: 6px; font-size: var(--text-xs); color: var(--muted); }
+.nextstep__tech summary { cursor: pointer; }
+.nextstep__tech code { display: block; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
 /* Hub tabs: the pages that share one sidebar entry (src/navigation.py HUBS) */
 .hubtabs { display: flex; gap: 6px; margin: 0 0 22px; padding: 5px; width: fit-content; max-width: 100%; overflow-x: auto;
   background: var(--surface-sunk); border-radius: 999px; scrollbar-width: none; }

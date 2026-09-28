@@ -33,7 +33,8 @@
 {# ---------- the one thing to do next ---------- #}
 {% if plan.status == 'Failed' %}
 <div class="nextstep nextstep--bad"><span class="nextstep__icon">{{ icon('alert', 20) }}</span>
-  <div class="nextstep__text"><strong>The AI could not finish writing this plan</strong><span>{{ plan.error }}</span></div>
+  <div class="nextstep__text"><strong>The AI could not finish writing this plan</strong><span>{{ plan.error|ai_error }}</span>
+    {% if plan.error %}<details class="nextstep__tech"><summary>Technical details</summary><code>{{ plan.error }}</code></details>{% endif %}</div>
   <a class="btn" href="{{ url_for('plans.employees') }}">Back to employees</a></div>
 {% elif plan.status == 'superseded' %}
 <div class="nextstep"><span class="nextstep__icon">{{ icon('file', 20) }}</span>

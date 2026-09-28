@@ -157,7 +157,10 @@ def ask(question, employee, actor, app_config, module_key=None, plan=None, provi
                     "requirements": p["requirements"][:4], "score": p["score"], "cited": False} for l, p in given.items()]
     if call is None or not call.ok:
         row.status = "blocked"
-        row.check = {"reason": "The model could not be reached, so here are the passages instead.",
+        from src.ui_text import ai_error
+        row.check = {"reason": ai_error(call.error if call else error).replace("this could not be finished",
+                                                                             "no answer could be written")
+                     + " Here are the matching passages from the policies instead.",
                      "error": (call.error if call else error)[:200]}
     else:
         ok, check = check_answer(call.parsed, given)

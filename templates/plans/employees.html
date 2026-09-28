@@ -95,7 +95,7 @@
       {% else %}
         <p class="personcard__none">{{ icon('spark', 15) }}No training plan yet</p>
       {% endif %}
-      {% if f %}<a class="badge badge--bad personcard__failed" href="{{ url_for('plans.plan_detail', pk=f.id) }}" title="{{ f.error }}">Last attempt failed (v{{ f.version }})</a>{% endif %}
+      {% if f %}<a class="badge badge--bad personcard__failed" href="{{ url_for('plans.plan_detail', pk=f.id) }}" title="{{ f.error|ai_error }}">Last attempt failed (v{{ f.version }})</a>{% endif %}
     </div>
 
     <footer class="personcard__actions">

@@ -107,9 +107,27 @@ def module_title(title):
     return f"{title[:m.start()]} +{n} more topic{'s' if n != 1 else ''}"
 
 
+def ai_error(text):
+    """A GenAI failure in plain words; the technical text stays available separately."""
+    t = (text or "").lower()
+    if "per day" in t or t.startswith("quota"):          # kind "quota" is only the daily limit
+        return ("The AI service has reached its daily limit. Please try again tomorrow, or ask an administrator "
+                "to check the Gemini plan.")
+    if any(k in t for k in ("503", "unavailable", "high demand", "overloaded", "429", "rate_limit", "rate limit",
+                            "resource_exhausted", "504", "deadline", "timeout", "timed out")):
+        return ("Google's AI service is very busy right now, so this could not be finished. Nothing was given to "
+                "anyone. Please try again in a few minutes.")
+    if any(k in t for k in ("401", "403", "permission_denied", "api key", "api_key", "unauthenticated", "auth")):
+        return "The AI service did not accept the API key. An administrator needs to check GEMINI_API_KEY."
+    if "invalid_json" in t or "schema" in t:
+        return "The AI's answer was not in the expected format, even after one correction. Please try again."
+    return "The AI service returned an error. Please try again in a few minutes."
+
+
 def register(app):
     from src.navigation import is_active, items_for, sidebar_for
     app.jinja_env.globals.update(status_label=label, glossary=GLOSSARY, nav_items=items_for, nav_sidebar=sidebar_for, nav_active=is_active,
                                  category_icon=category_icon, category_photo=category_photo)
     app.jinja_env.filters["plain_step"] = plain_step
     app.jinja_env.filters["module_title"] = module_title
+    app.jinja_env.filters["ai_error"] = ai_error

@@ -61,7 +61,7 @@
         <div class="pcard">
           <div class="pcard__top"><span class="avatar">{{ initials(e.name) }}</span><div class="pcard__who"><strong>{{ e.name }}</strong><span>{{ e.job_role.name }}</span></div></div>
           <span class="pcard__when {{ 'is-soon' if days <= 7 }}">{% if days < 0 %}Joined {{ -days }} day{{ 's' if days != -1 }} ago{% elif days == 0 %}Joins today{% elif days <= 7 %}Joins in {{ days }} day{{ 's' if days != 1 }}{% else %}Joins {{ e.joining_date.strftime('%d %b') }}{% endif %}</span>
-          {% if c.failed %}<a class="badge badge--bad" href="{{ url_for('plans.plan_detail', pk=c.failed.id) }}" data-tip="{{ c.failed.error }}">Last attempt failed</a>{% endif %}
+          {% if c.failed %}<a class="badge badge--bad" href="{{ url_for('plans.plan_detail', pk=c.failed.id) }}" data-tip="{{ c.failed.error|ai_error }}">Last attempt failed</a>{% endif %}
           {% if can('plans.generate') and stats.matrix %}
           <form method="post" action="{{ url_for('plans.generate', code=e.employee_code) }}" style="margin: 0"
                 data-busy="Writing {{ e.name.split(' ')[0] }}'s plan" data-busy-steps="Finding the rules for {{ e.job_role.name }}|The AI drafts an outline|The AI writes each module|The app checks every item against its policy|Comparing with the approved list" data-busy-step-ms="7000">

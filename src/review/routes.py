@@ -8,6 +8,7 @@ from database.models import Chunk, Document, Plan, ReviewItem
 from genai_pipeline.providers import ProviderError
 from src.rbac import has_permission, require_permission
 from src.services import review
+from src.ui_text import ai_error
 
 bp = Blueprint("review", __name__)
 
@@ -115,7 +116,8 @@ def decide(pk):
         return redirect(url_for("review.detail", pk=pk))
     except (ProviderError, ValueError) as exc:
         db.session.rollback()
-        flash(f"Regeneration did not run: {exc}", "error")
+        flash(ai_error(f"{getattr(exc, 'kind', '')}: {exc}") if isinstance(exc, ProviderError)
+              else f"Regeneration did not run: {exc}", "error")
         return redirect(url_for("review.detail", pk=pk))
     flash(message, "success")
     if action == "regenerate":

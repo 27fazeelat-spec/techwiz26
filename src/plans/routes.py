@@ -12,6 +12,7 @@ from database.models import (Chunk, ComparisonRow, Document, Employee, Finding, 
 from genai_pipeline.providers import ProviderError
 from src.rbac import require_permission
 from src.services import planning
+from src.ui_text import ai_error
 
 bp = Blueprint("plans", __name__)
 
@@ -93,10 +94,10 @@ def generate(code):
         flash(str(exc), "error")
         return redirect(url_for("plans.employees"))
     except ProviderError as exc:
-        flash(f"Gemini is not available ({exc.kind}): {exc}", "error")
+        flash(ai_error(f"{exc.kind}: {exc}"), "error")
         return redirect(url_for("plans.employees"))
     if plan.status == "Failed":
-        flash(f"Generation failed and nothing was assigned: {plan.error}", "error")
+        flash(ai_error(plan.error), "error")
     else:
         total = next((s["ms"] for s in plan.timeline if s["step"] == "Total"), 0) / 1000
         flash(f"Plan generated and validated in {total:.1f} s. Status: {plan.status}.", "success")
@@ -111,7 +112,7 @@ def consistency(pk):
         planning.run_consistency(plan, current_app.config)
         flash(f"Consistency across {plan.consistency['runs']} runs: {plan.score_generation_consistency}%.", "success")
     except ProviderError as exc:
-        flash(f"Gemini is not available ({exc.kind}).", "error")
+        flash(ai_error(f"{exc.kind}: {exc}"), "error")
     return redirect(url_for("plans.plan_detail", pk=pk))
 
 

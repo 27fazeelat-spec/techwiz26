@@ -9,6 +9,7 @@ from database.models import ChangeImpact
 from genai_pipeline.providers import ProviderError
 from src.rbac import require_permission
 from src.services import changes
+from src.ui_text import ai_error
 
 bp = Blueprint("changes", __name__)
 
@@ -59,7 +60,8 @@ def regenerate(pk):
         return redirect(url_for("changes.detail", pk=pk))
     except (ProviderError, ValueError) as exc:
         db.session.rollback()
-        flash(f"Regeneration did not run: {exc}", "error")
+        flash(ai_error(f"{getattr(exc, 'kind', '')}: {exc}") if isinstance(exc, ProviderError)
+              else f"Regeneration did not run: {exc}", "error")
         return redirect(url_for("changes.detail", pk=pk))
     flash("Regenerated only the affected modules: " + "; ".join(
         f"{a.plan_code} v{a.version} -> v{b.version} ({b.status})" for a, b in results), "success")

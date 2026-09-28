@@ -153,3 +153,15 @@ def test_prompt_templates_are_versioned():
     for name in ("plan_outline", "module_content"):
         t = load(name)
         assert t.version and len(t.sha256) == 64 and "DATA" in t.system
+
+
+def test_ai_errors_are_explained_in_plain_words():
+    from src.ui_text import ai_error
+    busy = "unavailable: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand.'}}"
+    assert "very busy" in ai_error(busy) and "few minutes" in ai_error(busy)
+    assert "very busy" in ai_error("unavailable: 504 DEADLINE_EXCEEDED")
+    assert "very busy" in ai_error("rate_limit: 429 You exceeded your current quota")   # per minute, not per day
+    assert "daily limit" in ai_error("quota: exceeded per day")
+    assert "API key" in ai_error("auth: 403 PERMISSION_DENIED")
+    assert "{" not in ai_error(busy)                                                      # no raw JSON for people
+
