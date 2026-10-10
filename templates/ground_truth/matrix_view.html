@@ -32,13 +32,13 @@
 <nav class="jobpick" aria-label="Choose a job">
   {% for r in roles %}{% set s = summary[r.code] %}
   <a class="jobpick__item {{ 'is-on' if role and r.code == role.code }}" href="{{ url_for('ground_truth.matrix_view', number=version.version_no, role=r.code) }}#rows"
-     {{ 'aria-current=page' if role and r.code == role.code }}>{{ r.name }}<b>{{ s.total or 0 }}</b></a>
+     {{ 'aria-current=page' if role and r.code == role.code }}>{{ r.name }}<b>{{ s['total'] or 0 }}</b></a>
   {% endfor %}
 </nav>
 
 {% if role %}
 <section class="acard mxcard rise" id="rows">
-  <div class="acard__head"><h3>{{ role.name }}: when to learn what</h3><span>{{ summary[role.code].total or 0 }} rules, {{ summary[role.code].mandatory or 0 }} are a must</span></div>
+  <div class="acard__head"><h3>{{ role.name }}: when to learn what</h3><span>{{ summary[role.code]['total'] or 0 }} rules, {{ summary[role.code]['mandatory'] or 0 }} are a must</span></div>
   <div class="acard__body">
     <ol class="stagestrip">
       {% for code, label, n in timeline %}
